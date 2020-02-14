@@ -1,0 +1,255 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.ar.sceneform.plugin'
+
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.capstone.aryoulearning"
+        minSdkVersion 24
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    //noinspection GradleCompatible
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation 'com.android.support:support-v4:28.0.0'
+    implementation 'com.android.support:multidex:1.0.3'
+
+    //Tests
+    implementation 'com.android.support:design:28.0.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    //Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
+
+    //Gson Converter
+    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
+    //Recyclerview
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
+    implementation 'com.android.support:cardview-v7:28.0.0'
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    //Sceneform
+    implementation "com.google.ar.sceneform.ux:sceneform-ux:1.9.0"
+    implementation 'com.airbnb.android:lottie:2.7.0'
+    implementation 'com.facebook.shimmer:shimmer:0.4.0'
+
+}
+
+//letters
+sceneform.asset('sampledata/alphabet/balloonb.obj',
+        'default',
+        'sampledata/alphabet/b.sfa',
+        'src/main/assets/b')
+
+
+sceneform.asset('sampledata/alphabet/balloonc.obj',
+        'default',
+        'sampledata/alphabet/c.sfa',
+        'src/main/assets/c')
+
+sceneform.asset('sampledata/alphabet/d.fbx',
+        'default',
+        'sampledata/alphabet/d.sfa',
+        'src/main/assets/d')
+
+sceneform.asset('sampledata/alphabet/balloone.obj',
+        'default',
+        'sampledata/alphabet/e.sfa',
+        'src/main/assets/e')
+
+sceneform.asset('sampledata/alphabet/balloonf.obj',
+        'default',
+        'sampledata/alphabet/f.sfa',
+        'src/main/assets/f')
+
+sceneform.asset('sampledata/alphabet/g.fbx',
+        'default',
+        'sampledata/alphabet/g.sfa',
+        'src/main/assets/g')
+
+sceneform.asset('sampledata/alphabet/balloonh.obj',
+        'default',
+        'sampledata/alphabet/h.sfa',
+        'src/main/assets/h')
+
+sceneform.asset('sampledata/alphabet/ballooni.obj',
+        'default',
+        'sampledata/alphabet/i.sfa',
+        'src/main/assets/i')
+
+sceneform.asset('sampledata/alphabet/balloonj.obj',
+        'default',
+        'sampledata/alphabet/j.sfa',
+        'src/main/assets/j')
+
+sceneform.asset('sampledata/alphabet/balloonk.obj',
+        'default',
+        'sampledata/alphabet/k.sfa',
+        'src/main/assets/k')
+
+sceneform.asset('sampledata/alphabet/balloonl.obj',
+        'default',
+        'sampledata/alphabet/l.sfa',
+        'src/main/assets/l')
+
+sceneform.asset('sampledata/alphabet/balloonm.obj',
+        'default',
+        'sampledata/alphabet/m.sfa',
+        'src/main/assets/m')
+
+sceneform.asset('sampledata/alphabet/balloonn.obj',
+        'default',
+        'sampledata/alphabet/n.sfa',
+        'src/main/assets/n')
+
+sceneform.asset('sampledata/alphabet/o.fbx',
+        'default',
+        'sampledata/alphabet/o.sfa',
+        'src/main/assets/o')
+
+sceneform.asset('sampledata/alphabet/balloonp.obj',
+        'default',
+        'sampledata/alphabet/p.sfa',
+        'src/main/assets/p')
+
+sceneform.asset('sampledata/alphabet/balloona.fbx',
+        'default',
+        'sampledata/alphabet/a.sfa',
+        'src/main/assets/a')
+
+
+sceneform.asset('sampledata/alphabet/z.obj',
+        'default',
+        'sampledata/alphabet/z.sfa',
+        'src/main/assets/z')
+
+sceneform.asset('sampledata/alphabet/q.obj',
+        'default',
+        'sampledata/alphabet/q.sfa',
+        'src/main/assets/q')
+
+sceneform.asset('sampledata/alphabet/r.obj',
+        'default',
+        'sampledata/alphabet/r.sfa',
+        'src/main/assets/r')
+
+sceneform.asset('sampledata/alphabet/s.obj',
+        'default',
+        'sampledata/alphabet/s.sfa',
+        'src/main/assets/s')
+
+sceneform.asset('sampledata/alphabet/t.obj',
+        'default',
+        'sampledata/alphabet/t.sfa',
+        'src/main/assets/t')
+
+sceneform.asset('sampledata/alphabet/u.obj',
+        'default',
+        'sampledata/alphabet/u.sfa',
+        'src/main/assets/u')
+
+sceneform.asset('sampledata/alphabet/v.obj',
+        'default',
+        'sampledata/alphabet/v.sfa',
+        'src/main/assets/v')
+
+sceneform.asset('sampledata/alphabet/w.obj',
+        'default',
+        'sampledata/alphabet/w.sfa',
+        'src/main/assets/w')
+
+sceneform.asset('sampledata/alphabet/x.obj',
+        'default',
+        'sampledata/alphabet/x.sfa',
+        'src/main/assets/x')
+
+sceneform.asset('sampledata/alphabet/y.obj',
+        'default',
+        'sampledata/alphabet/y.sfa',
+        'src/main/assets/y')
+//colors
+
+sceneform.asset('sampledata/color/blue.obj',
+        'default',
+        'sampledata/color/blue.sfa',
+        'src/main/assets/blue')
+
+sceneform.asset('sampledata/color/green.obj',
+        'default',
+        'sampledata/color/green.sfa',
+        'src/main/assets/green')
+
+sceneform.asset('sampledata/color/red.obj',
+        'default',
+        'sampledata/color/red.sfa',
+        'src/main/assets/red')
+
+sceneform.asset('sampledata/color/purple.obj',
+        'default',
+        'sampledata/color/purple.sfa',
+        'src/main/assets/purple')
+
+sceneform.asset('sampledata/color/yellow.obj',
+        'default',
+        'sampledata/color/yellow.sfa',
+        'src/main/assets/yellow')
+
+sceneform.asset('sampledata/color/orange.obj',
+        'default',
+        'sampledata/color/orange.sfa',
+        'src/main/assets/orange')
+
+
+sceneform.asset('sampledata/animal/Bat_01.obj',
+        'default',
+        'sampledata/animal/Bat_01.sfa',
+        'src/main/assets/bat')
+
+sceneform.asset('sampledata/animal/Bear_01.obj',
+        'default',
+        'sampledata/animal/Bear_01.sfa',
+        'src/main/assets/bear')
+
+sceneform.asset('sampledata/animal/Lion.obj',
+        'default',
+        'sampledata/animal/Lion.sfa',
+        'src/main/assets/lion')
+
+sceneform.asset('sampledata/animal/Mesh_Cat.obj',
+        'default',
+        'sampledata/animal/Mesh_Cat.sfa',
+        'src/main/assets/cat')
+
+sceneform.asset('sampledata/animal/Rat_01.obj',
+        'default',
+        'sampledata/animal/Rat_01.sfa',
+        'src/main/assets/rat')
+
+sceneform.asset('sampledata/animal/Mesh_Beagle.obj',
+        'default',
+        'sampledata/animal/Mesh_Beagle.sfa',
+        'src/main/assets/dog')
+
+sceneform.asset('sampledata/animal/Mesh_Cow.obj',
+        'default',
+        'sampledata/animal/Mesh_Cow.sfa',
+        'src/main/assets/cow')
