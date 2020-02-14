@@ -14,12 +14,12 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.widget.CardView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.cardview.widget.CardView;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -39,7 +39,7 @@ import com.capstone.aryoulearning.animation.Animations;
 import com.capstone.aryoulearning.audio.PronunciationUtil;
 import com.capstone.aryoulearning.controller.NavListener;
 import com.capstone.aryoulearning.model.Model;
-import com.capstone.aryoulearning.view.MainActivity;
+import com.capstone.aryoulearning.MainActivityX;
 import com.capstone.aryoulearning.view.fragment.ResultsFragment;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Frame;
@@ -207,9 +207,9 @@ public class ARHostFragment extends Fragment {
         exitNo = exitMenu.findViewById(R.id.exit_button_no);
 
         exit.setOnClickListener(v -> f.addView(exitMenu));
-        exitYes.setOnClickListener(v -> listener.moveToListFragment(MainActivity.getAnimalModelList(),
-                MainActivity.getCategoryList(),
-                MainActivity.getBackgroundList()));
+        exitYes.setOnClickListener(v -> listener.moveToListFragment(MainActivityX.getAnimalModelList(),
+                MainActivityX.getCategoryList(),
+                MainActivityX.getBackgroundList()));
         exitNo.setOnClickListener(v -> f.removeView(exitMenu));
 
         undo = view.findViewById(R.id.button_undo);

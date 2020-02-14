@@ -1,7 +1,7 @@
 package com.capstone.aryoulearning.animation;
 
 import android.animation.ObjectAnimator;
-import android.support.v7.widget.CardView;
+import androidx.cardview.widget.CardView;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;

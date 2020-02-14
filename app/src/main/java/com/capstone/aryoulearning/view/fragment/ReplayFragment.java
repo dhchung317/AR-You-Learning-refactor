@@ -5,10 +5,10 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.CardView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.cardview.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +17,7 @@ import com.capstone.aryoulearning.R;
 import com.capstone.aryoulearning.audio.PronunciationUtil;
 import com.capstone.aryoulearning.controller.NavListener;
 import com.capstone.aryoulearning.model.Model;
-import com.capstone.aryoulearning.view.MainActivity;
+import com.capstone.aryoulearning.MainActivityX;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,9 +100,9 @@ public class ReplayFragment extends Fragment {
         });
         homeButtonCard.setOnClickListener(v -> {
             pronunciationUtil.textToSpeechAnnouncer("Lets go home", textToSpeech);
-            listener.moveToListFragment(MainActivity.getAnimalModelList(),
-                    MainActivity.getCategoryList(),
-                    MainActivity.getBackgroundList());
+            listener.moveToListFragment(MainActivityX.getAnimalModelList(),
+                    MainActivityX.getCategoryList(),
+                    MainActivityX.getBackgroundList());
         });
         playAgainButtonCard.setOnClickListener(v -> {
             pronunciationUtil.textToSpeechAnnouncer("Lets play again!", textToSpeech);

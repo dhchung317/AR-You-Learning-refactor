@@ -11,12 +11,11 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +27,7 @@ import android.widget.TextView;
 import com.capstone.aryoulearning.R;
 import com.capstone.aryoulearning.controller.CategoryAdapter;
 import com.capstone.aryoulearning.model.Model;
-import com.capstone.aryoulearning.view.MainActivity;
+import com.capstone.aryoulearning.MainActivityX;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,7 +134,7 @@ public class ListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        MainActivity.AR_SWITCH_STATUS = false;
+        MainActivityX.AR_SWITCH_STATUS = false;
         if (Objects.requireNonNull(getFragmentManager()).findFragmentByTag("result_fragment") != null) {
             getFragmentManager().beginTransaction().remove(Objects.requireNonNull(getFragmentManager().findFragmentByTag("result_fragment"))).commit();
         }

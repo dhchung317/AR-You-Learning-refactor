@@ -2,9 +2,9 @@ package com.capstone.aryoulearning.controller;
 
 import android.content.Context;
 import android.os.Vibrator;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import com.capstone.aryoulearning.R;
 import com.capstone.aryoulearning.model.Model;
-import com.capstone.aryoulearning.view.MainActivity;
+import com.capstone.aryoulearning.MainActivityX;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -78,7 +78,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
             Log.d("TAG", backgroundImage);
             categoryCard.setOnClickListener(v -> {
-                MainActivity.currentCategory = category;
+                MainActivityX.currentCategory = category;
                 listener.moveToHintFragment(categoryList);
                 makeVibration();
             });
