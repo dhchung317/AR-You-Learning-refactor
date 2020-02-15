@@ -26,11 +26,11 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     private NavListener listener;
 
 
-    public CategoryAdapter(List<List<Model>> categoryList, List<String> categoryName, List<String> categoryImages) {
-        this.categoryList = categoryList;
-        this.categoryName = categoryName;
-        this.categoryImages = categoryImages;
-    }
+//    public CategoryAdapter() {
+//        this.categoryList = categoryList;
+//        this.categoryName = categoryName;
+//        this.categoryImages = categoryImages;
+//    }
 
     @NonNull
     @Override
@@ -58,6 +58,18 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         return categoryList.size();
     }
 
+    public void setLists(
+            List<List<Model>> categoryList,
+            List<String> categoryName,
+            List<String> categoryImages){
+
+        this.categoryList = categoryList;
+        this.categoryName = categoryName;
+        this.categoryImages = categoryImages;
+
+        notifyDataSetChanged();
+    }
+
     class CategoryViewHolder extends RecyclerView.ViewHolder {
         private CardView categoryCard;
         private TextView categoryName;
@@ -78,7 +90,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
             Log.d("TAG", backgroundImage);
             categoryCard.setOnClickListener(v -> {
-                MainActivityX.currentCategory = category;
+//            MainActivity.currentCategory = category;
                 listener.moveToHintFragment(categoryList);
                 makeVibration();
             });

@@ -207,9 +207,9 @@ public class ARHostFragment extends Fragment {
         exitNo = exitMenu.findViewById(R.id.exit_button_no);
 
         exit.setOnClickListener(v -> f.addView(exitMenu));
-        exitYes.setOnClickListener(v -> listener.moveToListFragment(MainActivityX.getAnimalModelList(),
-                MainActivityX.getCategoryList(),
-                MainActivityX.getBackgroundList()));
+//        exitYes.setOnClickListener(v -> listener.moveToListFragment(MainActivityX.getAnimalModelList(),
+//                MainActivityX.getCategoryList(),
+//                MainActivityX.getBackgroundList()));
         exitNo.setOnClickListener(v -> f.removeView(exitMenu));
 
         undo = view.findViewById(R.id.button_undo);

@@ -100,9 +100,9 @@ public class ReplayFragment extends Fragment {
         });
         homeButtonCard.setOnClickListener(v -> {
             pronunciationUtil.textToSpeechAnnouncer("Lets go home", textToSpeech);
-            listener.moveToListFragment(MainActivityX.getAnimalModelList(),
-                    MainActivityX.getCategoryList(),
-                    MainActivityX.getBackgroundList());
+//            listener.moveToListFragment(MainActivityX.getAnimalModelList(),
+//                    MainActivityX.getCategoryList(),
+//                    MainActivityX.getBackgroundList());
         });
         playAgainButtonCard.setOnClickListener(v -> {
             pronunciationUtil.textToSpeechAnnouncer("Lets play again!", textToSpeech);

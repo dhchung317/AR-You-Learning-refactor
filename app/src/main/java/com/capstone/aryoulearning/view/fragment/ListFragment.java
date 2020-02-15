@@ -94,7 +94,7 @@ public class ListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initializeViews(view);
-        setListRV();
+//        setListRV();
         animateIt();
         privacyButtonClick();
     }
@@ -125,10 +125,10 @@ public class ListFragment extends Fragment {
         privacyButton = view.findViewById(R.id.privacy_button);
     }
 
-    public void setListRV() {
-        rv.setAdapter(new CategoryAdapter(categoryList, categoryName, categoryImages));
-        rv.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayout.HORIZONTAL, false));
-    }
+//    public void setListRV() {
+//        rv.setAdapter(new CategoryAdapter(categoryList, categoryName, categoryImages));
+//        rv.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayout.HORIZONTAL, false));
+//    }
 
     @SuppressLint("CommitTransaction")
     @Override

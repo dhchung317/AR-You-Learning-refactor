@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.LiveDataReactiveStreams;
 import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
@@ -19,6 +20,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Flowable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
@@ -29,7 +31,9 @@ public class MainViewModel extends ViewModel {
 
     private final MainApi mainApi;
 
-    private MediatorLiveData<MainResource<List<ModelResponse>>> modelResponses;
+    private String currentCategory;
+
+    public MediatorLiveData<MainResource<List<ModelResponse>>> modelResponsesData = new MediatorLiveData<>();
 
     @Inject
     public MainViewModel(MainApi mainApi) {
@@ -37,50 +41,57 @@ public class MainViewModel extends ViewModel {
     }
 
     public LiveData<MainResource<List<ModelResponse>>> observeModelResponses(){
-        if(modelResponses == null){
-            modelResponses = new MediatorLiveData<>();
-            modelResponses.setValue(MainResource.loading((List<ModelResponse>)null));
 
-            final LiveData<MainResource<List<ModelResponse>>> source = LiveDataReactiveStreams.fromPublisher(
-                    mainApi.getModels()
+            modelResponsesData.setValue(MainResource.loading(new ArrayList<>()));
 
-                            .onErrorReturn(new Function<Throwable, List<ModelResponse>>() {
-                                @Override
-                                public List<ModelResponse> apply(Throwable throwable) throws Exception {
-                                    Log.e(TAG, "apply: ", throwable);
-                                    ModelResponse modelResponse = new ModelResponse(null);
-                                    modelResponse.setError(-1);
 
-                                    ArrayList<ModelResponse> modelResponses = new ArrayList<>();
-                                    modelResponses.add(modelResponse);
-                                    return modelResponses;
-                                }
+                    LiveData<MainResource<List<ModelResponse>>> data = LiveDataReactiveStreams.fromPublisher(
+                            mainApi.getModels()
+
+                            .onErrorReturn(throwable -> {
+                                Log.e(TAG, "apply: ", throwable);
+                                ModelResponse modelResponse = new ModelResponse(null);
+                                modelResponse.setError(-1);
+
+                                ArrayList<ModelResponse> modelResponses = new ArrayList<>();
+                                modelResponses.add(modelResponse);
+                                return modelResponses;
                             })
-                            .map(new Function<List<ModelResponse>, MainResource<List<ModelResponse>>>() {
-                                @Override
-                                public MainResource<List<ModelResponse>> apply(List<ModelResponse> modelResponses) throws Exception {
+                            .map((Function<List<ModelResponse>, MainResource<List<ModelResponse>>>) modelResponses -> {
 
-                                    if (modelResponses.size() > 0) {
+                                if (modelResponses.size() > 0) {
 
-                                        if (modelResponses.get(0).getError() == -1) {
-                                            return MainResource.error("error", null);
-                                        }
+                                    if (modelResponses.get(0).getError() == -1) {
+                                        return MainResource.error("error", null);
                                     }
-                                    return MainResource.success(modelResponses);
                                 }
+
+                                return MainResource.success(modelResponses);
                             })
                             .subscribeOn(Schedulers.io())
-            );
+                    );
 
-            modelResponses.addSource(source, new Observer<MainResource<List<ModelResponse>>>() {
-                @Override
-                public void onChanged(MainResource<List<ModelResponse>> listResource) {
-                    modelResponses.setValue(listResource);
-                    modelResponses.removeSource(source);
-                }
-            });
-        }
+            modelResponsesData.addSource(data, listResource -> {
+            Log.d(TAG, "observeModelResponses: reached" + listResource.data.size());
+            modelResponsesData.setValue(MainResource.finished(listResource.data));
+            modelResponsesData.removeSource(data);
 
-        return modelResponses;
+//
+        });
+
+        return modelResponsesData;
+    }
+
+    public List<ModelResponse> getModelResponses() {
+
+        return modelResponsesData.getValue().data;
+    }
+
+    public String getCurrentCategory() {
+        return currentCategory;
+    }
+
+    public void setCurrentCategory(String currentCategory) {
+        this.currentCategory = currentCategory;
     }
 }

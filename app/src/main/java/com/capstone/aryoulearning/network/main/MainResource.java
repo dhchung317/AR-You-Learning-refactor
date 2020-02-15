@@ -18,6 +18,11 @@ public class MainResource<T> {
     public final String message;
 
 
+//    public MainResource(@NonNull Status status) {
+//        this.status = status;
+//        this.data = null;
+//        this.message = null;
+//    }
     public MainResource(@NonNull Status status, @Nullable T data, @Nullable String message) {
         this.status = status;
         this.data = data;
@@ -36,6 +41,10 @@ public class MainResource<T> {
         return new MainResource<>(Status.LOADING, data, null);
     }
 
-    public enum Status {SUCCESS, ERROR, LOADING}
+    public static <T> MainResource<T> finished(@Nullable T data) {
+        return new MainResource<>(Status.FINISHED, data, null);
+    }
+
+    public enum Status {SUCCESS, ERROR, LOADING, FINISHED}
 }
 

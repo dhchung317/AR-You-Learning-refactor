@@ -54,7 +54,7 @@ public class MainActivityX extends AppCompatActivity implements NavListener, Swi
                                 categoryList.add(response.body().get(i).getCategory());
                                 backgroundList.add(response.body().get(i).getBackground());
                             }
-                            moveToListFragment(animalModelList, categoryList, backgroundList);
+//                            moveToListFragment(animalModelList, categoryList, backgroundList);
                         }
                     }
 
@@ -66,11 +66,7 @@ public class MainActivityX extends AppCompatActivity implements NavListener, Swi
     }
 
     @Override
-    public void moveToListFragment(final List<List<Model>> modelResponseList, final List<String> categoryName, final List<String> categoryImages) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container, ListFragment.newInstance(modelResponseList, categoryName, categoryImages))
-                .commit();
+    public void moveToListFragment() {
 
     }
 

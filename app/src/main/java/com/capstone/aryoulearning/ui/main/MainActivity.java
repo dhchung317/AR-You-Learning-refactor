@@ -10,9 +10,12 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.capstone.aryoulearning.R;
+import com.capstone.aryoulearning.controller.NavListener;
 import com.capstone.aryoulearning.model.Model;
 import com.capstone.aryoulearning.model.ModelResponse;
 import com.capstone.aryoulearning.network.main.MainResource;
+
+import com.capstone.aryoulearning.ui.main.list.ListFragment;
 import com.capstone.aryoulearning.viewmodel.ViewModelProviderFactory;
 
 import java.util.List;
@@ -21,11 +24,11 @@ import javax.inject.Inject;
 
 import dagger.android.support.DaggerAppCompatActivity;
 
-public class MainActivity extends DaggerAppCompatActivity {
+public class MainActivity extends DaggerAppCompatActivity implements NavListener {
     public static final String TAG = "MainActivity";
-
     private MainViewModel viewModel;
     private ProgressBar progressBar;
+
     @Inject
     int resId;
 
@@ -52,6 +55,7 @@ public class MainActivity extends DaggerAppCompatActivity {
         viewModel.observeModelResponses().observe(this, new Observer<MainResource<List<ModelResponse>>>() {
             @Override
             public void onChanged(MainResource<List<ModelResponse>> listResource) {
+
                 if(listResource != null){
                     switch (listResource.status){
 
@@ -64,9 +68,13 @@ public class MainActivity extends DaggerAppCompatActivity {
                         case SUCCESS:{
                             Log.d(TAG, "onChanged: success");
                             showProgressBar(false);
-                            for (Model m:listResource.data.get(0).getList()) {
-                                Log.d(TAG, "observeModelResponses: " + m.getName());
-                            }
+                            Log.d(TAG, "onChanged: " + listResource.data.size());
+
+
+
+//                            for (Model m:listResource.data.get(0).getList()) {
+//                                Log.d(TAG, "observeModelResponses: " + m.getName());
+//                            }
 //                            adapter.setPosts(listResource.data);
                             break;
                         }
@@ -74,6 +82,12 @@ public class MainActivity extends DaggerAppCompatActivity {
                         case ERROR:{
                             showProgressBar(false);
                             Log.e(TAG, "onChanged: error: " + listResource.message );
+                            break;
+                        }
+
+                        case FINISHED:{
+                            showProgressBar(false);
+                            moveToListFragment();
                         }
 
                     }
@@ -88,6 +102,45 @@ public class MainActivity extends DaggerAppCompatActivity {
         }else{
             progressBar.setVisibility(View.GONE);
         }
+
+    }
+
+    @Override
+    public void moveToListFragment() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, ListFragment.newInstance())
+                .commit();
+
+    }
+
+    @Override
+    public void moveToGameOrARFragment(List<Model> animalResponseList, boolean isAR_on) {
+
+    }
+
+    @Override
+    public void moveToResultsFragment(List<Model> categoryList) {
+
+    }
+
+    @Override
+    public void moveToHintFragment(List<Model> animalResponseList) {
+
+    }
+
+    @Override
+    public void moveToReplayFragment(List<Model> modelList, boolean wasPreviousGameTypeAR) {
+
+    }
+
+    @Override
+    public void backToHintFragment(List<Model> animalResponseList) {
+
+    }
+
+    @Override
+    public void moveToTutorialScreen(List<Model> modelList) {
 
     }
 }
