@@ -2,9 +2,9 @@ package com.capstone.aryoulearning.controller;
 
 import android.content.Context;
 import android.os.Vibrator;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import com.capstone.aryoulearning.R;
 import com.capstone.aryoulearning.model.Model;
-import com.capstone.aryoulearning.view.MainActivity;
+import com.capstone.aryoulearning.MainActivityX;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -26,11 +26,11 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     private NavListener listener;
 
 
-    public CategoryAdapter(List<List<Model>> categoryList, List<String> categoryName, List<String> categoryImages) {
-        this.categoryList = categoryList;
-        this.categoryName = categoryName;
-        this.categoryImages = categoryImages;
-    }
+//    public CategoryAdapter() {
+//        this.categoryList = categoryList;
+//        this.categoryName = categoryName;
+//        this.categoryImages = categoryImages;
+//    }
 
     @NonNull
     @Override
@@ -58,6 +58,18 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         return categoryList.size();
     }
 
+    public void setLists(
+            List<List<Model>> categoryList,
+            List<String> categoryName,
+            List<String> categoryImages){
+
+        this.categoryList = categoryList;
+        this.categoryName = categoryName;
+        this.categoryImages = categoryImages;
+
+        notifyDataSetChanged();
+    }
+
     class CategoryViewHolder extends RecyclerView.ViewHolder {
         private CardView categoryCard;
         private TextView categoryName;
@@ -78,7 +90,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
             Log.d("TAG", backgroundImage);
             categoryCard.setOnClickListener(v -> {
-                MainActivity.currentCategory = category;
+//            MainActivity.currentCategory = category;
                 listener.moveToHintFragment(categoryList);
                 makeVibration();
             });

@@ -14,14 +14,14 @@ import android.os.Parcelable;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +33,7 @@ import com.capstone.aryoulearning.R;
 import com.capstone.aryoulearning.audio.PronunciationUtil;
 import com.capstone.aryoulearning.controller.ResultsAdapter;
 import com.capstone.aryoulearning.model.Model;
-import com.capstone.aryoulearning.view.MainActivity;
+import com.capstone.aryoulearning.MainActivityX;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -116,7 +116,7 @@ public class ResultsFragment extends Fragment {
 
     public void setViews(){
         displayRatingBarAttempts();
-        categoryTextView.setText(MainActivity.currentCategory);
+        categoryTextView.setText(MainActivityX.currentCategory);
         shareFAB.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.share_button_color)));
         backFABClick();
         shareFABClick();

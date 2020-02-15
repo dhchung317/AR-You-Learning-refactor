@@ -1,9 +1,8 @@
-package com.capstone.aryoulearning.view;
+package com.capstone.aryoulearning;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
-import com.capstone.aryoulearning.R;
 import com.capstone.aryoulearning.augmented.ARHostFragment;
 import com.capstone.aryoulearning.controller.NavListener;
 import com.capstone.aryoulearning.controller.SwitchListener;
@@ -26,7 +25,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements NavListener, SwitchListener {
+public class MainActivityX extends AppCompatActivity implements NavListener, SwitchListener {
     private static List<String> categoryList = new ArrayList<>();
     private static List<List<Model>> animalModelList = new ArrayList<>();
     private static List<String> backgroundList = new ArrayList<>();
@@ -36,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements NavListener, Swit
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getRetrofit();
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements NavListener, Swit
                                 categoryList.add(response.body().get(i).getCategory());
                                 backgroundList.add(response.body().get(i).getBackground());
                             }
-                            moveToListFragment(animalModelList, categoryList, backgroundList);
+//                            moveToListFragment(animalModelList, categoryList, backgroundList);
                         }
                     }
 
@@ -66,11 +66,7 @@ public class MainActivity extends AppCompatActivity implements NavListener, Swit
     }
 
     @Override
-    public void moveToListFragment(final List<List<Model>> modelResponseList, final List<String> categoryName, final List<String> categoryImages) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container, ListFragment.newInstance(modelResponseList, categoryName, categoryImages))
-                .commit();
+    public void moveToListFragment() {
 
     }
 

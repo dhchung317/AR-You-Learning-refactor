@@ -3,6 +3,7 @@ package com.capstone.aryoulearning.model;
 import java.util.ArrayList;
 
 public final class ModelResponse {
+    private int error = 1;
     private String category;
     private String background;
     private ArrayList<Model> list;
@@ -21,5 +22,13 @@ public final class ModelResponse {
 
     public ArrayList<Model> getList() {
         return list;
+    }
+
+    public void setError(int error) {
+        this.error = error;
+    }
+
+    public int getError() {
+        return error;
     }
 }

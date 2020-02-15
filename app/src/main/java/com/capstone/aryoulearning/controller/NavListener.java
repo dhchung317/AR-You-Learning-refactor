@@ -5,7 +5,7 @@ import com.capstone.aryoulearning.model.Model;
 import java.util.List;
 
 public interface NavListener {
-    void moveToListFragment(final List<List<Model>> animalResponseList, final List<String> categoryName, final List<String> categoryImage);
+    void moveToListFragment();
 
     void moveToGameOrARFragment(final List<Model> animalResponseList, final boolean isAR_on);
 
