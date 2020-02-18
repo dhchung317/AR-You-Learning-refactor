@@ -1,4 +1,19 @@
-# AR you learning
+# AR you learning 2
+Refactor of original project
+
+Goals will be to incorporate the most recent libraries and best pratices
+## Current Libraries:
+* Androidx
+* RxJava2
+* Room
+* Picasso
+* Retrofit2
+* Dagger2
+* ARCore
+* Sceneform
+
+Original description below:
+
 ## App Theme:
 
 AR you learning is a children's game app that uses word-picture association and seeks to 
