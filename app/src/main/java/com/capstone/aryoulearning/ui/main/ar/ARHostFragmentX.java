@@ -33,14 +33,21 @@ import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.capstone.aryoulearning.R;
 import com.capstone.aryoulearning.animation.Animations;
 import com.capstone.aryoulearning.controller.NavListenerX;
+import com.capstone.aryoulearning.db.model.ModelInfo;
 import com.capstone.aryoulearning.model.Model;
+import com.capstone.aryoulearning.ui.main.MainViewModel;
+import com.capstone.aryoulearning.ui.main.controller.NavListener;
 import com.capstone.aryoulearning.util.audio.PronunciationUtil;
 import com.capstone.aryoulearning.view.fragment.ResultsFragment;
+import com.capstone.aryoulearning.viewmodel.ViewModelProviderFactory;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Frame;
 import com.google.ar.core.HitResult;
@@ -72,14 +79,21 @@ import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
-public class ARHostFragmentX extends Fragment {
+import dagger.android.support.AndroidSupportInjection;
+import dagger.android.support.DaggerFragment;
+
+public class ARHostFragmentX extends DaggerFragment {
+
+    private final PronunciationUtil pronunciationUtil;
 
     @Inject
-    PronunciationUtil pronunciationUtil;
+    ViewModelProviderFactory viewModelProviderFactory;
+
+    private MainViewModel mainViewModel;
 
     private static final int RC_PERMISSIONS = 0x123;
     public static final String MODEL_LIST = "MODEL_LIST";
-    private NavListenerX listener;
+    private NavListener listener;
 
     private GestureDetector gestureDetector;
     private ArFragment arFragment;
@@ -144,21 +158,28 @@ public class ARHostFragmentX extends Fragment {
     private MediaPlayer playBalloonPop;
     private boolean placedAnimation;
 
-    public static ARHostFragmentX newInstance(List<Model> modelList) {
-        ARHostFragmentX fragment = new ARHostFragmentX();
-        Bundle args = new Bundle();
-        args.putParcelableArrayList(MODEL_LIST, (ArrayList<? extends Parcelable>) modelList);
-        fragment.setArguments(args);
-        return fragment;
+//    public static ARHostFragmentX newInstance(List<Model> modelList) {
+//        ARHostFragmentX fragment = new ARHostFragmentX();
+//        Bundle args = new Bundle();
+//        args.putParcelableArrayList(MODEL_LIST, (ArrayList<? extends Parcelable>) modelList);
+//        fragment.setArguments(args);
+//        return fragment;
+//    }
+
+    @Inject
+    public ARHostFragmentX(PronunciationUtil pronunciationUtil){
+        this.pronunciationUtil = pronunciationUtil;
+        this.textToSpeech = pronunciationUtil.textToSpeech;
     }
+
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof NavListenerX) {
-            listener = (NavListenerX) context;
+        if (context instanceof NavListener) {
+            listener = (NavListener) context;
         }
-
+        AndroidSupportInjection.inject(this);
 //        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
     }
 
@@ -173,10 +194,10 @@ public class ARHostFragmentX extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            categoryList = getArguments().getParcelableArrayList(MODEL_LIST);
-            Collections.shuffle(categoryList);
-        }
+//        if (getArguments() != null) {
+//            categoryList = getArguments().getParcelableArrayList(MODEL_LIST);
+//            Collections.shuffle(categoryList);
+//        }
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         playBalloonPop = MediaPlayer.create(getContext(), R.raw.pop_effect);
@@ -185,6 +206,39 @@ public class ARHostFragmentX extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mainViewModel = ViewModelProviders.of(this,viewModelProviderFactory).get(MainViewModel.class);
+        mainViewModel.loadCurrentCategoryName();
+        mainViewModel.getCurCatLiveData().observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                Log.d("ar x view created", "onChanged: " + s);
+                mainViewModel.loadModelInfoByCat(s);
+            }
+        });
+        mainViewModel.getModelInfoLiveData().observe(getViewLifecycleOwner(), new Observer<List<ModelInfo>>() {
+            @Override
+            public void onChanged(List<ModelInfo> modelInfos) {
+                Log.d("ar x view created", "onChanged: " + modelInfos.size());
+                mainViewModel.convertModelInfoToModels(modelInfos);
+            }
+        });
+        mainViewModel.getConvertedModelInfoLiveData().observe(getViewLifecycleOwner(), new Observer<List<Model>>() {
+            @Override
+            public void onChanged(List<Model> models) {
+                categoryList = models;
+                for (int i = 0; i < models.size(); i++) {
+                    Log.d("ar x fragemnt", "onChanged: " + models.get(i).getName());
+                }
+                setListMapsOfFutureModels(categoryList);
+                setMapOfFutureLetters(futureModelMapList);
+
+                setModelRenderables(futureModelMapList);
+                setLetterRenderables(futureLetterMap);
+            }
+        });
+
+
+
         f = view.findViewById(R.id.frame_layout);
 
         wordCardView = view.findViewById(R.id.card_wordContainer);
@@ -278,12 +332,6 @@ public class ARHostFragmentX extends Fragment {
             }
         });
 
-        setListMapsOfFutureModels(categoryList);
-        setMapOfFutureLetters(futureModelMapList);
-
-        setModelRenderables(futureModelMapList);
-        setLetterRenderables(futureLetterMap);
-
         gestureDetector =
                 new GestureDetector(
                         getActivity(),
@@ -364,7 +412,7 @@ public class ARHostFragmentX extends Fragment {
 
 //            String randomWord = e.getKey() + "abcdefghijklmnopqrstuvwxyz";
             collisionSet.clear();
-            pronunciationUtil.textToSpeechAnnouncer(e.getKey(), textToSpeech);
+            pronunciationUtil.textToSpeechAnnouncer(e.getKey(), pronunciationUtil.textToSpeech);
 
             for (int i = 0; i < e.getKey().length(); i++) {
                 createLetter(Character.toString(e.getKey().charAt(i)), e.getKey(), base, letterMap.get(Character.toString(e.getKey().charAt(i))));
@@ -788,7 +836,7 @@ public class ARHostFragmentX extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         textToSpeech.shutdown();
-        pronunciationUtil = null;
+//        pronunciationUtil
         playBalloonPop.reset();
         playBalloonPop.release();
     }

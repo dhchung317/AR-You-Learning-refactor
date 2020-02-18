@@ -49,7 +49,7 @@ public class MainViewModel extends ViewModel {
     private MutableLiveData<List<Category>> catLiveData = new MutableLiveData<>();
     private MutableLiveData<String> curCatLiveData = new MutableLiveData<>();
 
-    private MutableLiveData<List<Model>> modelLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<Model>> convertModelLiveData = new MutableLiveData<>();
 
 //    private Map<String,List<Model>> catMap = new HashMap<>();
 
@@ -142,10 +142,11 @@ public class MainViewModel extends ViewModel {
 //        compositeDisposable.add(favoriteShowsDisposable);
 //    }
 
-    public void convertModelInfoToModels() {
-        List<ModelInfo> infos = getModelInfoLiveData().getValue();
-        Disposable modelDisposable = Observable.just(infos)
+    public void convertModelInfoToModels(List<ModelInfo> modelList) {
+
+        Disposable modelDisposable = Observable.just(modelList)
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .flatMapIterable(info -> info)
                 .flatMap(this::getModelObservable)
                 .toList()
@@ -204,6 +205,10 @@ public class MainViewModel extends ViewModel {
         return modelInfoLiveData;
     }
 
+    public MutableLiveData<List<Model>> getConvertedModelInfoLiveData() {
+        return convertModelLiveData;
+    }
+
     public MutableLiveData<List<Category>> getCatLiveData() {
         return catLiveData;
     }
@@ -257,7 +262,7 @@ public class MainViewModel extends ViewModel {
 
     private void onModelInfosConverted(List<Model> models) {
         Log.d(TAG, "onModelsFetched: " + models.size());
-        modelLiveData.setValue(models);
+        convertModelLiveData.setValue(models);
     }
 
     private void onCatsFetched(List<Category> categories) {

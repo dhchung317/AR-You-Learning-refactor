@@ -9,10 +9,12 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.capstone.aryoulearning.R;
 import com.capstone.aryoulearning.controller.NavListenerX;
+import com.capstone.aryoulearning.db.model.ModelInfo;
 import com.capstone.aryoulearning.model.Model;
 import com.capstone.aryoulearning.ui.main.MainViewModel;
 import com.capstone.aryoulearning.ui.main.controller.NavListener;
@@ -39,7 +41,7 @@ public class ARFragment extends DaggerFragment {
 
     private MainViewModel mainViewModel;
 
-    private List<Model> categoryList = new ArrayList<>();
+    private List<Model> modelList = new ArrayList<>();
 
     private static final int RC_PERMISSIONS = 0x123;
     public static final String MODEL_LIST = "MODEL_LIST";
@@ -68,16 +70,33 @@ public class ARFragment extends DaggerFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            categoryList = getArguments().getParcelableArrayList(MODEL_LIST);
-            Collections.shuffle(categoryList);
-        }
+        mainViewModel = ViewModelProviders.of(this, viewModelProviderFactory).get(MainViewModel.class);
+        mainViewModel.loadCurrentCategoryName();
+        mainViewModel.getCurCatLiveData().observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                mainViewModel.loadModelInfoByCat(s);
+            }
+        });
+        mainViewModel.getModelInfoLiveData().observe(getViewLifecycleOwner(), new Observer<List<ModelInfo>>() {
+            @Override
+            public void onChanged(List<ModelInfo> modelInfos) {
+                mainViewModel.convertModelInfoToModels(modelInfos);
+            }
+        });
+        mainViewModel.getConvertedModelInfoLiveData().observe(getViewLifecycleOwner(), new Observer<List<Model>>() {
+            @Override
+            public void onChanged(List<Model> models) {
+                modelList = models;
+            }
+        });
+
     }
 
 
         @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mainViewModel = ViewModelProviders.of(this, viewModelProviderFactory).get(MainViewModel.class);
+
     }
 }
