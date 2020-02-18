@@ -19,7 +19,6 @@ public final class PronunciationUtil implements TextToSpeech.OnInitListener {
         this.textToSpeech = new TextToSpeech(context,this);
     }
 
-
     public void textToSpeechAnnouncer(final TextView textView, final TextToSpeech textToSpeech) {
         String letter = textView.getText().toString().toLowerCase();
         int speakText = textToSpeech.speak(pronounceSingleLetter(letter),

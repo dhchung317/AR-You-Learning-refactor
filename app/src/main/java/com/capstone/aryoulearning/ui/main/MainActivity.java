@@ -14,17 +14,17 @@ import com.capstone.aryoulearning.model.Model;
 import com.capstone.aryoulearning.model.ModelResponse;
 import com.capstone.aryoulearning.network.main.MainResource;
 
-import com.capstone.aryoulearning.ui.main.ar.ARHostFragment;
+import com.capstone.aryoulearning.ui.main.ar.ARHostFragmentX;
 import com.capstone.aryoulearning.ui.main.list.ListFragment;
 import com.capstone.aryoulearning.ui.main.controller.*;
 import com.capstone.aryoulearning.ui.main.hint.HintFragment;
+import com.capstone.aryoulearning.util.audio.PronunciationUtil;
 import com.capstone.aryoulearning.viewmodel.ViewModelProviderFactory;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-import dagger.android.DaggerActivity;
 import dagger.android.support.DaggerAppCompatActivity;
 
 public class MainActivity extends DaggerAppCompatActivity implements NavListener {
@@ -32,6 +32,12 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     private MainViewModel viewModel;
     private ProgressBar progressBar;
 //    public static String currentCategory;
+
+    @Inject
+    PronunciationUtil pronunciationUtil;
+
+    @Inject
+    ARHostFragmentX arHostFragmentX;
 
 
     @Inject
@@ -124,7 +130,7 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, new ARHostFragment(), "ar_fragment")
+                .replace(R.id.fragment_container, arHostFragmentX, "ar_fragment")
 //                    .addToBackStack(null)
                 .commit();
 
