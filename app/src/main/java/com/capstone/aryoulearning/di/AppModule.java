@@ -1,14 +1,15 @@
 package com.capstone.aryoulearning.di;
 
 import android.app.Application;
-import android.graphics.drawable.Drawable;
-
-import androidx.core.content.ContextCompat;
+import android.content.Context;
+import android.speech.tts.TextToSpeech;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
+import com.capstone.aryoulearning.BaseApplication;
 import com.capstone.aryoulearning.R;
+import com.capstone.aryoulearning.util.audio.PronunciationUtil;
 import com.capstone.aryoulearning.util.Constants;
 
 
@@ -33,10 +34,21 @@ public class AppModule {
         return RequestOptions.placeholderOf(R.drawable.error)
                 .error(R.drawable.error);
     }
+
     @Provides
-    static RequestManager provideGlideInstance(Application applicaiton, RequestOptions requestOptions){
-        return Glide.with(applicaiton)
+    static RequestManager provideGlideInstance(Application application, RequestOptions requestOptions){
+        return Glide.with(application)
                 .setDefaultRequestOptions(requestOptions);
+    }
+
+    @Provides
+    static Context provideApplicationContext(Application application) {
+        return application.getBaseContext();
+    }
+
+    @Provides
+    static PronunciationUtil providePronunciationUtil(Application application){
+        return new PronunciationUtil(application.getBaseContext());
     }
 
 //    @Provides

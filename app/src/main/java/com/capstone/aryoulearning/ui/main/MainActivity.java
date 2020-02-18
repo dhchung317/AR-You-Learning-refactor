@@ -7,27 +7,32 @@ import android.widget.ProgressBar;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.capstone.aryoulearning.R;
-import com.capstone.aryoulearning.controller.NavListener;
+
 import com.capstone.aryoulearning.model.Model;
 import com.capstone.aryoulearning.model.ModelResponse;
 import com.capstone.aryoulearning.network.main.MainResource;
 
+import com.capstone.aryoulearning.ui.main.ar.ARHostFragment;
 import com.capstone.aryoulearning.ui.main.list.ListFragment;
+import com.capstone.aryoulearning.ui.main.controller.*;
+import com.capstone.aryoulearning.ui.main.hint.HintFragment;
 import com.capstone.aryoulearning.viewmodel.ViewModelProviderFactory;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
+import dagger.android.DaggerActivity;
 import dagger.android.support.DaggerAppCompatActivity;
 
 public class MainActivity extends DaggerAppCompatActivity implements NavListener {
     public static final String TAG = "MainActivity";
     private MainViewModel viewModel;
     private ProgressBar progressBar;
+//    public static String currentCategory;
+
 
     @Inject
     int resId;
@@ -109,13 +114,19 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     public void moveToListFragment() {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, ListFragment.newInstance())
+                .replace(R.id.fragment_container, new ListFragment())
                 .commit();
 
     }
 
     @Override
-    public void moveToGameOrARFragment(List<Model> animalResponseList, boolean isAR_on) {
+    public void moveToGameFragment() {
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, new ARHostFragment(), "ar_fragment")
+//                    .addToBackStack(null)
+                .commit();
 
     }
 
@@ -125,7 +136,16 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     }
 
     @Override
-    public void moveToHintFragment(List<Model> animalResponseList) {
+    public void moveToHintFragment(String category) {
+        viewModel.setCurrentCategory(category);
+//        viewModel.setModelList(modelList);
+        Log.d(TAG, "moveToHintFragment: " + category);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, new HintFragment())
+                .addToBackStack(null)
+                .commit();
 
     }
 

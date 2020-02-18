@@ -1,4 +1,4 @@
-package com.capstone.aryoulearning.augmented;
+package com.capstone.aryoulearning.ui.main.ar;
 
 import android.Manifest;
 import android.animation.Animator;
@@ -14,12 +14,6 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.cardview.widget.CardView;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -33,12 +27,19 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.fragment.app.Fragment;
+
 import com.airbnb.lottie.LottieAnimationView;
 import com.capstone.aryoulearning.R;
 import com.capstone.aryoulearning.animation.Animations;
-import com.capstone.aryoulearning.util.audio.PronunciationUtil;
 import com.capstone.aryoulearning.controller.NavListenerX;
 import com.capstone.aryoulearning.model.Model;
+import com.capstone.aryoulearning.util.audio.PronunciationUtil;
 import com.capstone.aryoulearning.view.fragment.ResultsFragment;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Frame;
@@ -69,7 +70,12 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import javax.inject.Inject;
+
 public class ARHostFragment extends Fragment {
+
+    @Inject
+    PronunciationUtil pronunciationUtil;
 
     private static final int RC_PERMISSIONS = 0x123;
     public static final String MODEL_LIST = "MODEL_LIST";
@@ -117,7 +123,6 @@ public class ARHostFragment extends Fragment {
 
     private List<String> wrongAnswerList = new ArrayList<>();
     private TextToSpeech textToSpeech;
-    private PronunciationUtil pronunciationUtil;
 
     private Anchor mainAnchor;
     private AnchorNode mainAnchorNode;

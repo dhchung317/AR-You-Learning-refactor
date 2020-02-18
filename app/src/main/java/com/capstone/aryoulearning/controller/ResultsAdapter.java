@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.capstone.aryoulearning.R;
-import com.capstone.aryoulearning.audio.PronunciationUtil;
+import com.capstone.aryoulearning.util.audio.PronunciationUtil;
 import com.capstone.aryoulearning.model.Model;
 import com.squareup.picasso.Picasso;
 

@@ -27,8 +27,8 @@ import android.widget.TextView;
 
 import com.capstone.aryoulearning.R;
 import com.capstone.aryoulearning.animation.Animations;
-import com.capstone.aryoulearning.audio.PronunciationUtil;
-import com.capstone.aryoulearning.controller.NavListener;
+import com.capstone.aryoulearning.util.audio.PronunciationUtil;
+import com.capstone.aryoulearning.controller.NavListenerX;
 import com.capstone.aryoulearning.model.Model;
 import com.squareup.picasso.Picasso;
 
@@ -45,7 +45,7 @@ import javax.annotation.Nonnull;
 
 public class GameFragment extends Fragment {
     public static final String MODEL_LIST = "MODEL_LIST";
-    private NavListener listener;
+    private NavListenerX listener;
     private List<Model> modelList;
     private List<String> wrongAnswerList = new ArrayList<>();
     private ImageView imageView;
@@ -74,10 +74,10 @@ public class GameFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof NavListener) {
-            listener = (NavListener) context;
+        if (context instanceof NavListenerX) {
+            listener = (NavListenerX) context;
         }
-        pronunciationUtil = new PronunciationUtil();
+//        pronunciationUtil = new PronunciationUtil();
     }
 
     @Override
@@ -153,7 +153,7 @@ public class GameFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        textToSpeech = pronunciationUtil.getTTS(view.getContext());
+//        textToSpeech = pronunciationUtil.getTTS(view.getContext());
 
         initializeViews(view);
 

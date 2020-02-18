@@ -1,34 +1,22 @@
-package com.capstone.aryoulearning.audio;
+package com.capstone.aryoulearning.util.audio;
 
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.Locale;
 
-public final class PronunciationUtil {
-    private TextToSpeech textToSpeech;
+import javax.inject.Inject;
 
+public final class PronunciationUtil implements TextToSpeech.OnInitListener {
+    public final TextToSpeech textToSpeech;
 
-    public TextToSpeech getTTS(final Context context) {
-        if (textToSpeech == null) {
-            textToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
-                @Override
-                public void onInit(int status) {
-                    if (status == TextToSpeech.SUCCESS) {
-                        int language = textToSpeech.setLanguage(Locale.US);
-                        if (language == TextToSpeech.LANG_MISSING_DATA
-                                || language == TextToSpeech.LANG_NOT_SUPPORTED) {
-                            Log.e("TTS", "Language not supported");
-                        } else {
-                            Log.e("TTS", "Initialization failed");
-                        }
-                    }
-                }
-            });
-        }
-        return textToSpeech;
+    @Inject
+    public PronunciationUtil(Context context){
+        this.textToSpeech = new TextToSpeech(context,this);
     }
 
 
@@ -42,7 +30,6 @@ public final class PronunciationUtil {
     }
 
     public void textToSpeechAnnouncer(final String message, final TextToSpeech textToSpeech) {
-        ;
         int speakText = textToSpeech.speak(message,
                 TextToSpeech.QUEUE_ADD, null);
         if (speakText == TextToSpeech.ERROR) {
@@ -50,7 +37,7 @@ public final class PronunciationUtil {
         }
     }
 
-    private static String pronounceSingleLetter(String letter) {
+    private String pronounceSingleLetter(String letter) {
         switch (letter) {
             case "a":
                 return "ayee";
@@ -106,6 +93,18 @@ public final class PronunciationUtil {
                 return "zed";
         }
         return letter;
+
+    }
+
+    @Override
+    public void onInit(int status) {
+
+        if (status == TextToSpeech.SUCCESS) {
+            textToSpeech.setLanguage(Locale.US);
+        } else {
+            Log.e("TextToSpeechManager", "Initilization Failed!");
+
+        }
 
     }
 

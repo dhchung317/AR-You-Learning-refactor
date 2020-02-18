@@ -3,11 +3,19 @@ package com.capstone.aryoulearning.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import java.util.ArrayList;
 
+
 public class Model implements Parcelable {
+
     private String name;
+
     private String image;
+
     private boolean isCorrect;
     private ArrayList<String> wrongAnswerSet;
 

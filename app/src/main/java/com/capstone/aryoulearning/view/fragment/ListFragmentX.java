@@ -14,18 +14,15 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.capstone.aryoulearning.R;
-import com.capstone.aryoulearning.controller.CategoryAdapter;
 import com.capstone.aryoulearning.model.Model;
 import com.capstone.aryoulearning.MainActivityX;
 
@@ -33,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ListFragment extends Fragment {
+public class ListFragmentX extends Fragment {
 
     public static final String CATEGORY_NAME = "category-name";
     public static final String CATEGORY_IMAGE = "category-image";
@@ -48,8 +45,8 @@ public class ListFragment extends Fragment {
     private Button privacyButton;
 
 
-    public static ListFragment newInstance(final List<List<Model>> categoryList, final List<String> categoryName, final List<String> categoryImages) {
-        ListFragment fragment = new ListFragment();
+    public static ListFragmentX newInstance(final List<List<Model>> categoryList, final List<String> categoryName, final List<String> categoryImages) {
+        ListFragmentX fragment = new ListFragmentX();
         Bundle args = new Bundle();
         args.putStringArrayList(CATEGORY_NAME, (ArrayList<String>) categoryName);
         args.putStringArrayList(CATEGORY_IMAGE, (ArrayList<String>) categoryImages);
@@ -126,7 +123,7 @@ public class ListFragment extends Fragment {
     }
 
 //    public void setListRV() {
-//        rv.setAdapter(new CategoryAdapter(categoryList, categoryName, categoryImages));
+//        rv.setAdapter(new ListAdapter(categoryList, categoryName, categoryImages));
 //        rv.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayout.HORIZONTAL, false));
 //    }
 

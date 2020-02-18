@@ -14,10 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.capstone.aryoulearning.R;
-import com.capstone.aryoulearning.audio.PronunciationUtil;
-import com.capstone.aryoulearning.controller.NavListener;
+import com.capstone.aryoulearning.util.audio.PronunciationUtil;
+import com.capstone.aryoulearning.controller.NavListenerX;
 import com.capstone.aryoulearning.model.Model;
-import com.capstone.aryoulearning.MainActivityX;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +28,7 @@ public class ReplayFragment extends Fragment {
 
     private static final String MODEL_LIST = "MODEL_LIST";
     private static final String PREVIOUS_GAME_STATUS = "GAME_STATUS";
-    private NavListener listener;
+    private NavListenerX listener;
 
     private CardView resultsButtonCard, homeButtonCard, playAgainButtonCard;
 
@@ -72,10 +71,10 @@ public class ReplayFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof NavListener) {
-            listener = (NavListener) context;
+        if (context instanceof NavListenerX) {
+            listener = (NavListenerX) context;
         }
-        pronunciationUtil = new PronunciationUtil();
+//        pronunciationUtil = new PronunciationUtil();
     }
 
 
@@ -84,7 +83,7 @@ public class ReplayFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         initializeViews(view);
         viewClickListeners();
-        textToSpeech = pronunciationUtil.getTTS(requireContext());
+//        textToSpeech = pronunciationUtil.getTTS(requireContext());
     }
 
     private void initializeViews(final View view) {
