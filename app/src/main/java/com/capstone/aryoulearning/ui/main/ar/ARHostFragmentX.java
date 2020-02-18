@@ -72,7 +72,7 @@ import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
-public class ARHostFragment extends Fragment {
+public class ARHostFragmentX extends Fragment {
 
     @Inject
     PronunciationUtil pronunciationUtil;
@@ -144,8 +144,8 @@ public class ARHostFragment extends Fragment {
     private MediaPlayer playBalloonPop;
     private boolean placedAnimation;
 
-    public static ARHostFragment newInstance(List<Model> modelList) {
-        ARHostFragment fragment = new ARHostFragment();
+    public static ARHostFragmentX newInstance(List<Model> modelList) {
+        ARHostFragmentX fragment = new ARHostFragmentX();
         Bundle args = new Bundle();
         args.putParcelableArrayList(MODEL_LIST, (ArrayList<? extends Parcelable>) modelList);
         fragment.setArguments(args);
@@ -159,7 +159,6 @@ public class ARHostFragment extends Fragment {
             listener = (NavListenerX) context;
         }
 
-        textToSpeech = pronunciationUtil.textToSpeech;
 //        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
     }
 
