@@ -2,7 +2,11 @@ package com.capstone.aryoulearning.di;
 
 import android.app.Application;
 
+import androidx.fragment.app.Fragment;
+
 import com.capstone.aryoulearning.BaseApplication;
+import com.capstone.aryoulearning.db.ModelDatabaseModule;
+import com.capstone.aryoulearning.di.main.MainFragmentBuildersModule;
 
 import dagger.BindsInstance;
 import dagger.Component;
@@ -15,6 +19,7 @@ import dagger.android.support.AndroidSupportInjectionModule;
                 ActivityBuildersModule.class,
                 AppModule.class,
                 ViewModelFactoryModule.class,
+                ModelDatabaseModule.class
 
 })
 public interface AppComponent extends AndroidInjector<BaseApplication> {
@@ -27,4 +32,6 @@ public interface AppComponent extends AndroidInjector<BaseApplication> {
 
         AppComponent build();
     }
+
+    void inject(BaseApplication baseApplication);
 }

@@ -1,33 +1,39 @@
-package com.capstone.aryoulearning.controller;
+package com.capstone.aryoulearning.ui.main.hint.rv;
 
 import android.graphics.Color;
 import android.os.CountDownTimer;
 import android.speech.tts.TextToSpeech;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.capstone.aryoulearning.R;
 import com.capstone.aryoulearning.animation.Animations;
-import com.capstone.aryoulearning.audio.PronunciationUtil;
+import com.capstone.aryoulearning.db.model.ModelInfo;
+import com.capstone.aryoulearning.util.audio.PronunciationUtil;
 import com.capstone.aryoulearning.model.Model;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class HintAdapter extends RecyclerView.Adapter<HintAdapter.HintViewHolder> {
-    private List<Model> modelList;
-    private PronunciationUtil pronunciationUtil;
-    private TextToSpeech textToSpeech;
+import javax.inject.Inject;
 
-    public HintAdapter(List<Model> modelList, PronunciationUtil pronunciationUtil, TextToSpeech textToSpeech) {
-        this.modelList = modelList;
+public class HintAdapter extends RecyclerView.Adapter<HintAdapter.HintViewHolder> {
+
+    private List<ModelInfo> modelList = new ArrayList<>();
+
+    private final PronunciationUtil pronunciationUtil;
+
+    @Inject
+    public HintAdapter(PronunciationUtil pronunciationUtil) {
         this.pronunciationUtil = pronunciationUtil;
-        this.textToSpeech = textToSpeech;
     }
 
     @NonNull
@@ -38,7 +44,7 @@ public class HintAdapter extends RecyclerView.Adapter<HintAdapter.HintViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull HintViewHolder hintViewHolder, int i) {
-        hintViewHolder.onBind(modelList.get(i), pronunciationUtil, textToSpeech);
+        hintViewHolder.onBind(modelList.get(i));
     }
 
     @Override
@@ -51,17 +57,22 @@ public class HintAdapter extends RecyclerView.Adapter<HintAdapter.HintViewHolder
             super(itemView);
         }
 
-        public void onBind(Model model, final PronunciationUtil pronunciationUtil, final TextToSpeech textToSpeech) {
+        public void onBind(ModelInfo modelInfo) {
             ImageView imageView = itemView.findViewById(R.id.hint_fragment_image_view);
             TextView textView = itemView.findViewById(R.id.hint_fragment_textview);
+
             textView.setTextColor(Color.DKGRAY);
-            Picasso.get().load(model.getImage()).into(imageView);
-            textView.setText(model.getName());
+
+            Picasso.get().load(modelInfo.getImage()).into(imageView);
+
+            textView.setText(modelInfo.getName());
+
             itemView.setOnClickListener(v -> {
-                pronunciationUtil.textToSpeechAnnouncer(model.getName(), textToSpeech);
+
+                pronunciationUtil.textToSpeechAnnouncer(modelInfo.getName(), pronunciationUtil.textToSpeech );
                 itemView.startAnimation(Animations.Normal.getVibrator(itemView));
                 textView.setTextColor(Color.LTGRAY);
-                CountDownTimer timer = new CountDownTimer(1000,1000) {
+                CountDownTimer timer = new CountDownTimer(1000, 1000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
 
@@ -76,7 +87,14 @@ public class HintAdapter extends RecyclerView.Adapter<HintAdapter.HintViewHolder
                 timer.start();
 
             });
-            }
         }
     }
+
+    public void setList(List<ModelInfo> modelList) {
+
+        this.modelList = modelList;
+
+        notifyDataSetChanged();
+    }
+}
 

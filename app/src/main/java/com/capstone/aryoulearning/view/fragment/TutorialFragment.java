@@ -16,7 +16,7 @@ import android.widget.MediaController;
 import android.widget.VideoView;
 
 import com.capstone.aryoulearning.R;
-import com.capstone.aryoulearning.controller.NavListener;
+import com.capstone.aryoulearning.controller.NavListenerX;
 import com.capstone.aryoulearning.model.Model;
 
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
 public class TutorialFragment extends Fragment {
     public static final String MODEL_LIST = "MODEL_LIST";
     private Button backButton, playVideoButton, startGameButton;
-    private NavListener listener;
+    private NavListenerX listener;
     private List<Model> modelList;
     private VideoView tutorialVideoView;
 
@@ -45,8 +45,8 @@ public class TutorialFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof NavListener) {
-            listener = (NavListener) context;
+        if (context instanceof NavListenerX) {
+            listener = (NavListenerX) context;
         }
     }
 

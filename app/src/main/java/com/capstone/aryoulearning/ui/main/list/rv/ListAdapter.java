@@ -1,4 +1,4 @@
-package com.capstone.aryoulearning.controller;
+package com.capstone.aryoulearning.ui.main.list.rv;
 
 import android.content.Context;
 import android.os.Vibrator;
@@ -13,20 +13,33 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.capstone.aryoulearning.R;
+import com.capstone.aryoulearning.controller.NavListenerX;
+import com.capstone.aryoulearning.db.model.Category;
 import com.capstone.aryoulearning.model.Model;
-import com.capstone.aryoulearning.MainActivityX;
+import com.capstone.aryoulearning.ui.main.MainActivity;
+import com.capstone.aryoulearning.ui.main.MainViewModel;
+import com.capstone.aryoulearning.ui.main.controller.NavListener;
+import com.capstone.aryoulearning.viewmodel.ViewModelProviderFactory;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder> {
-    private List<List<Model>> categoryList;
-    private List<String> categoryName;
-    private List<String> categoryImages;
+import javax.inject.Inject;
+
+public class ListAdapter extends RecyclerView.Adapter<ListAdapter.CategoryViewHolder> {
+//    private List<List<Model>> categoryList;
+//    private List<String> categoryName;
+//    private List<String> categoryImages;
+    private List<Category> categories = new ArrayList<>();
     private NavListener listener;
 
+//    @Inject
+//    ViewModelProviderFactory viewModelProviderFactory;
+//    private MainViewModel mainViewModel;
 
-//    public CategoryAdapter() {
+
+//    public ListAdapter() {
 //        this.categoryList = categoryList;
 //        this.categoryName = categoryName;
 //        this.categoryImages = categoryImages;
@@ -45,27 +58,29 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             throw new RuntimeException(context.toString()
                     + "must implement FragmentInteractionListener");
         }
+
         return new CategoryViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull CategoryViewHolder holder, int position) {
-        holder.onBind(categoryList.get(position), categoryName.get(position), categoryImages.get(position), listener);
+        holder.onBind(categories.get(position), listener);
     }
 
     @Override
     public int getItemCount() {
-        return categoryList.size();
+        return categories.size();
     }
 
     public void setLists(
-            List<List<Model>> categoryList,
-            List<String> categoryName,
-            List<String> categoryImages){
+            List<Category> categories
+    ){
 
-        this.categoryList = categoryList;
-        this.categoryName = categoryName;
-        this.categoryImages = categoryImages;
+
+        this.categories = categories;
+//        this.categoryList = categoryList;
+//        this.categoryName = categoryName;
+//        this.categoryImages = categoryImages;
 
         notifyDataSetChanged();
     }
@@ -82,16 +97,17 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             categoryImage = itemView.findViewById(R.id.category_image);
         }
 
-        public void onBind(final List<Model> categoryList, final String category, final String backgroundImage, final NavListener listener) {
-            categoryName.setText(category);
+        public void onBind(final Category category, final NavListener listener) {
+            categoryName.setText(category.getName());
             Picasso.get()
-                    .load(backgroundImage)
+                    .load(category.getImage())
                     .into(categoryImage);
 
-            Log.d("TAG", backgroundImage);
+            Log.d("TAG", category.getImage());
             categoryCard.setOnClickListener(v -> {
-//            MainActivity.currentCategory = category;
-                listener.moveToHintFragment(categoryList);
+                Log.d("list adapter", "onBind: " + category.getName());
+
+                listener.moveToHintFragment(category.getName());
                 makeVibration();
             });
         }

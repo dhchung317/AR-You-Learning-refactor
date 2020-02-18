@@ -30,7 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.capstone.aryoulearning.R;
-import com.capstone.aryoulearning.audio.PronunciationUtil;
+import com.capstone.aryoulearning.util.audio.PronunciationUtil;
 import com.capstone.aryoulearning.controller.ResultsAdapter;
 import com.capstone.aryoulearning.model.Model;
 import com.capstone.aryoulearning.MainActivityX;
@@ -81,8 +81,8 @@ public class ResultsFragment extends Fragment {
         if(getArguments() != null){
             modelList = getArguments().getParcelableArrayList(MODEL_LIST);
         }
-        pronunciationUtil = new PronunciationUtil();
-        textToSpeech = pronunciationUtil.getTTS(getContext());
+//        pronunciationUtil = new PronunciationUtil();
+//        textToSpeech = pronunciationUtil.getTTS(getContext());
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         extractSharedPrefs();
     }

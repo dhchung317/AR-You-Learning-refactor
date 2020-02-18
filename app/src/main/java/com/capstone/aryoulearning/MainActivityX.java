@@ -4,14 +4,13 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.capstone.aryoulearning.augmented.ARHostFragment;
-import com.capstone.aryoulearning.controller.NavListener;
+import com.capstone.aryoulearning.controller.NavListenerX;
 import com.capstone.aryoulearning.controller.SwitchListener;
 import com.capstone.aryoulearning.model.Model;
 import com.capstone.aryoulearning.model.ModelResponse;
 import com.capstone.aryoulearning.network.RetrofitSingleton;
 import com.capstone.aryoulearning.view.fragment.GameFragment;
-import com.capstone.aryoulearning.view.fragment.HintFragment;
-import com.capstone.aryoulearning.view.fragment.ListFragment;
+import com.capstone.aryoulearning.view.fragment.HintFragmentX;
 import com.capstone.aryoulearning.view.fragment.ReplayFragment;
 import com.capstone.aryoulearning.view.fragment.ResultsFragment;
 import com.capstone.aryoulearning.view.fragment.TutorialFragment;
@@ -25,7 +24,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivityX extends AppCompatActivity implements NavListener, SwitchListener {
+public class MainActivityX extends AppCompatActivity implements NavListenerX, SwitchListener {
     private static List<String> categoryList = new ArrayList<>();
     private static List<List<Model>> animalModelList = new ArrayList<>();
     private static List<String> backgroundList = new ArrayList<>();
@@ -100,7 +99,7 @@ public class MainActivityX extends AppCompatActivity implements NavListener, Swi
     public void moveToHintFragment(final List<Model> modelWithImageNameList) {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, HintFragment.newInstance(modelWithImageNameList))
+                .replace(R.id.fragment_container, HintFragmentX.newInstance(modelWithImageNameList))
                 .addToBackStack(null)
                 .commit();
     }
@@ -108,7 +107,7 @@ public class MainActivityX extends AppCompatActivity implements NavListener, Swi
     public void backToHintFragment(final List<Model> modelList) {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, HintFragment.newInstance(modelList))
+                .replace(R.id.fragment_container, HintFragmentX.newInstance(modelList))
                 .commit();
     }
 

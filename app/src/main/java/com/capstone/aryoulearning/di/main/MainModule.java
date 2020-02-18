@@ -1,8 +1,19 @@
 package com.capstone.aryoulearning.di.main;
 
+import android.content.Context;
+import android.speech.tts.TextToSpeech;
+import android.util.Log;
+
+import com.capstone.aryoulearning.BaseApplication;
 import com.capstone.aryoulearning.R;
-import com.capstone.aryoulearning.controller.CategoryAdapter;
+import com.capstone.aryoulearning.ui.main.hint.rv.HintAdapter;
+import com.capstone.aryoulearning.ui.main.list.rv.ListAdapter;
 import com.capstone.aryoulearning.network.main.MainApi;
+import com.capstone.aryoulearning.util.audio.PronunciationUtil;
+
+import org.w3c.dom.Text;
+
+import java.util.Locale;
 
 import dagger.Module;
 import dagger.Provides;
@@ -22,7 +33,13 @@ public class MainModule {
     }
 
     @Provides
-    static CategoryAdapter provideCategoryAdapter(){
-        return new CategoryAdapter();
+    static ListAdapter provideCategoryAdapter(){
+        return new ListAdapter();
     }
+
+    @Provides
+    static HintAdapter provideHintAdapter(PronunciationUtil pronunciationUtil){
+        return new HintAdapter(pronunciationUtil);
+    }
+
 }
