@@ -21,8 +21,6 @@ import com.capstone.aryoulearning.model.Model;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 
 public class ReplayFragment extends Fragment {
 
@@ -46,7 +44,7 @@ public class ReplayFragment extends Fragment {
     public static ReplayFragment newInstance(final List<Model> modelList, final boolean wasPreviousGameTypeAR) {
         ReplayFragment fragment = new ReplayFragment();
         Bundle args = new Bundle();
-        args.putParcelableArrayList(MODEL_LIST, (ArrayList<? extends Parcelable>) modelList);
+//        args.putParcelableArrayList(MODEL_LIST, (ArrayList<? extends Parcelable>) modelList);
         args.putBoolean(PREVIOUS_GAME_STATUS,wasPreviousGameTypeAR);
         fragment.setArguments(args);
         return fragment;
@@ -56,13 +54,13 @@ public class ReplayFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            modelList = getArguments().getParcelableArrayList(MODEL_LIST);
+//            modelList = getArguments().getParcelableArrayList(MODEL_LIST);
             previousGameTypeIsAR = getArguments().getBoolean(PREVIOUS_GAME_STATUS);
         }
     }
 
     @Override
-    public View onCreateView(@Nonnull LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_replay, container, false);
     }

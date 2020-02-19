@@ -1,9 +1,10 @@
 package com.capstone.aryoulearning;
 
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.capstone.aryoulearning.augmented.ARHostFragment;
 import com.capstone.aryoulearning.controller.NavListenerX;
 import com.capstone.aryoulearning.controller.SwitchListener;
 import com.capstone.aryoulearning.model.Model;
@@ -18,7 +19,7 @@ import com.capstone.aryoulearning.view.fragment.TutorialFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
+
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,7 +46,7 @@ public class MainActivityX extends AppCompatActivity implements NavListenerX, Sw
                 .getModels()
                 .enqueue(new Callback<List<ModelResponse>>() {
                     @Override
-                    public void onResponse(@Nonnull Call<List<ModelResponse>> call, @Nonnull Response<List<ModelResponse>> response) {
+                    public void onResponse(@NonNull Call<List<ModelResponse>> call, @NonNull Response<List<ModelResponse>> response) {
                         if (response.body() != null) {
                             animalModelList = new ArrayList<>();
                             for (int i = 0; i < response.body().size(); i++) {
@@ -58,7 +59,7 @@ public class MainActivityX extends AppCompatActivity implements NavListenerX, Sw
                     }
 
                     @Override
-                    public void onFailure(@Nonnull Call<List<ModelResponse>> call, @Nonnull Throwable t) {
+                    public void onFailure(@NonNull Call<List<ModelResponse>> call, @NonNull Throwable t) {
                         t.printStackTrace();
                     }
                 });
@@ -72,11 +73,11 @@ public class MainActivityX extends AppCompatActivity implements NavListenerX, Sw
     @Override
     public void moveToGameOrARFragment(final List<Model> modelList, final boolean AR_is_on) {
         if (AR_is_on) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, ARHostFragment.newInstance(modelList), "ar_fragment")
-//                    .addToBackStack(null)
-                    .commit();
+//            getSupportFragmentManager()
+//                    .beginTransaction()
+//                    .replace(R.id.fragment_container, ARHostFragment.newInstance(modelList), "ar_fragment")
+////                    .addToBackStack(null)
+//                    .commit();
         } else {
             getSupportFragmentManager()
                     .beginTransaction()

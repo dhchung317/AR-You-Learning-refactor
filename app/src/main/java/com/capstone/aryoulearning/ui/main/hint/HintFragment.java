@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
 import dagger.android.support.AndroidSupportInjection;
@@ -81,7 +80,7 @@ public class HintFragment extends DaggerFragment {
     }
 
     @Override
-    public View onCreateView(@Nonnull LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_hint, container, false);
     }
@@ -97,7 +96,7 @@ public class HintFragment extends DaggerFragment {
             @Override
             public void onChanged(String s) {
 //                currentCategory = s;
-                mainViewModel.loadModelInfoByCat(s);
+                mainViewModel.loadModelsByCat(s);
             }
         });
         enableViews(constraintLayout);
@@ -113,9 +112,9 @@ public class HintFragment extends DaggerFragment {
 
         hintRecyclerView.setAdapter(hintAdapter);
 
-        mainViewModel.getModelInfoLiveData().observe(getViewLifecycleOwner(), new Observer<List<ModelInfo>>() {
+        mainViewModel.getModelLiveData().observe(getViewLifecycleOwner(), new Observer<List<Model>>() {
             @Override
-            public void onChanged(List<ModelInfo> models) {
+            public void onChanged(List<Model> models) {
 //                        modelList = models;
                 for (int i = 0; i < models.size(); i++) {
                     Log.d("hint fragmetn", "onChanged: " + models.get(i).getName());

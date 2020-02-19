@@ -1,53 +1,47 @@
 package com.capstone.aryoulearning.ui.main;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-
 import com.capstone.aryoulearning.db.dao.CategoryDao;
 import com.capstone.aryoulearning.db.dao.CurrentCategoryDao;
+import com.capstone.aryoulearning.db.dao.ModelDao;
 import com.capstone.aryoulearning.db.model.Category;
 import com.capstone.aryoulearning.db.model.CurrentCategory;
-import com.capstone.aryoulearning.db.model.ModelInfo;
-import com.capstone.aryoulearning.db.dao.ModelInfoDao;
 import com.capstone.aryoulearning.model.Model;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Completable;
-import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 public class MainRepository {
-    private final ModelInfoDao modelInfoDao;
+    private final ModelDao modelDao;
     private final CategoryDao categoryDao;
     private final CurrentCategoryDao currentCategoryDao;
 
     @Inject
-    public MainRepository(ModelInfoDao modelInfoDao, CategoryDao categoryDao, CurrentCategoryDao currentCategoryDao) {
-        this.modelInfoDao = modelInfoDao;
+    public MainRepository(ModelDao modelDao, CategoryDao categoryDao, CurrentCategoryDao currentCategoryDao) {
+        this.modelDao = modelDao;
         this.categoryDao = categoryDao;
         this.currentCategoryDao = currentCategoryDao;
     }
 
-    public Single<List<ModelInfo>> getAllModelInfo() {
-        return modelInfoDao.getAllModelInfo();
+    public Single<List<Model>> getAllModels() {
+        return modelDao.getAllModels();
     }
 
-    Single<List<ModelInfo>> getModelInfoByCat(String cat) {
+    public Single<List<Model>> getModelsByCat(String cat) {
 //        final MutableLiveData<List<ModelInfo>> data = new MutableLiveData<>();
 //
 //        data.setValue(modelInfoDao.getModelInfoByCat(cat));
-        return modelInfoDao.getModelInfoByCat(cat);
+        return modelDao.getModelsByCat(cat);
     }
 
-    void insertModelInfo(ModelInfo modelInfo) {
-        modelInfoDao.insert(modelInfo);
+    void insertModel(Model model) {
+        modelDao.insert(model);
     }
-
-    void insertAllModelInfos(List<ModelInfo> modelInfos) {
-        modelInfoDao.insertAll(modelInfos);
+//
+    void insertAllModels(List<Model> models) {
+        modelDao.insertAll(models);
     }
 
     Single<List<Category>> getAllCats() {
@@ -60,7 +54,7 @@ public class MainRepository {
         categoryDao.insert(category);
     }
 
-    Single<CurrentCategory> getCurrentCategory() {
+    public Single<CurrentCategory> getCurrentCategory() {
         return currentCategoryDao.getCurrentCategory();
     }
 
@@ -69,7 +63,7 @@ public class MainRepository {
     }
 
     void clearEntireDatabase() {
-        modelInfoDao.deleteAll();
+        modelDao.deleteAll();
         categoryDao.deleteAll();
         currentCategoryDao.deleteAll();
     }

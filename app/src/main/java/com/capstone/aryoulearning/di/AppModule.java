@@ -9,8 +9,11 @@ import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
 import com.capstone.aryoulearning.BaseApplication;
 import com.capstone.aryoulearning.R;
+import com.capstone.aryoulearning.ui.main.MainActivity;
+import com.capstone.aryoulearning.ui.main.ar.ARHostFragmentX;
 import com.capstone.aryoulearning.util.audio.PronunciationUtil;
 import com.capstone.aryoulearning.util.Constants;
+import com.google.ar.sceneform.ux.ArFragment;
 
 
 import dagger.Module;
@@ -46,10 +49,20 @@ public class AppModule {
         return application.getBaseContext();
     }
 
+//    @Provides
+//    static Application provideApplication(Application application) {
+//        return application;
+//    }
+
     @Provides
     static PronunciationUtil providePronunciationUtil(Application application){
         return new PronunciationUtil(application.getBaseContext());
     }
+
+//    @Provides
+//    static ArFragment provideArFragment(MainActivity activity){
+//        return (ArFragment)activity.getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
+//    }
 
 //    @Provides
 //    static Drawable provideAppDrawable(Application application) {

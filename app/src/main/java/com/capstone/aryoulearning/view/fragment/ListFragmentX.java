@@ -50,17 +50,17 @@ public class ListFragmentX extends Fragment {
         Bundle args = new Bundle();
         args.putStringArrayList(CATEGORY_NAME, (ArrayList<String>) categoryName);
         args.putStringArrayList(CATEGORY_IMAGE, (ArrayList<String>) categoryImages);
-        addCategoryListToBundle(categoryList, args);
+//        addCategoryListToBundle(categoryList, args);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public static void addCategoryListToBundle(final List<List<Model>> categoryList, final Bundle args) {
-        for (int i = 0; i < categoryList.size(); i++) {
-            args.putParcelableArrayList(CATEGORY_KEY + i, (ArrayList<? extends Parcelable>) categoryList.get(i));
-            args.putInt(SIZE, categoryList.size());
-        }
-    }
+//    public static void addCategoryListToBundle(final List<List<Model>> categoryList, final Bundle args) {
+//        for (int i = 0; i < categoryList.size(); i++) {
+//            args.putParcelableArrayList(CATEGORY_KEY + i, (ArrayList<? extends Parcelable>) categoryList.get(i));
+//            args.putInt(SIZE, categoryList.size());
+//        }
+//    }
 
     @Override
     public void onAttach(Context context) {
@@ -73,7 +73,7 @@ public class ListFragmentX extends Fragment {
         if (getArguments() != null) {
             int size = getArguments().getInt("SIZE");
                 for (int i = 0; i < size; i++) {
-                    categoryList.add(getArguments().getParcelableArrayList(CATEGORY_KEY + i));
+//                    categoryList.add(getArguments().getParcelableArrayList(CATEGORY_KEY + i));
                 }
             categoryName = getArguments().getStringArrayList(CATEGORY_NAME);
             categoryImages = getArguments().getStringArrayList(CATEGORY_IMAGE);

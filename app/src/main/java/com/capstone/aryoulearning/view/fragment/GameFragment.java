@@ -41,7 +41,6 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
-import javax.annotation.Nonnull;
 
 public class GameFragment extends Fragment {
     public static final String MODEL_LIST = "MODEL_LIST";
@@ -66,7 +65,7 @@ public class GameFragment extends Fragment {
     public static GameFragment newInstance(final List<Model> modelList) {
         GameFragment fragment = new GameFragment();
         Bundle args = new Bundle();
-        args.putParcelableArrayList(MODEL_LIST, (ArrayList<? extends Parcelable>) modelList);
+//        args.putParcelableArrayList(MODEL_LIST, (ArrayList<? extends Parcelable>) modelList);
         fragment.setArguments(args);
         return fragment;
     }
@@ -84,7 +83,7 @@ public class GameFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            modelList = getArguments().getParcelableArrayList(MODEL_LIST);
+//            modelList = getArguments().getParcelableArrayList(MODEL_LIST);
             Collections.shuffle(modelList);
         }
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -96,7 +95,7 @@ public class GameFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_game, container, false);
     }
 
-    public void initializeViews(@Nonnull final View view){
+    public void initializeViews(@NonNull final View view){
         checker = view.findViewById(R.id.checker);
         imageView = view.findViewById(R.id.imageView);
         cv = view.findViewById(R.id.static_card);

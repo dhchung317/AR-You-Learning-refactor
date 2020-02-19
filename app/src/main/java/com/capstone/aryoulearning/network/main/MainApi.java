@@ -2,14 +2,10 @@ package com.capstone.aryoulearning.network.main;
 
 import com.capstone.aryoulearning.model.ModelResponse;
 
-import org.checkerframework.common.reflection.qual.GetClass;
-
 import java.util.List;
 
 import io.reactivex.Flowable;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Response;
+
 import retrofit2.http.GET;
 
 public interface MainApi {

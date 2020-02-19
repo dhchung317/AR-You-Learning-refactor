@@ -3,6 +3,8 @@ package com.capstone.aryoulearning.viewmodel;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.capstone.aryoulearning.ui.main.ar.ArViewModel;
+
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -10,7 +12,7 @@ import javax.inject.Provider;
 
 public class ViewModelProviderFactory implements ViewModelProvider.Factory {
 
-    private static final String TAG = "ViewModelProviderFactor";
+    private static final String TAG = "ViewModelProviderFactory";
 
     private final Map<Class<? extends ViewModel>, Provider<ViewModel>> creators;
 
@@ -21,7 +23,9 @@ public class ViewModelProviderFactory implements ViewModelProvider.Factory {
 
     @Override
     public <T extends ViewModel> T create(Class<T> modelClass) {
+
         Provider<? extends ViewModel> creator = creators.get(modelClass);
+
         if (creator == null) { // if the viewmodel has not been created
 
             // loop through the allowable keys (aka allowed classes with the @ViewModelKey)
