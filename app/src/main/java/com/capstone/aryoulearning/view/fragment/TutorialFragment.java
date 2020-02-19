@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.annotation.Nonnull;
-
 public class TutorialFragment extends Fragment {
     public static final String MODEL_LIST = "MODEL_LIST";
     private Button backButton, playVideoButton, startGameButton;
@@ -37,7 +35,7 @@ public class TutorialFragment extends Fragment {
     public static TutorialFragment newInstance(final List<Model> modelList) {
         TutorialFragment tutorialFragment = new TutorialFragment();
         Bundle args = new Bundle();
-        args.putParcelableArrayList(MODEL_LIST, (ArrayList<? extends Parcelable>) modelList);
+//        args.putParcelableArrayList(MODEL_LIST, (ArrayList<? extends Parcelable>) modelList);
         tutorialFragment.setArguments(args);
         return tutorialFragment;
     }
@@ -54,13 +52,13 @@ public class TutorialFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            modelList = getArguments().getParcelableArrayList(MODEL_LIST);
+//            modelList = getArguments().getParcelableArrayList(MODEL_LIST);
         }
     }
 
 
     @Override
-    public View onCreateView(@Nonnull LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_tutorial_screen, container, false);
     }

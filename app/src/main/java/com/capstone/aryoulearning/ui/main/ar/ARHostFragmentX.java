@@ -83,19 +83,21 @@ import dagger.android.support.AndroidSupportInjection;
 import dagger.android.support.DaggerFragment;
 
 public class ARHostFragmentX extends DaggerFragment {
-
+    //
     private final PronunciationUtil pronunciationUtil;
 
     @Inject
     ViewModelProviderFactory viewModelProviderFactory;
 
     private MainViewModel mainViewModel;
+    private ArViewModel arViewModel;
 
     private static final int RC_PERMISSIONS = 0x123;
     public static final String MODEL_LIST = "MODEL_LIST";
     private NavListener listener;
 
     private GestureDetector gestureDetector;
+
     private ArFragment arFragment;
 
     FrameLayout f;
@@ -166,8 +168,9 @@ public class ARHostFragmentX extends DaggerFragment {
 //        return fragment;
 //    }
 
+
     @Inject
-    public ARHostFragmentX(PronunciationUtil pronunciationUtil){
+    public ARHostFragmentX(PronunciationUtil pronunciationUtil) {
         this.pronunciationUtil = pronunciationUtil;
         this.textToSpeech = pronunciationUtil.textToSpeech;
     }
@@ -199,6 +202,7 @@ public class ARHostFragmentX extends DaggerFragment {
 //            Collections.shuffle(categoryList);
 //        }
 
+
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         playBalloonPop = MediaPlayer.create(getContext(), R.raw.pop_effect);
     }
@@ -206,23 +210,25 @@ public class ARHostFragmentX extends DaggerFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mainViewModel = ViewModelProviders.of(this,viewModelProviderFactory).get(MainViewModel.class);
+        mainViewModel = ViewModelProviders.of(this, viewModelProviderFactory).get(MainViewModel.class);
+        arViewModel = ViewModelProviders.of(this, viewModelProviderFactory).get(ArViewModel.class);
+
         mainViewModel.loadCurrentCategoryName();
         mainViewModel.getCurCatLiveData().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String s) {
                 Log.d("ar x view created", "onChanged: " + s);
-                mainViewModel.loadModelInfoByCat(s);
+                mainViewModel.loadModelsByCat(s);
             }
         });
-        mainViewModel.getModelInfoLiveData().observe(getViewLifecycleOwner(), new Observer<List<ModelInfo>>() {
-            @Override
-            public void onChanged(List<ModelInfo> modelInfos) {
-                Log.d("ar x view created", "onChanged: " + modelInfos.size());
-                mainViewModel.convertModelInfoToModels(modelInfos);
-            }
-        });
-        mainViewModel.getConvertedModelInfoLiveData().observe(getViewLifecycleOwner(), new Observer<List<Model>>() {
+//        mainViewModel.getModelLiveData().observe(getViewLifecycleOwner(), new Observer<List<ModelInfo>>() {
+//            @Override
+//            public void onChanged(List<ModelInfo> modelInfos) {
+//                Log.d("ar x view created", "onChanged: " + modelInfos.size());
+//                mainViewModel.convertModelInfoToModels(modelInfos);
+//            }
+//        });
+        mainViewModel.getModelLiveData().observe(getViewLifecycleOwner(), new Observer<List<Model>>() {
             @Override
             public void onChanged(List<Model> models) {
                 categoryList = models;
@@ -238,13 +244,12 @@ public class ARHostFragmentX extends DaggerFragment {
         });
 
 
-
         f = view.findViewById(R.id.frame_layout);
 
         wordCardView = view.findViewById(R.id.card_wordContainer);
         wordContainer = view.findViewById(R.id.word_container);
 
-        wordValidatorLayout = getLayoutInflater().inflate(R.layout.validator_card,f,false);
+        wordValidatorLayout = getLayoutInflater().inflate(R.layout.validator_card, f, false);
         CardView wordValidatorCv = wordValidatorLayout.findViewById(R.id.word_validator_cv);
         wordValidator = wordValidatorLayout.findViewById(R.id.word_validator);
 
@@ -257,7 +262,7 @@ public class ARHostFragmentX extends DaggerFragment {
 
 //        wordValidatorCv.setVisibility(View.INVISIBLE);
 
-        exitMenu = getLayoutInflater().inflate(R.layout.exit_menu_card,f,false);
+        exitMenu = getLayoutInflater().inflate(R.layout.exit_menu_card, f, false);
         exit = view.findViewById(R.id.exit_imageButton);
         exitYes = exitMenu.findViewById(R.id.exit_button_yes);
         exitNo = exitMenu.findViewById(R.id.exit_button_no);
@@ -348,6 +353,8 @@ public class ARHostFragmentX extends DaggerFragment {
                             }
                         });
 
+//        new GestureDetector(getActivity(), new GestureDetector.OnGestureListener() {
+//        })
         arFragment.getArSceneView()
                 .getScene()
                 .setOnTouchListener(
@@ -374,14 +381,14 @@ public class ARHostFragmentX extends DaggerFragment {
                             if (frame.getCamera().getTrackingState() != TrackingState.TRACKING) {
                                 return;
                             }
-                            if(!hasPlacedGame){
-                            for(Plane plane : frame.getUpdatedTrackables(Plane.class)){
-                                if(!placedAnimation && plane.getTrackingState() == TrackingState.TRACKING){
-                                    placedAnimation = true;
-                                    tapAnimation = getTapAnimationView();
-                                    addTapAnimationToScreen(tapAnimation);
+                            if (!hasPlacedGame) {
+                                for (Plane plane : frame.getUpdatedTrackables(Plane.class)) {
+                                    if (!placedAnimation && plane.getTrackingState() == TrackingState.TRACKING) {
+                                        placedAnimation = true;
+                                        tapAnimation = getTapAnimationView();
+                                        addTapAnimationToScreen(tapAnimation);
+                                    }
                                 }
-                            }
                             }
 
                         });
@@ -390,35 +397,40 @@ public class ARHostFragmentX extends DaggerFragment {
     }
 
 
-    private Node createGame(Map<String, ModelRenderable> modelMap) {
+    private Node createGame(String name, ModelRenderable model) {
 
         base = new Node();
 
-        Node sunVisual = new Node();
-        sunVisual.setParent(base);
+        Node mainModel = new Node();
+        mainModel.setParent(base);
 
         ObjectAnimator rotate = Animations.AR.createRotationAnimator();
-        rotate.setTarget(sunVisual);
+        rotate.setTarget(mainModel);
         rotate.setDuration(7000);
         rotate.start();
 
-        for (Map.Entry<String, ModelRenderable> e : modelMap.entrySet()) {
-            sunVisual.setRenderable(e.getValue());
-            sunVisual.setLocalPosition(new Vector3(base.getLocalPosition().x,//x
-                    base.getLocalPosition().y,//y
-                    base.getLocalPosition().z));
-            sunVisual.setLookDirection(new Vector3(0, 0, 4));
-            sunVisual.setLocalScale(new Vector3(1.0f, 1.0f, 1.0f));
+//        for (Map.Entry<String, ModelRenderable> e : modelMap.entrySet()) {
+
+        mainModel.setRenderable(model);
+
+        mainModel.setLocalPosition(new Vector3(base.getLocalPosition().x,//x
+                base.getLocalPosition().y,//y
+                base.getLocalPosition().z));
+        mainModel.setLookDirection(new Vector3(0, 0, 4));
+        mainModel.setLocalScale(new Vector3(1.0f, 1.0f, 1.0f));
 
 //            String randomWord = e.getKey() + "abcdefghijklmnopqrstuvwxyz";
-            collisionSet.clear();
-            pronunciationUtil.textToSpeechAnnouncer(e.getKey(), pronunciationUtil.textToSpeech);
+        collisionSet.clear(); // should call this outside of this method as it is being called
+//            pronunciationUtil.textToSpeechAnnouncer(e.getKey(), pronunciationUtil.textToSpeech);
 
-            for (int i = 0; i < e.getKey().length(); i++) {
-                createLetter(Character.toString(e.getKey().charAt(i)), e.getKey(), base, letterMap.get(Character.toString(e.getKey().charAt(i))));
-            }
-            currentWord = e.getKey();
+        for (int i = 0; i < name.length(); i++) {
+            createLetter(
+                    Character.toString(name.charAt(i)),
+                    name, base, model);
         }
+
+        currentWord = name;
+
         return base;
     }
 
@@ -478,9 +490,9 @@ public class ARHostFragmentX extends DaggerFragment {
 
                 LottieAnimationView lav;
 
-                if(letter.equals(Character.toString(word.charAt(letters.length())))) {
-                    lav =getSparklingAnimationView();
-                }else{
+                if (letter.equals(Character.toString(word.charAt(letters.length())))) {
+                    lav = getSparklingAnimationView();
+                } else {
                     lav = getWarningAnimationView();
                 }
 
@@ -491,11 +503,11 @@ public class ARHostFragmentX extends DaggerFragment {
                 //Keep track of the letter selected
                 letters += letter;
 
-                if(wordCardView.getVisibility() == View.INVISIBLE){
+                if (wordCardView.getVisibility() == View.INVISIBLE) {
                     wordCardView.setVisibility(View.VISIBLE);
                 }
 
-                if(undo.getVisibility() == View.INVISIBLE){
+                if (undo.getVisibility() == View.INVISIBLE) {
                     undo.setVisibility(View.VISIBLE);
                 }
 
@@ -517,17 +529,17 @@ public class ARHostFragmentX extends DaggerFragment {
         });
     }
 
-    private void setValidatorCardView(boolean isCorrect){
+    private void setValidatorCardView(boolean isCorrect) {
 
 
         validatorWord.setText(currentWord);
         validatorWrongWord.setVisibility(View.INVISIBLE);
         validatorWrongPrompt.setVisibility(View.INVISIBLE);
 
-        if(isCorrect){
+        if (isCorrect) {
             validatorBackgroudImage.setImageResource(R.drawable.star);
             Picasso.get().load(categoryList.get(roundCounter - 1).getImage()).into(validatorImage);
-        }else{
+        } else {
             validatorBackgroudImage.setImageResource(R.drawable.error);
             Picasso.get().load(categoryList.get(roundCounter).getImage()).into(validatorImage);
             validatorWrongWord.setVisibility(View.VISIBLE);
@@ -593,21 +605,29 @@ public class ARHostFragmentX extends DaggerFragment {
     private boolean tryPlaceGame(MotionEvent tap, Frame frame) {
         if (tap != null && frame.getCamera().getTrackingState() == TrackingState.TRACKING) {
 
-                mainHit = frame.hitTest(tap).get(0);
+            mainHit = frame.hitTest(tap).get(0);
 
-                Trackable trackable = mainHit.getTrackable();
-                if (trackable instanceof Plane && ((Plane) trackable).isPoseInPolygon(mainHit.getHitPose())) {
-                    // Create the Anchor.
-                    if (trackable.getTrackingState() == TrackingState.TRACKING) {
-                        mainAnchor = mainHit.createAnchor();
-                    }
-                    mainAnchorNode = new AnchorNode(mainAnchor);
-                    mainAnchorNode.setParent(arFragment.getArSceneView().getScene());
-                    Node gameSystem = createGame(modelMapList.get(0));
-                    mainAnchorNode.addChild(gameSystem);
-                    return true;
+            Trackable trackable = mainHit.getTrackable();
+            if (trackable instanceof Plane && ((Plane) trackable).isPoseInPolygon(mainHit.getHitPose())) {
+                // Create the Anchor.
+                if (trackable.getTrackingState() == TrackingState.TRACKING) {
+                    mainAnchor = mainHit.createAnchor();
                 }
+                mainAnchorNode = new AnchorNode(mainAnchor);
+                mainAnchorNode.setParent(arFragment.getArSceneView().getScene());
+//                    Node gameSystem = createGame(modelMapList.get(0));
+                HashMap<String, ModelRenderable> g = modelMapList.get(0);
+
+                for (Map.Entry<String, ModelRenderable> e : g.entrySet()) {
+                    Node game = ModelUtil.anchorGame(e.getKey(), e.getValue());
+                    mainAnchorNode.addChild(game);
+                }
+
+
+                return true;
+            }
         }
+
         return false;
     }
 
@@ -619,17 +639,17 @@ public class ARHostFragmentX extends DaggerFragment {
         mainAnchorNode = null;
 
 
-            Trackable trackable = mainHit.getTrackable();
-            if (trackable instanceof Plane && ((Plane) trackable).isPoseInPolygon(mainHit.getHitPose())) {
-                // Create the Anchor.
-                if (trackable.getTrackingState() == TrackingState.TRACKING) {
-                    mainAnchor = mainHit.createAnchor();
-                }
-                mainAnchorNode = new AnchorNode(mainAnchor);
-                mainAnchorNode.setParent(arFragment.getArSceneView().getScene());
-                Node gameSystem = createGame(modelMap);
-                mainAnchorNode.addChild(gameSystem);
+        Trackable trackable = mainHit.getTrackable();
+        if (trackable instanceof Plane && ((Plane) trackable).isPoseInPolygon(mainHit.getHitPose())) {
+            // Create the Anchor.
+            if (trackable.getTrackingState() == TrackingState.TRACKING) {
+                mainAnchor = mainHit.createAnchor();
             }
+            mainAnchorNode = new AnchorNode(mainAnchor);
+            mainAnchorNode.setParent(arFragment.getArSceneView().getScene());
+//                Node gameSystem = createGame(modelMap);
+//                mainAnchorNode.addChild(gameSystem);
+        }
 
         wordContainer.removeAllViews();
     }
@@ -762,7 +782,7 @@ public class ARHostFragmentX extends DaggerFragment {
         return lav;
     }
 
-    private LottieAnimationView getTapAnimationView(){
+    private LottieAnimationView getTapAnimationView() {
         LottieAnimationView lav = new LottieAnimationView(getContext());
         lav.setVisibility(View.VISIBLE);
         lav.loop(true);
@@ -798,11 +818,11 @@ public class ARHostFragmentX extends DaggerFragment {
         });
     }
 
-    public void addTapAnimationToScreen(LottieAnimationView lavTap){
+    public void addTapAnimationToScreen(LottieAnimationView lavTap) {
         int width = getActivity().getWindow().getDecorView().getWidth();
         int height = getActivity().getWindow().getDecorView().getHeight();
-        lavTap.setX(width/2 - 50);
-        lavTap.setY(height/2 - 50);
+        lavTap.setX(width / 2 - 50);
+        lavTap.setY(height / 2 - 50);
         f.addView(lavTap, 500, 500);
         lavTap.playAnimation();
     }

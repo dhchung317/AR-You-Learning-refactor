@@ -6,6 +6,7 @@ import androidx.room.Room;
 
 import com.capstone.aryoulearning.db.dao.CategoryDao;
 import com.capstone.aryoulearning.db.dao.CurrentCategoryDao;
+import com.capstone.aryoulearning.db.dao.ModelDao;
 import com.capstone.aryoulearning.db.dao.ModelInfoDao;
 
 import javax.inject.Singleton;
@@ -38,7 +39,7 @@ public class ModelDatabaseModule {
 //    }
 
     @Provides
-    static ModelInfoDao provideModelDao(ModelDatabase modelDatabase) {
+    static ModelDao provideModelDao(ModelDatabase modelDatabase) {
         return modelDatabase.modelDao();
     }
 

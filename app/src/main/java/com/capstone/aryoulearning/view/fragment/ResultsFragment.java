@@ -43,7 +43,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
-import javax.annotation.Nonnull;
 
 
 public class ResultsFragment extends Fragment {
@@ -67,7 +66,7 @@ public class ResultsFragment extends Fragment {
     public static ResultsFragment newInstance(final List<Model> modelList) {
         ResultsFragment resultsFragment = new ResultsFragment();
         Bundle args = new Bundle();
-        args.putParcelableArrayList(MODEL_LIST, (ArrayList<? extends Parcelable>) modelList);
+//        args.putParcelableArrayList(MODEL_LIST, (ArrayList<? extends Parcelable>) modelList);
         resultsFragment.setArguments(args);
         return resultsFragment;
     }
@@ -79,7 +78,7 @@ public class ResultsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null){
-            modelList = getArguments().getParcelableArrayList(MODEL_LIST);
+//            modelList = getArguments().getParcelableArrayList(MODEL_LIST);
         }
 //        pronunciationUtil = new PronunciationUtil();
 //        textToSpeech = pronunciationUtil.getTTS(getContext());
@@ -102,7 +101,7 @@ public class ResultsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(@Nonnull LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_results, container, false);
     }

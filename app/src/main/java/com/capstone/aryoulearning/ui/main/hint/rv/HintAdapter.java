@@ -27,7 +27,7 @@ import javax.inject.Inject;
 
 public class HintAdapter extends RecyclerView.Adapter<HintAdapter.HintViewHolder> {
 
-    private List<ModelInfo> modelList = new ArrayList<>();
+    private List<Model> modelList = new ArrayList<>();
 
     private final PronunciationUtil pronunciationUtil;
 
@@ -57,19 +57,19 @@ public class HintAdapter extends RecyclerView.Adapter<HintAdapter.HintViewHolder
             super(itemView);
         }
 
-        public void onBind(ModelInfo modelInfo) {
+        public void onBind(Model model) {
             ImageView imageView = itemView.findViewById(R.id.hint_fragment_image_view);
             TextView textView = itemView.findViewById(R.id.hint_fragment_textview);
 
             textView.setTextColor(Color.DKGRAY);
 
-            Picasso.get().load(modelInfo.getImage()).into(imageView);
+            Picasso.get().load(model.getImage()).into(imageView);
 
-            textView.setText(modelInfo.getName());
+            textView.setText(model.getName());
 
             itemView.setOnClickListener(v -> {
 
-                pronunciationUtil.textToSpeechAnnouncer(modelInfo.getName(), pronunciationUtil.textToSpeech );
+                pronunciationUtil.textToSpeechAnnouncer(model.getName(), pronunciationUtil.textToSpeech );
                 itemView.startAnimation(Animations.Normal.getVibrator(itemView));
                 textView.setTextColor(Color.LTGRAY);
                 CountDownTimer timer = new CountDownTimer(1000, 1000) {
@@ -90,7 +90,7 @@ public class HintAdapter extends RecyclerView.Adapter<HintAdapter.HintViewHolder
         }
     }
 
-    public void setList(List<ModelInfo> modelList) {
+    public void setList(List<Model> modelList) {
 
         this.modelList = modelList;
 

@@ -36,24 +36,22 @@ import io.reactivex.schedulers.Schedulers;
 
 public class MainViewModel extends ViewModel {
     public static final String TAG = "MainViewModel";
+
     private final MainRepository mainRepository;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private final MainApi mainApi;
 
-    private String currentCategory;
-
     private MediatorLiveData<MainResource<List<ModelResponse>>> modelResponsesData = new MediatorLiveData<>();
 
-    private MutableLiveData<List<ModelInfo>> modelInfoLiveData = new MediatorLiveData<>();
+    private MutableLiveData<List<Model>> modelLiveData = new MediatorLiveData<>();
     private MutableLiveData<List<Category>> catLiveData = new MutableLiveData<>();
     private MutableLiveData<String> curCatLiveData = new MutableLiveData<>();
-
-    private MutableLiveData<List<Model>> convertModelLiveData = new MutableLiveData<>();
+//    private MutableLiveData<List<Model>> convertModelLiveData = new MutableLiveData<>();
 
 //    private Map<String,List<Model>> catMap = new HashMap<>();
 
-    private List<ModelInfo> modelList = new ArrayList<>();
+//    private List<ModelInfo> modelList = new ArrayList<>();
 
     @Inject
     public MainViewModel(MainApi mainApi, MainRepository mainRepository) {
@@ -83,7 +81,7 @@ public class MainViewModel extends ViewModel {
                                     ));
                                     for (int j = 0; j < modelResponses.get(i).getList().size(); j++) {
                                         Log.d(TAG, "observeModelResponses: " + modelResponses.get(i).getList().get(j).getName());
-                                        modelList.add(new ModelInfo(
+                                        mainRepository.insertModel(new Model(
                                                 modelResponses.get(i).getCategory(),
                                                 modelResponses.get(i).getList().get(j).getName(),
                                                 modelResponses.get(i).getList().get(j).getImage()
@@ -111,11 +109,11 @@ public class MainViewModel extends ViewModel {
 
         modelResponsesData.addSource(data, listResource -> {
 //            Log.d(TAG, "observeModelResponses: reached" + listResource.data.size());
-            mainRepository.insertAllModelInfos(modelList);
+//            mainRepository.insertAllModelInfos(modelList);
 
-            for (int i = 0; i < modelList.size(); i++) {
-                Log.d(TAG, "addsource: " + modelList.get(i).getName());
-            }
+//            for (int i = 0; i < modelList.size(); i++) {
+//                Log.d(TAG, "addsource: " + modelList.get(i).getName());
+//            }
             modelResponsesData.setValue(MainResource.finished(listResource.data));
             modelResponsesData.removeSource(data);
 
@@ -142,36 +140,27 @@ public class MainViewModel extends ViewModel {
 //        compositeDisposable.add(favoriteShowsDisposable);
 //    }
 
-    public void convertModelInfoToModels(List<ModelInfo> modelList) {
-
-        Disposable modelDisposable = Observable.just(modelList)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .flatMapIterable(info -> info)
-                .flatMap(this::getModelObservable)
-                .toList()
-                .subscribe(this::onModelInfosConverted);
-        compositeDisposable.add(modelDisposable);
-
-    }
-
-    public void loadModelInfoByCat(String cat) {
-//        modelInfoLiveData.addSource(
-//                mainRepository.getModelInfoByCat(cat), modelInfos -> {
-//            modelInfoLiveData.setValue(modelInfos);
-//        });
-//        ArrayList<Model> returnModels = new ArrayList<>();
-        Disposable modelInfoDisposable =
-                mainRepository.getModelInfoByCat(cat)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-//                .toObservable()
-//                .flatMapIterable(modelInfo -> modelInfo)
+//    public void convertModelInfoToModels(List<ModelInfo> modelList) {
+//
+//        Disposable modelDisposable = Observable.just(modelList)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .flatMapIterable(info -> info)
 //                .flatMap(this::getModelObservable)
 //                .toList()
-                        .subscribe(this::onModelInfosFetched, this::onError);
-        compositeDisposable.add(modelInfoDisposable);
+//                .subscribe(this::onModelInfosConverted);
+//        compositeDisposable.add(modelDisposable);
+//    }
+
+    public void loadModelsByCat(String cat) {
+        Disposable modelDisposable =
+                mainRepository.getModelsByCat(cat)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(this::onModelsFetched, this::onError);
+        compositeDisposable.add(modelDisposable);
     }
+
 
 //    public void loadModelInfo(){
 //        Disposable modelInfoDisposable = mainRepository.getAllModelInfo()
@@ -201,13 +190,13 @@ public class MainViewModel extends ViewModel {
         compositeDisposable.add(curCatDisposable);
     }
 
-    public MutableLiveData<List<ModelInfo>> getModelInfoLiveData() {
-        return modelInfoLiveData;
+    public MutableLiveData<List<Model>> getModelLiveData() {
+        return modelLiveData;
     }
 
-    public MutableLiveData<List<Model>> getConvertedModelInfoLiveData() {
-        return convertModelLiveData;
-    }
+//    public MutableLiveData<List<Model>> getConvertedModelInfoLiveData() {
+//        return convertModelLiveData;
+//    }
 
     public MutableLiveData<List<Category>> getCatLiveData() {
         return catLiveData;
@@ -255,15 +244,15 @@ public class MainViewModel extends ViewModel {
         Log.d("MainViewModel", throwable.getMessage());
     }
 
-    private void onModelInfosFetched(List<ModelInfo> modelInfos) {
-        Log.d(TAG, "onModelsFetched: " + modelInfos.size());
-        modelInfoLiveData.setValue(modelInfos);
+    private void onModelsFetched(List<Model> models) {
+        Log.d(TAG, "onModelsFetched: " + models.size());
+        modelLiveData.setValue(models);
     }
 
-    private void onModelInfosConverted(List<Model> models) {
-        Log.d(TAG, "onModelsFetched: " + models.size());
-        convertModelLiveData.setValue(models);
-    }
+//    private void onModelInfosConverted(List<Model> models) {
+//        Log.d(TAG, "onModelsFetched: " + models.size());
+//        convertModelLiveData.setValue(models);
+//    }
 
     private void onCatsFetched(List<Category> categories) {
         catLiveData.setValue(categories);
@@ -273,18 +262,18 @@ public class MainViewModel extends ViewModel {
         curCatLiveData.setValue(category.getCurrentCategory());
     }
 
-    private Observable<Model> getModelObservable(ModelInfo modelInfo) {
-        Model model = new Model(modelInfo.getName(), modelInfo.getImage());
-
-        return Observable.just(model);
-    }
+//    private Observable<Model> getModelObservable(ModelInfo modelInfo) {
+//        Model model = new Model(modelInfo.getName(), modelInfo.getImage());
+//
+//        return Observable.just(model);
+//    }
 
 
     @Override
     protected void onCleared() {
         super.onCleared();
         compositeDisposable.clear();
-//        clearEntireDatabase();
+        clearEntireDatabase();
     }
 
 }
