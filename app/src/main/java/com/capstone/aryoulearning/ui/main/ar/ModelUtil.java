@@ -3,6 +3,7 @@ package com.capstone.aryoulearning.ui.main.ar;
 import android.animation.ObjectAnimator;
 
 import com.capstone.aryoulearning.animation.Animations;
+import com.capstone.aryoulearning.di.ActivityBuildersModule;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Pose;
 import com.google.ar.core.Session;
@@ -23,9 +24,7 @@ public class ModelUtil {
     private static Random r = new Random();
     private static Set<Vector3> collisionSet = new HashSet<>();
 
-
-
-    static Node getGameAnchor(String name, ModelRenderable model){
+    static Node getGameAnchor(ModelRenderable model){
         Node base = new Node();
         Node mainModel = new Node();
         mainModel.setParent(base);
@@ -54,15 +53,15 @@ public class ModelUtil {
 
     }
 
-    static void placeModel(){
+//    static void placeModel(){
+//
+//    }
 
-    }
+//    static void placeWord(String word){
+//
+//    }
 
-    static void placeWord(String word){
-
-    }
-
-    static TransformableNode placeLetter(Node parent,ModelRenderable renderable, ArFragment arFragment){
+    static AnchorNode getLetter(Node parent, ModelRenderable renderable, ArFragment arFragment){
 
         float[] pos = {0,//x
                 0,//y
@@ -98,7 +97,7 @@ public class ModelUtil {
 
         trNode.setLocalPosition(coordinates);
 
-        return trNode;
+        return base;
     }
 
     private static int getRandom(int max, int min) {

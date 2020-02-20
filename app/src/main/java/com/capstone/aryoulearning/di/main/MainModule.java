@@ -46,7 +46,4 @@ public class MainModule {
     static HintAdapter provideHintAdapter(PronunciationUtil pronunciationUtil){
         return new HintAdapter(pronunciationUtil);
     }
-
-
-
 }

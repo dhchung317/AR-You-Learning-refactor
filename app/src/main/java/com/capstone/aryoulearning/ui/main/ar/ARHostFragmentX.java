@@ -614,15 +614,18 @@ public class ARHostFragmentX extends DaggerFragment {
                 HashMap<String, ModelRenderable> g = modelMapList.get(0);
 
                 for (Map.Entry<String, ModelRenderable> e : g.entrySet()) {
-                    Node game = ModelUtil.getGameAnchor(e.getKey(), e.getValue());
+                    Node game = ModelUtil.getGameAnchor(e.getValue());
                     mainAnchorNode.addChild(game);
 
 
                     for (int i = 0; i < e.getKey().length(); i++){
 
-                        TransformableNode letter = ModelUtil.placeLetter(game,letterMap.get(Character.toString(e.getKey().charAt(i))),arFragment);
+                        AnchorNode letter = ModelUtil.getLetter(game,letterMap.get(Character.toString(e.getKey().charAt(i))),arFragment);
+                        letter.getChildren().get(0).setOnTapListener(getNodeOnTapListener(letter));
+
                         arFragment.getArSceneView().getScene().addChild(letter);
 //                        letter.setParent(game);
+
                         game.addChild(letter);
 
                     }
@@ -880,5 +883,10 @@ public class ARHostFragmentX extends DaggerFragment {
         if (!letterToRecreate.equals("")) {
             createLetter(letterToRecreate, currentWord, base, letterMap.get(letterToRecreate));
         }
+    }
+
+    private Node.OnTapListener getNodeOnTapListener(AnchorNode letter){
+
+        return (hitTestResult, motionEvent) -> letter.getAnchor().detach();
     }
 }
