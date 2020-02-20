@@ -11,11 +11,13 @@ public interface NavListener {
 
     void moveToResultsFragment(final List<Model> categoryList);
 
-    void moveToHintFragment(String category);
+    void moveToHintFragment();
 
     void moveToReplayFragment(final List<Model> modelList, final boolean wasPreviousGameTypeAR);
 
     void backToHintFragment(final List<Model> animalResponseList);
 
     void moveToTutorialScreen(final List<Model> modelList);
+
+    void setCategoryFromFragment(String category);
 }

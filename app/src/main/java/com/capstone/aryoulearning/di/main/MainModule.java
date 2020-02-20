@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 
 import com.capstone.aryoulearning.BaseApplication;
 import com.capstone.aryoulearning.R;
+import com.capstone.aryoulearning.animation.LottieHelper;
 import com.capstone.aryoulearning.ui.main.MainActivity;
 import com.capstone.aryoulearning.ui.main.ar.ARHostFragmentX;
 import com.capstone.aryoulearning.ui.main.hint.rv.HintAdapter;
@@ -45,5 +46,9 @@ public class MainModule {
     @Provides
     static HintAdapter provideHintAdapter(PronunciationUtil pronunciationUtil){
         return new HintAdapter(pronunciationUtil);
+    }
+    @Provides
+    static LottieHelper provideLottieHelper(){
+        return new LottieHelper();
     }
 }

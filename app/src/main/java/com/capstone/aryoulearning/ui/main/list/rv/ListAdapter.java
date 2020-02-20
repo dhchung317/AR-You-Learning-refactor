@@ -2,15 +2,16 @@ package com.capstone.aryoulearning.ui.main.list.rv;
 
 import android.content.Context;
 import android.os.Vibrator;
-import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.capstone.aryoulearning.R;
 import com.capstone.aryoulearning.db.model.Category;
@@ -21,29 +22,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.CategoryViewHolder> {
-//    private List<List<Model>> categoryList;
-//    private List<String> categoryName;
-//    private List<String> categoryImages;
     private List<Category> categories = new ArrayList<>();
     private NavListener listener;
-
-//    @Inject
-//    ViewModelProviderFactory viewModelProviderFactory;
-//    private MainViewModel mainViewModel;
-
-
-//    public ListAdapter() {
-//        this.categoryList = categoryList;
-//        this.categoryName = categoryName;
-//        this.categoryImages = categoryImages;
-//    }
 
     @NonNull
     @Override
     public CategoryViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).
                 inflate(R.layout.category_item, viewGroup, false);
-
         Context context = viewGroup.getContext();
         if (context instanceof NavListener) {
             listener = (NavListener) context;
@@ -51,7 +37,6 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.CategoryViewHo
             throw new RuntimeException(context.toString()
                     + "must implement FragmentInteractionListener");
         }
-
         return new CategoryViewHolder(view);
     }
 
@@ -65,16 +50,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.CategoryViewHo
         return categories.size();
     }
 
-    public void setLists(
-            List<Category> categories
-    ){
-
-
+    public void setLists(List<Category> categories) {
         this.categories = categories;
-//        this.categoryList = categoryList;
-//        this.categoryName = categoryName;
-//        this.categoryImages = categoryImages;
-
         notifyDataSetChanged();
     }
 
@@ -99,8 +76,10 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.CategoryViewHo
             Log.d("TAG", category.getImage());
             categoryCard.setOnClickListener(v -> {
                 Log.d("list adapter", "onBind: " + category.getName());
-
-                listener.moveToHintFragment(category.getName());
+                if (!category.getName().isEmpty()) {
+                    listener.setCategoryFromFragment(category.getName());
+                }
+                listener.moveToHintFragment();
                 makeVibration();
             });
         }

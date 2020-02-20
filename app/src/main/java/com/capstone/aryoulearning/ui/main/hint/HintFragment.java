@@ -49,17 +49,20 @@ public class HintFragment extends DaggerFragment {
 
     private List<Model> modelList = new ArrayList<>();
 
-    @Inject
-    ViewModelProviderFactory viewModelProviderFactory;
+    private ViewModelProviderFactory viewModelProviderFactory;
 
 //    @Inject
 //    PronunciationUtil pronunciationUtil;
 
+    private HintAdapter hintAdapter;
+
     @Inject
-    HintAdapter hintAdapter;
+    public HintFragment(ViewModelProviderFactory viewModelProviderFactory, HintAdapter hintAdapter) {
+        this.viewModelProviderFactory = viewModelProviderFactory;
+        this.hintAdapter = hintAdapter;
+    }
 
-
-//    public static HintFragment newInstance() {
+    //    public static HintFragment newInstance() {
 //
 //        return new HintFragment();
 //    }
@@ -83,7 +86,7 @@ public class HintFragment extends DaggerFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mainViewModel = ViewModelProviders.of(this, viewModelProviderFactory).get(MainViewModel.class);
+        mainViewModel = ViewModelProviders.of(getActivity(), viewModelProviderFactory).get(MainViewModel.class);
         mainViewModel.loadCurrentCategoryName();
 
         mainViewModel.getCurCatLiveData().observe(getViewLifecycleOwner(), new Observer<String>() {
@@ -170,7 +173,7 @@ public class HintFragment extends DaggerFragment {
         });
 
         tutorialButton.setOnClickListener(v -> listener.moveToTutorialScreen(modelList));
-        backFAB.setOnClickListener(v -> Objects.requireNonNull(getActivity()).onBackPressed());
+        backFAB.setOnClickListener(v -> getActivity().onBackPressed());
     }
 
     public void setHintRV(){

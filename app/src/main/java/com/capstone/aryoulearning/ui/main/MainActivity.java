@@ -37,6 +37,11 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     @Inject
     ARHostFragmentX arHostFragmentX;
 
+    @Inject
+    ListFragment listFragment;
+
+    @Inject
+    HintFragment hintFragment;
 
     @Inject
     int resId;
@@ -45,10 +50,29 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     ViewModelProviderFactory providerFactory;
 
     @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        View decorView = getWindow().getDecorView();
+
+        if (hasFocus) {
+            decorView.setSystemUiVisibility(
+//                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+//                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE);
+        }
+
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(resId);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
         progressBar = findViewById(R.id.progress_bar);
         Log.d(TAG, "onCreate");
 
@@ -109,7 +133,7 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     public void moveToListFragment() {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, new ListFragment())
+                .replace(R.id.fragment_container, listFragment)
                 .commit();
 
     }
@@ -130,14 +154,10 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     }
 
     @Override
-    public void moveToHintFragment(String category) {
-        viewModel.setCurrentCategory(category);
-//        viewModel.setModelList(modelList);
-        Log.d(TAG, "moveToHintFragment: " + category);
-
+    public void moveToHintFragment() {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, new HintFragment())
+                .replace(R.id.fragment_container, hintFragment)
                 .addToBackStack(null)
                 .commit();
 
@@ -156,5 +176,10 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     @Override
     public void moveToTutorialScreen(List<Model> modelList) {
 
+    }
+
+    @Override
+    public void setCategoryFromFragment(String category) {
+        viewModel.setCurrentCategory(category);
     }
 }

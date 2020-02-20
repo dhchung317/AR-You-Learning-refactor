@@ -35,6 +35,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.airbnb.lottie.LottieAnimationView;
 import com.capstone.aryoulearning.R;
 import com.capstone.aryoulearning.animation.Animations;
+import com.capstone.aryoulearning.animation.LottieHelper;
 import com.capstone.aryoulearning.model.Model;
 import com.capstone.aryoulearning.ui.main.controller.NavListener;
 import com.capstone.aryoulearning.ui.main.needsrefactor.ResultsFragment;
@@ -75,13 +76,16 @@ public class ARHostFragmentX extends DaggerFragment {
     @Inject
     ViewModelProviderFactory viewModelProviderFactory;
 
+    @Inject
+    LottieHelper lottieHelper;
+
     private ArViewModel arViewModel;
 
     private ArFragment arFragment;
 
     private NavListener listener;
     private GestureDetector gestureDetector;
-    private final PronunciationUtil pronunciationUtil;
+    private PronunciationUtil pronunciationUtil;
     private MediaPlayer playBalloonPop;
 
     private SharedPreferences prefs;
@@ -142,7 +146,6 @@ public class ARHostFragmentX extends DaggerFragment {
         this.pronunciationUtil = pronunciationUtil;
         this.textToSpeech = pronunciationUtil.textToSpeech;
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -248,8 +251,8 @@ public class ARHostFragmentX extends DaggerFragment {
                                 for (Plane plane : frame.getUpdatedTrackables(Plane.class)) {
                                     if (!placedAnimation && plane.getTrackingState() == TrackingState.TRACKING) {
                                         placedAnimation = true;
-                                        tapAnimation = getTapAnimationView();
-                                        addTapAnimationToScreen(tapAnimation);
+                                        tapAnimation = lottieHelper.getAnimationView(getContext(),LottieHelper.AnimationType.TAP);
+                                        lottieHelper.addTapAnimationToScreen(tapAnimation,getActivity(),f);
                                     }
                                 }
                             }
@@ -261,7 +264,7 @@ public class ARHostFragmentX extends DaggerFragment {
     private void setUpViews(View view) {
         initViews(view);
         setListeners();
-        setAnimations();
+//        setAnimations();
     }
 
     private void initViews(View view) {
@@ -479,107 +482,6 @@ public class ARHostFragmentX extends DaggerFragment {
     }
 
 
-    private int getRandom(int max, int min) {
-        return r.nextInt((max - min)) + min;
-    }
-
-    private boolean checkDoesLetterCollide(Vector3 newV3, Vector3 parentModel) {
-        if (collisionSet.isEmpty()) {
-            collisionSet.add(newV3);
-            return false;
-        }
-
-        if ((newV3.x < parentModel.x + 2) && (newV3.x > parentModel.x - 2)
-                && (newV3.y < parentModel.y + 2) && (newV3.y > parentModel.y - 2)
-                && (newV3.z < parentModel.z + 2) && (newV3.z > parentModel.z - 10)) {
-            return true;
-        }
-
-        for (Vector3 v : collisionSet) {
-            //if the coordinates are within a range of any exisiting coordinates
-            if (((newV3.x < v.x + 2 && newV3.x > v.x - 2)
-                    && (newV3.y < v.y + 3 && newV3.y > v.y - 3))) {
-                return true;
-            } else {
-                collisionSet.add(newV3);
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private Vector3 getRandomCoordinates() {
-        return new Vector3(getRandom(5, -5),//x
-                getRandom(1, -2),//y
-                getRandom(-2, -10));//z
-    }
-
-    //instantiates a lottie view
-    private LottieAnimationView getSparklingAnimationView() {
-        LottieAnimationView lav = new LottieAnimationView(getContext());
-        lav.setVisibility(View.VISIBLE);
-        lav.loop(false);
-        lav.setAnimation("explosionA.json");
-        lav.setScale(1);
-        lav.setSpeed(.8f);
-        return lav;
-    }
-
-    private LottieAnimationView getWarningAnimationView() {
-        LottieAnimationView lav = new LottieAnimationView(getContext());
-        lav.setVisibility(View.VISIBLE);
-        lav.loop(false);
-        lav.setAnimation("error.json");
-        lav.setScale(1);
-        lav.setSpeed(.8f);
-        return lav;
-    }
-
-    private LottieAnimationView getTapAnimationView() {
-        LottieAnimationView lav = new LottieAnimationView(getContext());
-        lav.setVisibility(View.VISIBLE);
-        lav.loop(true);
-        lav.setAnimation("tap.json");
-        lav.setScale(1);
-        lav.setSpeed(.8f);
-        return lav;
-    }
-
-    //adds a lottie view to the corresposnding x and y coordinates
-    private void addAnimationViewOnTopOfLetter(LottieAnimationView lav, int x, int y) {
-        lav.setX(x);
-        lav.setY(y);
-        f.addView(lav, 300, 300);
-        lav.playAnimation();
-        lav.addAnimatorListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                f.removeView(lav);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-            }
-        });
-    }
-
-    public void addTapAnimationToScreen(LottieAnimationView lavTap) {
-        int width = getActivity().getWindow().getDecorView().getWidth();
-        int height = getActivity().getWindow().getDecorView().getHeight();
-        lavTap.setX(width / 2 - 50);
-        lavTap.setY(height / 2 - 50);
-        f.addView(lavTap, 500, 500);
-        lavTap.playAnimation();
-    }
-
     private void addLetterToWordContainer(String letter) {
         Typeface ballonTF = ResourcesCompat.getFont(getActivity(), R.font.balloon);
         TextView t = new TextView(getActivity());
@@ -609,9 +511,9 @@ public class ARHostFragmentX extends DaggerFragment {
     public void onDestroy() {
         super.onDestroy();
         textToSpeech.shutdown();
-//        pronunciationUtil
-        playBalloonPop.reset();
-        playBalloonPop.release();
+        pronunciationUtil = null;
+//        playBalloonPop.reset();
+//        playBalloonPop.release();
     }
 
     public String eraseLastLetter(String spelledOutWord) {

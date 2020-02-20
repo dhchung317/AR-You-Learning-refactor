@@ -2,6 +2,7 @@ package com.capstone.aryoulearning.ui.main.list;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.capstone.aryoulearning.ui.main.MainViewModel;
 import com.capstone.aryoulearning.ui.main.list.rv.ListAdapter;
 import com.capstone.aryoulearning.viewmodel.ViewModelProviderFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -32,16 +34,27 @@ public class ListFragment extends DaggerFragment {
     private MainViewModel mainViewModel;
     private RecyclerView recyclerView;
 
-    @Inject
-    ViewModelProviderFactory viewModelProviderFactory;
+    private ViewModelProviderFactory viewModelProviderFactory;
+
+    private ListAdapter listAdapter;
 
     @Inject
-    ListAdapter listAdapter;
+    public ListFragment(ViewModelProviderFactory viewModelProviderFactory, ListAdapter listAdapter) {
+        this.viewModelProviderFactory = viewModelProviderFactory;
+        this.listAdapter = listAdapter;
+    }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        Log.d(TAG, "onAttach: on attach ran");
         AndroidSupportInjection.inject(this);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d(TAG, "onAttach: on create ran");
     }
 
     @Nullable
@@ -52,17 +65,16 @@ public class ListFragment extends DaggerFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "onAttach: on viewcreated ran");
+
         recyclerView = view.findViewById(R.id.category_rv);
-        mainViewModel = ViewModelProviders.of(this, viewModelProviderFactory).get(MainViewModel.class);
+        mainViewModel = ViewModelProviders.of(getActivity(), viewModelProviderFactory).get(MainViewModel.class);
         mainViewModel.loadCategories();
         initRecyclerView();
-        mainViewModel.getCatLiveData().observe(getViewLifecycleOwner(), new Observer<List<Category>>() {
-            @Override
-            public void onChanged(List<Category> categories) {
-                listAdapter.setLists(categories);
-            }
-        });
 
+        mainViewModel.getCatLiveData().observe(getViewLifecycleOwner(), categories ->  {
+                listAdapter.setLists(categories);
+        });
     }
 
     private void initRecyclerView() {
