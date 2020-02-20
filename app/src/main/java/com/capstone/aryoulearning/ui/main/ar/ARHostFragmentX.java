@@ -83,7 +83,7 @@ public class ARHostFragmentX extends DaggerFragment {
     @Inject
     ViewModelProviderFactory viewModelProviderFactory;
 
-//    private MainViewModel mainViewModel;
+    //    private MainViewModel mainViewModel;
     private ArViewModel arViewModel;
 
     private static final int RC_PERMISSIONS = 0x123;
@@ -190,62 +190,33 @@ public class ARHostFragmentX extends DaggerFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-//        mainViewModel = ViewModelProviders.of(this, viewModelProviderFactory).get(MainViewModel.class);
+        f = view.findViewById(R.id.frame_layout);
         arViewModel = ViewModelProviders.of(this, viewModelProviderFactory).get(ArViewModel.class);
-
         arViewModel.loadModels();
 
-        arViewModel.getModelLiveData().observe(getViewLifecycleOwner(), new Observer<List<Model>>() {
-            @Override
-            public void onChanged(List<Model> models) {
-                categoryList = models;
-                for (int i = 0; i < models.size(); i++) {
-                    Log.d("ar x fragemnt", "onChanged: " + models.get(i).getName());
-                }
-
-                arViewModel.setListMapsOfFutureModels(models);
-            }
+        arViewModel.getModelLiveData().observe(getViewLifecycleOwner(), models -> {
+            categoryList = models;
+            arViewModel.setListMapsOfFutureModels(models);
         });
 
-        arViewModel.getFutureModelMapList().observe(getViewLifecycleOwner(), new Observer<List<HashMap<String, CompletableFuture<ModelRenderable>>>>() {
-            @Override
-            public void onChanged(List<HashMap<String, CompletableFuture<ModelRenderable>>> hashMaps) {
-                arViewModel.setModelRenderables(hashMaps);
-                arViewModel.setMapOfFutureLetters(hashMaps);
-                Log.d("arx", "onChanged: " + hashMaps.size());
-
-            }
+        arViewModel.getFutureModelMapList().observe(getViewLifecycleOwner(), hashMaps -> {
+            arViewModel.setModelRenderables(hashMaps);
+            arViewModel.setMapOfFutureLetters(hashMaps);
         });
 
-        arViewModel.getFutureLetterMap().observe(getViewLifecycleOwner(), new Observer<HashMap<String, CompletableFuture<ModelRenderable>>>() {
-            @Override
-            public void onChanged(HashMap<String, CompletableFuture<ModelRenderable>> stringCompletableFutureHashMap) {
-                    arViewModel.setLetterRenderables(stringCompletableFutureHashMap);
-                Log.d("arx", "onChanged: " + stringCompletableFutureHashMap.size());
-            }
+        arViewModel.getFutureLetterMap().observe(getViewLifecycleOwner(), map -> {
+            arViewModel.setLetterRenderables(map);
         });
 
-        arViewModel.getModelMapList().observe(getViewLifecycleOwner(), new Observer<List<HashMap<String, ModelRenderable>>>() {
-            @Override
-            public void onChanged(List<HashMap<String, ModelRenderable>> hashMaps) {
-                Log.d("arx", "onChanged: " + hashMaps.size());
-                modelMapList = hashMaps;
-                hasFinishedLoadingModels = true;
-            }
+        arViewModel.getModelMapList().observe(getViewLifecycleOwner(), hashMaps -> {
+            modelMapList = hashMaps;
+            hasFinishedLoadingModels = true;
         });
 
-        arViewModel.getLetterMap().observe(getViewLifecycleOwner(), new Observer<HashMap<String, ModelRenderable>>() {
-
-            @Override
-            public void onChanged(HashMap<String, ModelRenderable> returnMap) {
-                Log.d("arx", "onChanged: " + returnMap.size());
-                letterMap = returnMap;
-                hasFinishedLoadingLetters = true;
-            }
+        arViewModel.getLetterMap().observe(getViewLifecycleOwner(), returnMap -> {
+            letterMap = returnMap;
+            hasFinishedLoadingLetters = true;
         });
-
-
-        f = view.findViewById(R.id.frame_layout);
 
         wordCardView = view.findViewById(R.id.card_wordContainer);
         wordContainer = view.findViewById(R.id.word_container);
@@ -398,140 +369,139 @@ public class ARHostFragmentX extends DaggerFragment {
     }
 
 
-    private Node createGame(String name, ModelRenderable model) {
+//    private Node createGame(String name, ModelRenderable model) {
+//
+//        base = new Node();
+//
+//        Node mainModel = new Node();
+//        mainModel.setParent(base);
+//
+//        ObjectAnimator rotate = Animations.AR.createRotationAnimator();
+//        rotate.setTarget(mainModel);
+//        rotate.setDuration(7000);
+//        rotate.start();
+//
+////        for (Map.Entry<String, ModelRenderable> e : modelMap.entrySet()) {
+//
+//        mainModel.setRenderable(model);
+//
+//        mainModel.setLocalPosition(new Vector3(base.getLocalPosition().x,//x
+//                base.getLocalPosition().y,//y
+//                base.getLocalPosition().z));
+//        mainModel.setLookDirection(new Vector3(0, 0, 4));
+//        mainModel.setLocalScale(new Vector3(1.0f, 1.0f, 1.0f));
+//
+////            String randomWord = e.getKey() + "abcdefghijklmnopqrstuvwxyz";
+//        collisionSet.clear(); // should call this outside of this method as it is being called
+////            pronunciationUtil.textToSpeechAnnouncer(e.getKey(), pronunciationUtil.textToSpeech);
+//
+//        for (int i = 0; i < name.length(); i++) {
+//            createLetter(
+//                    Character.toString(name.charAt(i)),
+//                    name, base, model);
+//        }
+//
+//        currentWord = name;
+//
+//        return base;
+//    }
 
-        base = new Node();
-
-        Node mainModel = new Node();
-        mainModel.setParent(base);
-
-        ObjectAnimator rotate = Animations.AR.createRotationAnimator();
-        rotate.setTarget(mainModel);
-        rotate.setDuration(7000);
-        rotate.start();
-
-//        for (Map.Entry<String, ModelRenderable> e : modelMap.entrySet()) {
-
-        mainModel.setRenderable(model);
-
-        mainModel.setLocalPosition(new Vector3(base.getLocalPosition().x,//x
-                base.getLocalPosition().y,//y
-                base.getLocalPosition().z));
-        mainModel.setLookDirection(new Vector3(0, 0, 4));
-        mainModel.setLocalScale(new Vector3(1.0f, 1.0f, 1.0f));
-
-//            String randomWord = e.getKey() + "abcdefghijklmnopqrstuvwxyz";
-        collisionSet.clear(); // should call this outside of this method as it is being called
-//            pronunciationUtil.textToSpeechAnnouncer(e.getKey(), pronunciationUtil.textToSpeech);
-
-        for (int i = 0; i < name.length(); i++) {
-            createLetter(
-                    Character.toString(name.charAt(i)),
-                    name, base, model);
-        }
-
-        currentWord = name;
-
-        return base;
-    }
-
-    private void createLetter(String letter, String word,
-                              Node parent,
-                              ModelRenderable renderable) {
-
-        Session session = arFragment.getArSceneView().getSession();
-        float[] pos = {0,//x
-                0,//y
-                0};//z
-        float[] rotation = {0, 0, 0, 0};
-
-        Anchor anchor = null;
-
-        if (session != null) {
-
-            try {
-                session.resume();
-
-            } catch (CameraNotAvailableException e) {
-                e.printStackTrace();
-            }
-            anchor = session.createAnchor(new Pose(pos, rotation));
-        }
-
-        AnchorNode base = new AnchorNode(anchor);
-        arFragment.getArSceneView().getScene().addChild(base);
-        base.setParent(parent);
-        TransformableNode trNode = new TransformableNode(arFragment.getTransformationSystem());
-        // Create the planet and position it relative to the sun.
-        trNode.setParent(base);
-
-        trNode.setRenderable(renderable);
-//        trNode.setLocalScale(new Vector3(.1f,.1f,.1f));
-        Vector3 coordinates = getRandomCoordinates();
-
-        while (checkDoesLetterCollide(coordinates, parent.getLocalPosition())) {
-            coordinates = getRandomCoordinates();
-        }
-        trNode.setLocalPosition(coordinates);
-
-        trNode.setOnTapListener(new Node.OnTapListener() {
-            @Override
-            public void onTap(HitTestResult hitTestResult, MotionEvent motionEvent) {
-
-//                final MediaPlayer playBallonPop = MediaPlayer.create(getContext(), R.raw.balloon_pop);
-                playBalloonPop.start();
-                playBalloonPop.setOnCompletionListener(mp -> {
-                    playBalloonPop.pause();
-                });
-
-                //Make the letter disappear
-                base.getAnchor().detach();
-
-                Log.d("motioneventxy", motionEvent.getX() + " " + motionEvent.getY());
-
-                LottieAnimationView lav;
-
-                if (letter.equals(Character.toString(word.charAt(letters.length())))) {
-                    lav = getSparklingAnimationView();
-                } else {
-                    lav = getWarningAnimationView();
-                }
-
-                addAnimationViewOnTopOfLetter(lav,
-                        Math.round(motionEvent.getX() - 7),
-                        Math.round(motionEvent.getY() + 7));
-
-                //Keep track of the letter selected
-                letters += letter;
-
-                if (wordCardView.getVisibility() == View.INVISIBLE) {
-                    wordCardView.setVisibility(View.VISIBLE);
-                }
-
-                if (undo.getVisibility() == View.INVISIBLE) {
-                    undo.setVisibility(View.VISIBLE);
-                }
-
-                //Add letter to container to show to the user.
-                addLetterToWordContainer(letter);
-
-                //Pronunciation of the word.
-                textToSpeech.setSpeechRate(0.6f);
-                pronunciationUtil.textToSpeechAnnouncer(letter, textToSpeech);
-
-                //Compare concatenated letters to actual word
-                //method was extracted into a handler because i suspected the heavy workload was causing my many AR errors
-
-                if (letters.length() == word.length()) {
-                    Handler handler = new Handler();
-                    handler.post(() -> compareAnswer(letters, word));
-                }
-            }
-        });
-    }
+//    private void createLetter(String letter, String word,
+//                              Node parent,
+//                              ModelRenderable renderable) {
+//
+//        Session session = arFragment.getArSceneView().getSession();
+//        float[] pos = {0,//x
+//                0,//y
+//                0};//z
+//        float[] rotation = {0, 0, 0, 0};
+//
+//        Anchor anchor = null;
+//
+//        if (session != null) {
+//
+//            try {
+//                session.resume();
+//
+//            } catch (CameraNotAvailableException e) {
+//                e.printStackTrace();
+//            }
+//            anchor = session.createAnchor(new Pose(pos, rotation));
+//        }
+//
+//        AnchorNode base = new AnchorNode(anchor);
+//        arFragment.getArSceneView().getScene().addChild(base);
+//        base.setParent(parent);
+//        TransformableNode trNode = new TransformableNode(arFragment.getTransformationSystem());
+//        // Create the planet and position it relative to the sun.
+//        trNode.setParent(base);
+//
+//        trNode.setRenderable(renderable);
+////        trNode.setLocalScale(new Vector3(.1f,.1f,.1f));
+//        Vector3 coordinates = getRandomCoordinates();
+//
+//        while (checkDoesLetterCollide(coordinates, parent.getLocalPosition())) {
+//            coordinates = getRandomCoordinates();
+//        }
+//        trNode.setLocalPosition(coordinates);
+//
+//        trNode.setOnTapListener(new Node.OnTapListener() {
+//            @Override
+//            public void onTap(HitTestResult hitTestResult, MotionEvent motionEvent) {
+//
+////                final MediaPlayer playBallonPop = MediaPlayer.create(getContext(), R.raw.balloon_pop);
+//                playBalloonPop.start();
+//                playBalloonPop.setOnCompletionListener(mp -> {
+//                    playBalloonPop.pause();
+//                });
+//
+//                //Make the letter disappear
+//                base.getAnchor().detach();
+//
+//                Log.d("motioneventxy", motionEvent.getX() + " " + motionEvent.getY());
+//
+//                LottieAnimationView lav;
+//
+//                if (letter.equals(Character.toString(word.charAt(letters.length())))) {
+//                    lav = getSparklingAnimationView();
+//                } else {
+//                    lav = getWarningAnimationView();
+//                }
+//
+//                addAnimationViewOnTopOfLetter(lav,
+//                        Math.round(motionEvent.getX() - 7),
+//                        Math.round(motionEvent.getY() + 7));
+//
+//                //Keep track of the letter selected
+//                letters += letter;
+//
+//                if (wordCardView.getVisibility() == View.INVISIBLE) {
+//                    wordCardView.setVisibility(View.VISIBLE);
+//                }
+//
+//                if (undo.getVisibility() == View.INVISIBLE) {
+//                    undo.setVisibility(View.VISIBLE);
+//                }
+//
+//                //Add letter to container to show to the user.
+//                addLetterToWordContainer(letter);
+//
+//                //Pronunciation of the word.
+//                textToSpeech.setSpeechRate(0.6f);
+//                pronunciationUtil.textToSpeechAnnouncer(letter, textToSpeech);
+//
+//                //Compare concatenated letters to actual word
+//                //method was extracted into a handler because i suspected the heavy workload was causing my many AR errors
+//
+//                if (letters.length() == word.length()) {
+//                    Handler handler = new Handler();
+//                    handler.post(() -> compareAnswer(letters, word));
+//                }
+//            }
+//        });
+//    }
 
     private void setValidatorCardView(boolean isCorrect) {
-
 
         validatorWord.setText(currentWord);
         validatorWrongWord.setVisibility(View.INVISIBLE);
@@ -546,7 +516,6 @@ public class ARHostFragmentX extends DaggerFragment {
             validatorWrongWord.setVisibility(View.VISIBLE);
             validatorWrongPrompt.setVisibility(View.VISIBLE);
         }
-
     }
 
     private void compareAnswer(String letters, String word) {
@@ -626,8 +595,8 @@ public class ARHostFragmentX extends DaggerFragment {
                     Node game = ModelUtil.getGameAnchor(e.getValue());
                     mainAnchorNode.addChild(game);
 
-                    for (int i = 0; i < e.getKey().length(); i++){
-                        AnchorNode letter = ModelUtil.getLetter(game,letterMap.get(Character.toString(e.getKey().charAt(i))),arFragment);
+                    for (int i = 0; i < e.getKey().length(); i++) {
+                        AnchorNode letter = ModelUtil.getLetter(game, letterMap.get(Character.toString(e.getKey().charAt(i))), arFragment);
                         letter.getChildren().get(0).setOnTapListener(getNodeOnTapListener(letter));
                         Log.d("arx", "tryPlaceGame: " + letterMap.get(Character.toString(e.getKey().charAt(i))));
                         arFragment.getArSceneView().getScene().addChild(letter);
@@ -881,13 +850,13 @@ public class ARHostFragmentX extends DaggerFragment {
         }
     }
 
-    public void recreateErasedLetter(String letterToRecreate) {
-        if (!letterToRecreate.equals("")) {
-            createLetter(letterToRecreate, currentWord, base, letterMap.get(letterToRecreate));
-        }
-    }
+//    public void recreateErasedLetter(String letterToRecreate) {
+//        if (!letterToRecreate.equals("")) {
+//            createLetter(letterToRecreate, currentWord, base, letterMap.get(letterToRecreate));
+//        }
+//    }
 
-    private Node.OnTapListener getNodeOnTapListener(AnchorNode letter){
+    private Node.OnTapListener getNodeOnTapListener(AnchorNode letter) {
 
         return (hitTestResult, motionEvent) -> letter.getAnchor().detach();
     }
