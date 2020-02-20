@@ -6,10 +6,8 @@ import androidx.room.RoomDatabase;
 import com.capstone.aryoulearning.db.dao.CategoryDao;
 import com.capstone.aryoulearning.db.dao.CurrentCategoryDao;
 import com.capstone.aryoulearning.db.dao.ModelDao;
-import com.capstone.aryoulearning.db.dao.ModelInfoDao;
 import com.capstone.aryoulearning.db.model.Category;
 import com.capstone.aryoulearning.db.model.CurrentCategory;
-import com.capstone.aryoulearning.db.model.ModelInfo;
 import com.capstone.aryoulearning.model.Model;
 
 @Database(entities = {Model.class, Category.class, CurrentCategory.class}, version = 1, exportSchema = false)

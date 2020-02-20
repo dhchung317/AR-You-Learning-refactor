@@ -5,8 +5,6 @@ import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -15,8 +13,8 @@ public final class PronunciationUtil implements TextToSpeech.OnInitListener {
     public final TextToSpeech textToSpeech;
 
     @Inject
-    public PronunciationUtil(Context context){
-        this.textToSpeech = new TextToSpeech(context,this);
+    public PronunciationUtil(Context context) {
+        this.textToSpeech = new TextToSpeech(context, this);
     }
 
     public void textToSpeechAnnouncer(final TextView textView, final TextToSpeech textToSpeech) {
@@ -92,7 +90,6 @@ public final class PronunciationUtil implements TextToSpeech.OnInitListener {
                 return "zed";
         }
         return letter;
-
     }
 
     @Override
@@ -104,7 +101,5 @@ public final class PronunciationUtil implements TextToSpeech.OnInitListener {
             Log.e("TextToSpeechManager", "Initilization Failed!");
 
         }
-
     }
-
 }

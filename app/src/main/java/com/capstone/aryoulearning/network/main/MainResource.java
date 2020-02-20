@@ -3,8 +3,6 @@ package com.capstone.aryoulearning.network.main;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.bumptech.glide.load.engine.Resource;
-
 public class MainResource<T> {
 
 
@@ -17,12 +15,6 @@ public class MainResource<T> {
     @Nullable
     public final String message;
 
-
-//    public MainResource(@NonNull Status status) {
-//        this.status = status;
-//        this.data = null;
-//        this.message = null;
-//    }
     public MainResource(@NonNull Status status, @Nullable T data, @Nullable String message) {
         this.status = status;
         this.data = data;

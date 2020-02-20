@@ -1,4 +1,4 @@
-package com.capstone.aryoulearning.augmented.pointer;
+package com.capstone.aryoulearning.pointer;
 
 import android.annotation.SuppressLint;
 import android.graphics.Canvas;

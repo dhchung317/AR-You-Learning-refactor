@@ -1,4 +1,4 @@
-package com.capstone.aryoulearning.controller;
+package com.capstone.aryoulearning.ui.main.controller;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;

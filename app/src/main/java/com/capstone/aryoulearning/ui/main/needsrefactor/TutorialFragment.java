@@ -1,10 +1,10 @@
-package com.capstone.aryoulearning.view.fragment;
+package com.capstone.aryoulearning.ui.main.needsrefactor;
 
 
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -16,17 +16,15 @@ import android.widget.MediaController;
 import android.widget.VideoView;
 
 import com.capstone.aryoulearning.R;
-import com.capstone.aryoulearning.controller.NavListenerX;
 import com.capstone.aryoulearning.model.Model;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class TutorialFragment extends Fragment {
     public static final String MODEL_LIST = "MODEL_LIST";
     private Button backButton, playVideoButton, startGameButton;
-    private NavListenerX listener;
+//    private NavListenerX listener;
     private List<Model> modelList;
     private VideoView tutorialVideoView;
 
@@ -43,9 +41,9 @@ public class TutorialFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof NavListenerX) {
-            listener = (NavListenerX) context;
-        }
+//        if (context instanceof NavListenerX) {
+//            listener = (NavListenerX) context;
+//        }
     }
 
     @Override
@@ -72,27 +70,27 @@ public class TutorialFragment extends Fragment {
     }
 
     public void viewClickListeners(){
-        startGameButton.setOnClickListener(v -> {
-            if (isVideoViewPlaying()) {
-                tutorialVideoView.pause();
-            }
-            listener.moveToGameOrARFragment(modelList, true);
-        });
-        backButton.setOnClickListener(v -> {
-            if (isVideoViewPlaying()) {
-                tutorialVideoView.pause();
-            }
-            listener.backToHintFragment(modelList);
-        });
-        playVideoButton.setOnClickListener(v -> {
-            if(isVideoViewPlaying()){
-                tutorialVideoView.pause();
-                playVideoButton.setBackgroundResource(R.drawable.play_button_paused);
-            } else {
-                tutorialVideoView.start();
-                playVideoButton.setBackgroundResource(R.drawable.play_button_playing);
-            }
-        });
+//        startGameButton.setOnClickListener(v -> {
+//            if (isVideoViewPlaying()) {
+//                tutorialVideoView.pause();
+//            }
+//            listener.moveToGameOrARFragment(modelList, true);
+//        });
+//        backButton.setOnClickListener(v -> {
+//            if (isVideoViewPlaying()) {
+//                tutorialVideoView.pause();
+//            }
+//            listener.backToHintFragment(modelList);
+//        });
+//        playVideoButton.setOnClickListener(v -> {
+//            if(isVideoViewPlaying()){
+//                tutorialVideoView.pause();
+//                playVideoButton.setBackgroundResource(R.drawable.play_button_paused);
+//            } else {
+//                tutorialVideoView.start();
+//                playVideoButton.setBackgroundResource(R.drawable.play_button_playing);
+//            }
+//        });
     }
 
     private boolean isVideoViewPlaying() {

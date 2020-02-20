@@ -2,8 +2,6 @@ package com.capstone.aryoulearning.ui.main.hint.rv;
 
 import android.graphics.Color;
 import android.os.CountDownTimer;
-import android.speech.tts.TextToSpeech;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.capstone.aryoulearning.R;
 import com.capstone.aryoulearning.animation.Animations;
-import com.capstone.aryoulearning.db.model.ModelInfo;
-import com.capstone.aryoulearning.util.audio.PronunciationUtil;
 import com.capstone.aryoulearning.model.Model;
+import com.capstone.aryoulearning.util.audio.PronunciationUtil;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -69,7 +66,7 @@ public class HintAdapter extends RecyclerView.Adapter<HintAdapter.HintViewHolder
 
             itemView.setOnClickListener(v -> {
 
-                pronunciationUtil.textToSpeechAnnouncer(model.getName(), pronunciationUtil.textToSpeech );
+                pronunciationUtil.textToSpeechAnnouncer(model.getName(), pronunciationUtil.textToSpeech);
                 itemView.startAnimation(Animations.Normal.getVibrator(itemView));
                 textView.setTextColor(Color.LTGRAY);
                 CountDownTimer timer = new CountDownTimer(1000, 1000) {

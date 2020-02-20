@@ -2,7 +2,6 @@ package com.capstone.aryoulearning.ui.main.hint;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,22 +12,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.capstone.aryoulearning.MainActivityX;
 import com.capstone.aryoulearning.R;
 
 
-import com.capstone.aryoulearning.db.model.ModelInfo;
 import com.capstone.aryoulearning.model.Model;
-import com.capstone.aryoulearning.ui.main.MainActivity;
 import com.capstone.aryoulearning.ui.main.MainViewModel;
 import com.capstone.aryoulearning.ui.main.controller.NavListener;
 import com.capstone.aryoulearning.ui.main.hint.rv.HintAdapter;
-import com.capstone.aryoulearning.util.audio.PronunciationUtil;
 import com.capstone.aryoulearning.viewmodel.ViewModelProviderFactory;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 

@@ -3,8 +3,6 @@ package com.capstone.aryoulearning.viewmodel;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.capstone.aryoulearning.ui.main.ar.ArViewModel;
-
 import java.util.Map;
 
 import javax.inject.Inject;

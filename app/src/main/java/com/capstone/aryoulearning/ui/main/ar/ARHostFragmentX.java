@@ -11,7 +11,6 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
@@ -32,21 +31,17 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.capstone.aryoulearning.R;
 import com.capstone.aryoulearning.animation.Animations;
-import com.capstone.aryoulearning.controller.NavListenerX;
-import com.capstone.aryoulearning.db.model.ModelInfo;
 import com.capstone.aryoulearning.model.Model;
 import com.capstone.aryoulearning.ui.main.MainViewModel;
 import com.capstone.aryoulearning.ui.main.controller.NavListener;
 import com.capstone.aryoulearning.util.audio.PronunciationUtil;
-import com.capstone.aryoulearning.view.fragment.ResultsFragment;
+import com.capstone.aryoulearning.ui.main.needsrefactor.ResultsFragment;
 import com.capstone.aryoulearning.viewmodel.ViewModelProviderFactory;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Frame;
@@ -67,7 +62,6 @@ import com.google.ar.sceneform.ux.TransformableNode;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -613,17 +607,27 @@ public class ARHostFragmentX extends DaggerFragment {
                 if (trackable.getTrackingState() == TrackingState.TRACKING) {
                     mainAnchor = mainHit.createAnchor();
                 }
+
                 mainAnchorNode = new AnchorNode(mainAnchor);
                 mainAnchorNode.setParent(arFragment.getArSceneView().getScene());
 //                    Node gameSystem = createGame(modelMapList.get(0));
                 HashMap<String, ModelRenderable> g = modelMapList.get(0);
 
                 for (Map.Entry<String, ModelRenderable> e : g.entrySet()) {
-                    Node game = ModelUtil.anchorGame(e.getKey(), e.getValue());
+                    Node game = ModelUtil.getGameAnchor(e.getKey(), e.getValue());
                     mainAnchorNode.addChild(game);
+
+
+                    for (int i = 0; i < e.getKey().length(); i++){
+
+                        TransformableNode letter = ModelUtil.placeLetter(game,letterMap.get(Character.toString(e.getKey().charAt(i))),arFragment);
+                        arFragment.getArSceneView().getScene().addChild(letter);
+//                        letter.setParent(game);
+                        game.addChild(letter);
+
+                    }
+
                 }
-
-
                 return true;
             }
         }

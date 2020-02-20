@@ -1,8 +1,7 @@
-package com.capstone.aryoulearning.view.fragment;
+package com.capstone.aryoulearning.ui.main.needsrefactor;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
 import androidx.annotation.NonNull;
@@ -15,7 +14,6 @@ import android.view.ViewGroup;
 
 import com.capstone.aryoulearning.R;
 import com.capstone.aryoulearning.util.audio.PronunciationUtil;
-import com.capstone.aryoulearning.controller.NavListenerX;
 import com.capstone.aryoulearning.model.Model;
 
 import java.util.ArrayList;
@@ -26,7 +24,7 @@ public class ReplayFragment extends Fragment {
 
     private static final String MODEL_LIST = "MODEL_LIST";
     private static final String PREVIOUS_GAME_STATUS = "GAME_STATUS";
-    private NavListenerX listener;
+//    private NavListenerX listener;
 
     private CardView resultsButtonCard, homeButtonCard, playAgainButtonCard;
 
@@ -69,9 +67,9 @@ public class ReplayFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof NavListenerX) {
-            listener = (NavListenerX) context;
-        }
+//        if (context instanceof NavListenerX) {
+//            listener = (NavListenerX) context;
+//        }
 //        pronunciationUtil = new PronunciationUtil();
     }
 
@@ -91,20 +89,20 @@ public class ReplayFragment extends Fragment {
     }
 
     public void viewClickListeners(){
-        resultsButtonCard.setOnClickListener(v -> {
-            pronunciationUtil.textToSpeechAnnouncer("Showing progress", textToSpeech);
-            listener.moveToResultsFragment(modelList);
-        });
-        homeButtonCard.setOnClickListener(v -> {
-            pronunciationUtil.textToSpeechAnnouncer("Lets go home", textToSpeech);
-//            listener.moveToListFragment(MainActivityX.getAnimalModelList(),
-//                    MainActivityX.getCategoryList(),
-//                    MainActivityX.getBackgroundList());
-        });
-        playAgainButtonCard.setOnClickListener(v -> {
-            pronunciationUtil.textToSpeechAnnouncer("Lets play again!", textToSpeech);
-            listener.moveToGameOrARFragment(modelList,previousGameTypeIsAR);
-        });
+//        resultsButtonCard.setOnClickListener(v -> {
+//            pronunciationUtil.textToSpeechAnnouncer("Showing progress", textToSpeech);
+//            listener.moveToResultsFragment(modelList);
+//        });
+//        homeButtonCard.setOnClickListener(v -> {
+//            pronunciationUtil.textToSpeechAnnouncer("Lets go home", textToSpeech);
+////            listener.moveToListFragment(MainActivityX.getAnimalModelList(),
+////                    MainActivityX.getCategoryList(),
+////                    MainActivityX.getBackgroundList());
+//        });
+//        playAgainButtonCard.setOnClickListener(v -> {
+//            pronunciationUtil.textToSpeechAnnouncer("Lets play again!", textToSpeech);
+//            listener.moveToGameOrARFragment(modelList,previousGameTypeIsAR);
+//        });
     }
 
     @Override
@@ -112,7 +110,7 @@ public class ReplayFragment extends Fragment {
         super.onDetach();
         textToSpeech.shutdown();
         pronunciationUtil = null;
-        listener = null;
+//        listener = null;
     }
 
     @Override

@@ -30,9 +30,6 @@ public class MainRepository {
     }
 
     public Single<List<Model>> getModelsByCat(String cat) {
-//        final MutableLiveData<List<ModelInfo>> data = new MutableLiveData<>();
-//
-//        data.setValue(modelInfoDao.getModelInfoByCat(cat));
         return modelDao.getModelsByCat(cat);
     }
 
@@ -45,8 +42,6 @@ public class MainRepository {
     }
 
     Single<List<Category>> getAllCats() {
-//        Single<List<Category>> list = categoryDao.getAllCategories();
-
         return categoryDao.getAllCategories();
     }
 

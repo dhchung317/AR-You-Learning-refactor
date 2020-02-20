@@ -4,7 +4,6 @@ import android.app.Application;
 import android.net.Uri;
 import android.util.Log;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -23,9 +22,6 @@ import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -54,7 +50,7 @@ public class ArViewModel extends ViewModel {
 
     private List<Model> modelList;
 
-    private List<HashMap<String, CompletableFuture<ModelRenderable>>>futureModelMapList = new ArrayList<>();
+    private List<HashMap<String, CompletableFuture<ModelRenderable>>> futureModelMapList = new ArrayList<>();
     private HashMap<String, CompletableFuture<ModelRenderable>> futureLetterMap = new HashMap<>();
     private List<HashMap<String, ModelRenderable>> modelMapList = new ArrayList<>();
     private HashMap<String, ModelRenderable> letterMap = new HashMap<>();
@@ -168,6 +164,7 @@ public class ArViewModel extends ViewModel {
     public MutableLiveData<List<Model>> getModelLiveData() {
         return modelLiveData;
     }
+
     public MutableLiveData<String> getCurCatLiveData() {
         return curCatLiveData;
     }

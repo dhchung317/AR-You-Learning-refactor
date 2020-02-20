@@ -13,19 +13,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.capstone.aryoulearning.R;
-import com.capstone.aryoulearning.controller.NavListenerX;
 import com.capstone.aryoulearning.db.model.Category;
-import com.capstone.aryoulearning.model.Model;
-import com.capstone.aryoulearning.ui.main.MainActivity;
-import com.capstone.aryoulearning.ui.main.MainViewModel;
 import com.capstone.aryoulearning.ui.main.controller.NavListener;
-import com.capstone.aryoulearning.viewmodel.ViewModelProviderFactory;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.inject.Inject;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.CategoryViewHolder> {
 //    private List<List<Model>> categoryList;

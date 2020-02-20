@@ -15,23 +15,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.capstone.aryoulearning.R;
-import com.capstone.aryoulearning.controller.NavListenerX;
-import com.capstone.aryoulearning.db.model.ModelInfo;
 import com.capstone.aryoulearning.model.Model;
 import com.capstone.aryoulearning.ui.main.MainViewModel;
 import com.capstone.aryoulearning.ui.main.controller.NavListener;
 import com.capstone.aryoulearning.util.audio.PronunciationUtil;
 import com.capstone.aryoulearning.viewmodel.ViewModelProviderFactory;
-import com.google.ar.core.Frame;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,22 +97,17 @@ public class ArHostFragment extends DaggerFragment {
                 mainViewModel.loadModelsByCat(s);
             }
         });
-//        mainViewModel.getModelInfoLiveData().observe(getViewLifecycleOwner(), new Observer<List<ModelInfo>>() {
-//            @Override
-//            public void onChanged(List<ModelInfo> modelInfos) {
-//                mainViewModel.convertModelInfoToModels(modelInfos);
-//            }
-//        });
+
         mainViewModel.getModelLiveData().observe(getViewLifecycleOwner(), new Observer<List<Model>>() {
             @Override
             public void onChanged(List<Model> models) {
                 modelList = models;
 
-                setListMapsOfFutureModels(modelList);
-                setMapOfFutureLetters(futureModelMapList);
-
-                setModelRenderables(futureModelMapList);
-                setLetterRenderables(futureLetterMap);
+//                setListMapsOfFutureModels(modelList);
+//                setMapOfFutureLetters(futureModelMapList);
+//
+//                setModelRenderables(futureModelMapList);
+//                setLetterRenderables(futureLetterMap);
 
                 futureLetterMap = arViewModel.getFutureLetterMap();
                 futureModelMapList = arViewModel.getFutureModelMapList();
@@ -145,7 +135,7 @@ public class ArHostFragment extends DaggerFragment {
     }
 
 
-        @Override
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
