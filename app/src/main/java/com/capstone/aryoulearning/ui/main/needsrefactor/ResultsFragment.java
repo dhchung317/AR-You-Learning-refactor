@@ -112,7 +112,7 @@ public class ResultsFragment extends Fragment {
 
     public void setViews(){
         displayRatingBarAttempts();
-        categoryTextView.setText(MainActivityX.currentCategory);
+//        categoryTextView.setText(MainActivityX.currentCategory);
         shareFAB.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.share_button_color)));
         backFABClick();
         shareFABClick();

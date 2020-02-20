@@ -20,15 +20,12 @@ import java.util.Set;
 
 public class ModelUtil {
 
-    private Random r = new Random();
+    private static Random r = new Random();
     private static Set<Vector3> collisionSet = new HashSet<>();
 
-//    ObjectAnimator rotate = Animations.AR.createRotationAnimator();
-//        rotate.setTarget(mainModel);
-//        rotate.setDuration(7000);
-//        rotate.start();
 
-    static Node anchorGame(String name, ModelRenderable model){
+
+    static Node getGameAnchor(String name, ModelRenderable model){
         Node base = new Node();
         Node mainModel = new Node();
         mainModel.setParent(base);
@@ -47,6 +44,11 @@ public class ModelUtil {
 //                    name, base, model);
 //        }
 
+        ObjectAnimator rotate = Animations.AR.createRotationAnimator();
+        rotate.setTarget(mainModel);
+        rotate.setDuration(7000);
+        rotate.start();
+
         return base;
 //        collisionSet.clear(); // should call this outside of this method as it is being called
 
@@ -60,7 +62,7 @@ public class ModelUtil {
 
     }
 
-    static void placeLetter(String letter, Node parent,ModelRenderable renderable, ArFragment arFragment){
+    static TransformableNode placeLetter(Node parent,ModelRenderable renderable, ArFragment arFragment){
 
         float[] pos = {0,//x
                 0,//y
@@ -83,26 +85,25 @@ public class ModelUtil {
         }
 
         AnchorNode base = new AnchorNode(anchor);
-
-        arFragment.getArSceneView().getScene().addChild(base);
-        base.setParent(parent);
         TransformableNode trNode = new TransformableNode(arFragment.getTransformationSystem());
-        trNode.setParent(base);
         trNode.setRenderable(renderable);
+        trNode.setParent(base);
 
-//        Vector3 coordinates = getRandomCoordinates();
-//
-//        while (checkDoesLetterCollide(coordinates, parent.getLocalPosition())) {
-//            coordinates = getRandomCoordinates();
-//        }
-//
-//        trNode.setLocalPosition(coordinates);
 
+        Vector3 coordinates = getRandomCoordinates();
+
+        while (checkDoesLetterCollide(coordinates, parent.getLocalPosition())) {
+            coordinates = getRandomCoordinates();
+        }
+
+        trNode.setLocalPosition(coordinates);
+
+        return trNode;
     }
 
-//    private static int getRandom(int max, int min) {
-//        return r.nextInt((max - min)) + min;
-//    }
+    private static int getRandom(int max, int min) {
+        return r.nextInt((max - min)) + min;
+    }
 
     private static boolean checkDoesLetterCollide(Vector3 newV3, Vector3 parentModel) {
         if (collisionSet.isEmpty()) {
@@ -129,11 +130,11 @@ public class ModelUtil {
         return true;
     }
 
-//    private static Vector3 getRandomCoordinates() {
-//        return new Vector3(getRandom(5, -5),//x
-//                getRandom(1, -2),//y
-//                getRandom(-2, -10));//z
-//    }
+    private static Vector3 getRandomCoordinates() {
+        return new Vector3(getRandom(5, -5),//x
+                getRandom(1, -2),//y
+                getRandom(-2, -10));//z
+    }
 
 //    private void createLetter(String letter, String word,
 //                              Node parent,

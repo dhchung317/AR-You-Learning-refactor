@@ -607,17 +607,27 @@ public class ARHostFragmentX extends DaggerFragment {
                 if (trackable.getTrackingState() == TrackingState.TRACKING) {
                     mainAnchor = mainHit.createAnchor();
                 }
+
                 mainAnchorNode = new AnchorNode(mainAnchor);
                 mainAnchorNode.setParent(arFragment.getArSceneView().getScene());
 //                    Node gameSystem = createGame(modelMapList.get(0));
                 HashMap<String, ModelRenderable> g = modelMapList.get(0);
 
                 for (Map.Entry<String, ModelRenderable> e : g.entrySet()) {
-                    Node game = ModelUtil.anchorGame(e.getKey(), e.getValue());
+                    Node game = ModelUtil.getGameAnchor(e.getKey(), e.getValue());
                     mainAnchorNode.addChild(game);
+
+
+                    for (int i = 0; i < e.getKey().length(); i++){
+
+                        TransformableNode letter = ModelUtil.placeLetter(game,letterMap.get(Character.toString(e.getKey().charAt(i))),arFragment);
+                        arFragment.getArSceneView().getScene().addChild(letter);
+//                        letter.setParent(game);
+                        game.addChild(letter);
+
+                    }
+
                 }
-
-
                 return true;
             }
         }
