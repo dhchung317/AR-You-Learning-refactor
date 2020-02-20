@@ -109,10 +109,10 @@ public class ArHostFragment extends DaggerFragment {
 //                setModelRenderables(futureModelMapList);
 //                setLetterRenderables(futureLetterMap);
 
-                futureLetterMap = arViewModel.getFutureLetterMap();
-                futureModelMapList = arViewModel.getFutureModelMapList();
-                modelMapList = arViewModel.getModelMapList();
-                letterMap = arViewModel.getLetterMap();
+//                futureLetterMap = arViewModel.getFutureLetterMap();
+//                futureModelMapList = arViewModel.getFutureModelMapList();
+//                modelMapList = arViewModel.getModelMapList();
+//                letterMap = arViewModel.getLetterMap();
             }
         });
 

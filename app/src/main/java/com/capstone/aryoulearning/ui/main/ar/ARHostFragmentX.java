@@ -83,7 +83,7 @@ public class ARHostFragmentX extends DaggerFragment {
     @Inject
     ViewModelProviderFactory viewModelProviderFactory;
 
-    private MainViewModel mainViewModel;
+//    private MainViewModel mainViewModel;
     private ArViewModel arViewModel;
 
     private static final int RC_PERMISSIONS = 0x123;
@@ -154,15 +154,6 @@ public class ARHostFragmentX extends DaggerFragment {
     private MediaPlayer playBalloonPop;
     private boolean placedAnimation;
 
-//    public static ARHostFragmentX newInstance(List<Model> modelList) {
-//        ARHostFragmentX fragment = new ARHostFragmentX();
-//        Bundle args = new Bundle();
-//        args.putParcelableArrayList(MODEL_LIST, (ArrayList<? extends Parcelable>) modelList);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
-
-
     @Inject
     public ARHostFragmentX(PronunciationUtil pronunciationUtil) {
         this.pronunciationUtil = pronunciationUtil;
@@ -191,11 +182,6 @@ public class ARHostFragmentX extends DaggerFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        if (getArguments() != null) {
-//            categoryList = getArguments().getParcelableArrayList(MODEL_LIST);
-//            Collections.shuffle(categoryList);
-//        }
-
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         playBalloonPop = MediaPlayer.create(getContext(), R.raw.pop_effect);
@@ -204,36 +190,57 @@ public class ARHostFragmentX extends DaggerFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mainViewModel = ViewModelProviders.of(this, viewModelProviderFactory).get(MainViewModel.class);
+//        mainViewModel = ViewModelProviders.of(this, viewModelProviderFactory).get(MainViewModel.class);
         arViewModel = ViewModelProviders.of(this, viewModelProviderFactory).get(ArViewModel.class);
 
-        mainViewModel.loadCurrentCategoryName();
-        mainViewModel.getCurCatLiveData().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                Log.d("ar x view created", "onChanged: " + s);
-                mainViewModel.loadModelsByCat(s);
-            }
-        });
-//        mainViewModel.getModelLiveData().observe(getViewLifecycleOwner(), new Observer<List<ModelInfo>>() {
-//            @Override
-//            public void onChanged(List<ModelInfo> modelInfos) {
-//                Log.d("ar x view created", "onChanged: " + modelInfos.size());
-//                mainViewModel.convertModelInfoToModels(modelInfos);
-//            }
-//        });
-        mainViewModel.getModelLiveData().observe(getViewLifecycleOwner(), new Observer<List<Model>>() {
+        arViewModel.loadModels();
+
+        arViewModel.getModelLiveData().observe(getViewLifecycleOwner(), new Observer<List<Model>>() {
             @Override
             public void onChanged(List<Model> models) {
                 categoryList = models;
                 for (int i = 0; i < models.size(); i++) {
                     Log.d("ar x fragemnt", "onChanged: " + models.get(i).getName());
                 }
-                setListMapsOfFutureModels(categoryList);
-                setMapOfFutureLetters(futureModelMapList);
 
-                setModelRenderables(futureModelMapList);
-                setLetterRenderables(futureLetterMap);
+                arViewModel.setListMapsOfFutureModels(models);
+            }
+        });
+
+        arViewModel.getFutureModelMapList().observe(getViewLifecycleOwner(), new Observer<List<HashMap<String, CompletableFuture<ModelRenderable>>>>() {
+            @Override
+            public void onChanged(List<HashMap<String, CompletableFuture<ModelRenderable>>> hashMaps) {
+                arViewModel.setModelRenderables(hashMaps);
+                arViewModel.setMapOfFutureLetters(hashMaps);
+                Log.d("arx", "onChanged: " + hashMaps.size());
+
+            }
+        });
+
+        arViewModel.getFutureLetterMap().observe(getViewLifecycleOwner(), new Observer<HashMap<String, CompletableFuture<ModelRenderable>>>() {
+            @Override
+            public void onChanged(HashMap<String, CompletableFuture<ModelRenderable>> stringCompletableFutureHashMap) {
+                    arViewModel.setLetterRenderables(stringCompletableFutureHashMap);
+                Log.d("arx", "onChanged: " + stringCompletableFutureHashMap.size());
+            }
+        });
+
+        arViewModel.getModelMapList().observe(getViewLifecycleOwner(), new Observer<List<HashMap<String, ModelRenderable>>>() {
+            @Override
+            public void onChanged(List<HashMap<String, ModelRenderable>> hashMaps) {
+                Log.d("arx", "onChanged: " + hashMaps.size());
+                modelMapList = hashMaps;
+                hasFinishedLoadingModels = true;
+            }
+        });
+
+        arViewModel.getLetterMap().observe(getViewLifecycleOwner(), new Observer<HashMap<String, ModelRenderable>>() {
+
+            @Override
+            public void onChanged(HashMap<String, ModelRenderable> returnMap) {
+                Log.d("arx", "onChanged: " + returnMap.size());
+                letterMap = returnMap;
+                hasFinishedLoadingLetters = true;
             }
         });
 
@@ -611,30 +618,25 @@ public class ARHostFragmentX extends DaggerFragment {
                 mainAnchorNode = new AnchorNode(mainAnchor);
                 mainAnchorNode.setParent(arFragment.getArSceneView().getScene());
 //                    Node gameSystem = createGame(modelMapList.get(0));
-                HashMap<String, ModelRenderable> g = modelMapList.get(0);
 
-                for (Map.Entry<String, ModelRenderable> e : g.entrySet()) {
+                HashMap<String, ModelRenderable> mainModel = modelMapList.get(0);
+                Log.d("arx", "tryPlaceGame: " + modelMapList.get(0).keySet());
+
+                for (Map.Entry<String, ModelRenderable> e : mainModel.entrySet()) {
                     Node game = ModelUtil.getGameAnchor(e.getValue());
                     mainAnchorNode.addChild(game);
 
-
                     for (int i = 0; i < e.getKey().length(); i++){
-
                         AnchorNode letter = ModelUtil.getLetter(game,letterMap.get(Character.toString(e.getKey().charAt(i))),arFragment);
                         letter.getChildren().get(0).setOnTapListener(getNodeOnTapListener(letter));
-
+                        Log.d("arx", "tryPlaceGame: " + letterMap.get(Character.toString(e.getKey().charAt(i))));
                         arFragment.getArSceneView().getScene().addChild(letter);
-//                        letter.setParent(game);
-
                         game.addChild(letter);
-
                     }
-
                 }
                 return true;
             }
         }
-
         return false;
     }
 
