@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -31,34 +30,28 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.capstone.aryoulearning.R;
 import com.capstone.aryoulearning.animation.Animations;
 import com.capstone.aryoulearning.model.Model;
-import com.capstone.aryoulearning.ui.main.MainViewModel;
 import com.capstone.aryoulearning.ui.main.controller.NavListener;
-import com.capstone.aryoulearning.util.audio.PronunciationUtil;
 import com.capstone.aryoulearning.ui.main.needsrefactor.ResultsFragment;
+import com.capstone.aryoulearning.util.audio.PronunciationUtil;
 import com.capstone.aryoulearning.viewmodel.ViewModelProviderFactory;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Frame;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
-import com.google.ar.core.Pose;
-import com.google.ar.core.Session;
 import com.google.ar.core.Trackable;
 import com.google.ar.core.TrackingState;
-import com.google.ar.core.exceptions.CameraNotAvailableException;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
-import com.google.ar.sceneform.ux.TransformableNode;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -69,7 +62,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
@@ -77,82 +69,73 @@ import dagger.android.support.AndroidSupportInjection;
 import dagger.android.support.DaggerFragment;
 
 public class ARHostFragmentX extends DaggerFragment {
-    //
-    private final PronunciationUtil pronunciationUtil;
+    private static final int RC_PERMISSIONS = 0x123;
+    public static final String MODEL_LIST = "MODEL_LIST";
 
     @Inject
     ViewModelProviderFactory viewModelProviderFactory;
 
-    //    private MainViewModel mainViewModel;
     private ArViewModel arViewModel;
-
-    private static final int RC_PERMISSIONS = 0x123;
-    public static final String MODEL_LIST = "MODEL_LIST";
-    private NavListener listener;
-
-    private GestureDetector gestureDetector;
 
     private ArFragment arFragment;
 
-    FrameLayout f;
+    private NavListener listener;
+    private GestureDetector gestureDetector;
+    private final PronunciationUtil pronunciationUtil;
+    private MediaPlayer playBalloonPop;
+
+    private SharedPreferences prefs;
 
     private boolean hasFinishedLoadingModels = false;
     private boolean hasFinishedLoadingLetters = false;
     private boolean hasPlacedGame = false;
-    private Set<String> correctAnswerSet = new HashSet<>();
-    private SharedPreferences prefs;
+    private boolean placedAnimation;
 
-    private List<Model> categoryList = new ArrayList<>();
+    private FrameLayout f;
 
-    private List<HashMap<String, CompletableFuture<ModelRenderable>>> futureModelMapList = new ArrayList<>();
-    private HashMap<String, CompletableFuture<ModelRenderable>> futureLetterMap = new HashMap<>();
-
-    private List<HashMap<String, ModelRenderable>> modelMapList = new ArrayList<>();
-    private HashMap<String, ModelRenderable> letterMap = new HashMap<>();
-    private String letters = "";
-    private String currentWord = "";
-
-    private int roundCounter = 0;
-    private int roundLimit = 5;
-
-    private CardView wordCardView;
     private LinearLayout wordContainer;
-
-    private TextView wordValidator;
     private View wordValidatorLayout;
-    private ImageView validatorImage;
-    private ImageView validatorBackgroudImage;
+    private CardView wordCardView;
+    private CardView wordValidatorCv;
+    private TextView wordValidator;
     private TextView validatorWord;
     private TextView validatorWrongWord;
     private TextView validatorWrongPrompt;
+    private ImageView validatorImage;
+    private ImageView validatorBackgroudImage;
     private Button validatorOkButton;
-
-    private Set<Vector3> collisionSet = new HashSet<>();
-
-    private Random r = new Random();
-
-    private List<String> wrongAnswerList = new ArrayList<>();
-    private TextToSpeech textToSpeech;
-
-    private Anchor mainAnchor;
-    private AnchorNode mainAnchorNode;
-    private HitResult mainHit;
-
-    private ObjectAnimator fadeIn;
-    private ObjectAnimator fadeOut;
-
-    private Node base;
     private ImageButton undo;
+
+    private LottieAnimationView tapAnimation;
 
     private View exitMenu;
     private ImageButton exit;
     private Button exitYes;
     private Button exitNo;
 
-    private LottieAnimationView tapAnimation;
+    private ObjectAnimator fadeIn;
+    private ObjectAnimator fadeOut;
 
-    private MediaPlayer playBalloonPop;
-    private boolean placedAnimation;
+    private List<Model> categoryList = new ArrayList<>();
+    private List<HashMap<String, ModelRenderable>> modelMapList = new ArrayList<>();
+    private HashMap<String, ModelRenderable> letterMap = new HashMap<>();
+    private String letters = "";
+    private String currentWord = "";
+
+    private Set<String> correctAnswerSet = new HashSet<>();
+    private List<String> wrongAnswerList = new ArrayList<>();
+
+    private int roundCounter = 0;
+    private int roundLimit = 5;
+
+    private Random r = new Random();
+    private Set<Vector3> collisionSet = new HashSet<>();
+
+    private TextToSpeech textToSpeech;
+
+    private Anchor mainAnchor;
+    private AnchorNode mainAnchorNode;
+    private HitResult mainHit;
 
     @Inject
     public ARHostFragmentX(PronunciationUtil pronunciationUtil) {
@@ -183,8 +166,8 @@ public class ARHostFragmentX extends DaggerFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        playBalloonPop = MediaPlayer.create(getContext(), R.raw.pop_effect);
+//        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+//        playBalloonPop = MediaPlayer.create(getContext(), R.raw.pop_effect);
     }
 
     @Override
@@ -218,36 +201,100 @@ public class ARHostFragmentX extends DaggerFragment {
             hasFinishedLoadingLetters = true;
         });
 
+        setUpViews(view);
+
+        gestureDetector =
+                new GestureDetector(
+                        getActivity(),
+                        new GestureDetector.SimpleOnGestureListener() {
+                            @Override
+                            public boolean onSingleTapUp(MotionEvent e) {
+                                onSingleTap(e);
+                                return true;
+                            }
+
+                            @Override
+                            public boolean onDown(MotionEvent e) {
+                                return true;
+                            }
+                        });
+
+        arFragment.getArSceneView()
+                .getScene()
+                .setOnTouchListener(
+                        (HitTestResult hitTestResult, MotionEvent event) -> {
+                            // If the solar system hasn't been placed yet, detect a tap and then check to see if
+                            // the tap occurred on an ARCore plane to place the solar system.
+                            if (!hasPlacedGame) {
+                                return gestureDetector.onTouchEvent(event);
+                            }
+                            // Otherwise return false so that the touch event can propagate to the scene.
+                            return false;
+                        });
+
+        arFragment.getArSceneView()
+                .getScene()
+                .addOnUpdateListener(
+                        frameTime -> {
+                            Frame frame = arFragment.getArSceneView().getArFrame();
+
+                            if (frame == null) {
+                                return;
+                            }
+                            if (frame.getCamera().getTrackingState() != TrackingState.TRACKING) {
+                                return;
+                            }
+                            if (!hasPlacedGame) {
+                                for (Plane plane : frame.getUpdatedTrackables(Plane.class)) {
+                                    if (!placedAnimation && plane.getTrackingState() == TrackingState.TRACKING) {
+                                        placedAnimation = true;
+                                        tapAnimation = getTapAnimationView();
+                                        addTapAnimationToScreen(tapAnimation);
+                                    }
+                                }
+                            }
+                        });
+//         Lastly request CAMERA permission which is required by ARCore.
+        requestCameraPermission(getActivity(), RC_PERMISSIONS);
+    }
+
+    private void setUpViews(View view) {
+        initViews(view);
+        setListeners();
+        setAnimations();
+    }
+
+    private void initViews(View view) {
         wordCardView = view.findViewById(R.id.card_wordContainer);
         wordContainer = view.findViewById(R.id.word_container);
-
         wordValidatorLayout = getLayoutInflater().inflate(R.layout.validator_card, f, false);
-        CardView wordValidatorCv = wordValidatorLayout.findViewById(R.id.word_validator_cv);
+//        wordValidatorCv = wordValidatorLayout.findViewById(R.id.word_validator_cv);
         wordValidator = wordValidatorLayout.findViewById(R.id.word_validator);
-
         validatorImage = wordValidatorLayout.findViewById(R.id.validator_imageView);
         validatorBackgroudImage = wordValidatorLayout.findViewById(R.id.correct_star_imageView);
         validatorWord = wordValidatorLayout.findViewById(R.id.validator_word);
         validatorWrongPrompt = wordValidatorLayout.findViewById(R.id.validator_incorrect_prompt);
         validatorWrongWord = wordValidatorLayout.findViewById(R.id.validator_wrong_word);
         validatorOkButton = wordValidatorLayout.findViewById(R.id.button_validator_ok);
-
 //        wordValidatorCv.setVisibility(View.INVISIBLE);
-
         exitMenu = getLayoutInflater().inflate(R.layout.exit_menu_card, f, false);
         exit = view.findViewById(R.id.exit_imageButton);
         exitYes = exitMenu.findViewById(R.id.exit_button_yes);
         exitNo = exitMenu.findViewById(R.id.exit_button_no);
-
-        exit.setOnClickListener(v -> f.addView(exitMenu));
-//        exitYes.setOnClickListener(v -> listener.moveToListFragment(MainActivityX.getAnimalModelList(),
-//                MainActivityX.getCategoryList(),
-//                MainActivityX.getBackgroundList()));
-        exitNo.setOnClickListener(v -> f.removeView(exitMenu));
-
         undo = view.findViewById(R.id.button_undo);
-        undo.setOnClickListener(v -> recreateErasedLetter(eraseLastLetter(letters)));
+    }
 
+    private void setListeners() {
+        exit.setOnClickListener(v -> f.addView(exitMenu));
+        exitYes.setOnClickListener(v -> {
+                    listener.moveToListFragment();
+                }
+        );
+        exitNo.setOnClickListener(v -> f.removeView(exitMenu));
+        undo.setOnClickListener(v -> recreateErasedLetter(eraseLastLetter(letters)));
+    }
+
+    private void setAnimations() {
         fadeIn = Animations.Normal.setCardFadeInAnimator(wordValidatorCv);
         fadeIn.addListener(new Animator.AnimatorListener() {
 
@@ -258,9 +305,6 @@ public class ARHostFragmentX extends DaggerFragment {
 
             @Override
             public void onAnimationEnd(Animator animation) {
-
-//                wordValidatorCv.setVisibility(View.VISIBLE);
-
                 validatorOkButton.setOnClickListener(v -> {
                     fadeOut.setStartDelay(500);
                     fadeOut.start();
@@ -285,16 +329,8 @@ public class ARHostFragmentX extends DaggerFragment {
             @Override
             public void onAnimationEnd(Animator animation) {
                 f.removeView(wordValidatorLayout);
-
                 if (roundCounter < roundLimit && roundCounter < modelMapList.size()) {
-                    Handler handler = new Handler();
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            createNextGame(modelMapList.get(roundCounter));
-                        }
-                    });
-//                    createNextGame(modelMapList.get(roundCounter));
+                    createNextGame(modelMapList.get(roundCounter));
                 } else {
                     moveToReplayFragment();
                 }
@@ -308,198 +344,8 @@ public class ARHostFragmentX extends DaggerFragment {
             public void onAnimationRepeat(Animator animation) {
             }
         });
-
-        gestureDetector =
-                new GestureDetector(
-                        getActivity(),
-                        new GestureDetector.SimpleOnGestureListener() {
-                            @Override
-                            public boolean onSingleTapUp(MotionEvent e) {
-                                onSingleTap(e);
-                                return true;
-                            }
-
-                            @Override
-                            public boolean onDown(MotionEvent e) {
-                                return true;
-                            }
-                        });
-
-//        new GestureDetector(getActivity(), new GestureDetector.OnGestureListener() {
-//        })
-        arFragment.getArSceneView()
-                .getScene()
-                .setOnTouchListener(
-                        (HitTestResult hitTestResult, MotionEvent event) -> {
-                            // If the solar system hasn't been placed yet, detect a tap and then check to see if
-                            // the tap occurred on an ARCore plane to place the solar system.
-                            if (!hasPlacedGame) {
-                                return gestureDetector.onTouchEvent(event);
-                            }
-                            // Otherwise return false so that the touch event can propagate to the scene.
-                            return false;
-                        });
-
-        arFragment.getArSceneView()
-                .getScene()
-                .addOnUpdateListener(
-                        frameTime -> {
-
-                            Frame frame = arFragment.getArSceneView().getArFrame();
-
-                            if (frame == null) {
-                                return;
-                            }
-                            if (frame.getCamera().getTrackingState() != TrackingState.TRACKING) {
-                                return;
-                            }
-                            if (!hasPlacedGame) {
-                                for (Plane plane : frame.getUpdatedTrackables(Plane.class)) {
-                                    if (!placedAnimation && plane.getTrackingState() == TrackingState.TRACKING) {
-                                        placedAnimation = true;
-                                        tapAnimation = getTapAnimationView();
-                                        addTapAnimationToScreen(tapAnimation);
-                                    }
-                                }
-                            }
-
-                        });
-//         Lastly request CAMERA permission which is required by ARCore.
-        requestCameraPermission(getActivity(), RC_PERMISSIONS);
     }
 
-
-//    private Node createGame(String name, ModelRenderable model) {
-//
-//        base = new Node();
-//
-//        Node mainModel = new Node();
-//        mainModel.setParent(base);
-//
-//        ObjectAnimator rotate = Animations.AR.createRotationAnimator();
-//        rotate.setTarget(mainModel);
-//        rotate.setDuration(7000);
-//        rotate.start();
-//
-////        for (Map.Entry<String, ModelRenderable> e : modelMap.entrySet()) {
-//
-//        mainModel.setRenderable(model);
-//
-//        mainModel.setLocalPosition(new Vector3(base.getLocalPosition().x,//x
-//                base.getLocalPosition().y,//y
-//                base.getLocalPosition().z));
-//        mainModel.setLookDirection(new Vector3(0, 0, 4));
-//        mainModel.setLocalScale(new Vector3(1.0f, 1.0f, 1.0f));
-//
-////            String randomWord = e.getKey() + "abcdefghijklmnopqrstuvwxyz";
-//        collisionSet.clear(); // should call this outside of this method as it is being called
-////            pronunciationUtil.textToSpeechAnnouncer(e.getKey(), pronunciationUtil.textToSpeech);
-//
-//        for (int i = 0; i < name.length(); i++) {
-//            createLetter(
-//                    Character.toString(name.charAt(i)),
-//                    name, base, model);
-//        }
-//
-//        currentWord = name;
-//
-//        return base;
-//    }
-
-//    private void createLetter(String letter, String word,
-//                              Node parent,
-//                              ModelRenderable renderable) {
-//
-//        Session session = arFragment.getArSceneView().getSession();
-//        float[] pos = {0,//x
-//                0,//y
-//                0};//z
-//        float[] rotation = {0, 0, 0, 0};
-//
-//        Anchor anchor = null;
-//
-//        if (session != null) {
-//
-//            try {
-//                session.resume();
-//
-//            } catch (CameraNotAvailableException e) {
-//                e.printStackTrace();
-//            }
-//            anchor = session.createAnchor(new Pose(pos, rotation));
-//        }
-//
-//        AnchorNode base = new AnchorNode(anchor);
-//        arFragment.getArSceneView().getScene().addChild(base);
-//        base.setParent(parent);
-//        TransformableNode trNode = new TransformableNode(arFragment.getTransformationSystem());
-//        // Create the planet and position it relative to the sun.
-//        trNode.setParent(base);
-//
-//        trNode.setRenderable(renderable);
-////        trNode.setLocalScale(new Vector3(.1f,.1f,.1f));
-//        Vector3 coordinates = getRandomCoordinates();
-//
-//        while (checkDoesLetterCollide(coordinates, parent.getLocalPosition())) {
-//            coordinates = getRandomCoordinates();
-//        }
-//        trNode.setLocalPosition(coordinates);
-//
-//        trNode.setOnTapListener(new Node.OnTapListener() {
-//            @Override
-//            public void onTap(HitTestResult hitTestResult, MotionEvent motionEvent) {
-//
-////                final MediaPlayer playBallonPop = MediaPlayer.create(getContext(), R.raw.balloon_pop);
-//                playBalloonPop.start();
-//                playBalloonPop.setOnCompletionListener(mp -> {
-//                    playBalloonPop.pause();
-//                });
-//
-//                //Make the letter disappear
-//                base.getAnchor().detach();
-//
-//                Log.d("motioneventxy", motionEvent.getX() + " " + motionEvent.getY());
-//
-//                LottieAnimationView lav;
-//
-//                if (letter.equals(Character.toString(word.charAt(letters.length())))) {
-//                    lav = getSparklingAnimationView();
-//                } else {
-//                    lav = getWarningAnimationView();
-//                }
-//
-//                addAnimationViewOnTopOfLetter(lav,
-//                        Math.round(motionEvent.getX() - 7),
-//                        Math.round(motionEvent.getY() + 7));
-//
-//                //Keep track of the letter selected
-//                letters += letter;
-//
-//                if (wordCardView.getVisibility() == View.INVISIBLE) {
-//                    wordCardView.setVisibility(View.VISIBLE);
-//                }
-//
-//                if (undo.getVisibility() == View.INVISIBLE) {
-//                    undo.setVisibility(View.VISIBLE);
-//                }
-//
-//                //Add letter to container to show to the user.
-//                addLetterToWordContainer(letter);
-//
-//                //Pronunciation of the word.
-//                textToSpeech.setSpeechRate(0.6f);
-//                pronunciationUtil.textToSpeechAnnouncer(letter, textToSpeech);
-//
-//                //Compare concatenated letters to actual word
-//                //method was extracted into a handler because i suspected the heavy workload was causing my many AR errors
-//
-//                if (letters.length() == word.length()) {
-//                    Handler handler = new Handler();
-//                    handler.post(() -> compareAnswer(letters, word));
-//                }
-//            }
-//        });
-//    }
 
     private void setValidatorCardView(boolean isCorrect) {
 
@@ -632,77 +478,6 @@ public class ARHostFragmentX extends DaggerFragment {
         wordContainer.removeAllViews();
     }
 
-    private void setListMapsOfFutureModels(List<Model> modelList) {
-
-        for (int i = 0; i < modelList.size(); i++) {
-            HashMap<String, CompletableFuture<ModelRenderable>> futureMap = new HashMap();
-            futureMap.put(modelList.get(i).getName(),
-                    ModelRenderable.builder().
-                            setSource(getActivity(), Uri.parse(categoryList.get(i).getName() + ".sfb")).build());
-            futureModelMapList.add(futureMap);
-        }
-    }
-
-    private void setMapOfFutureLetters(List<HashMap<String, CompletableFuture<ModelRenderable>>> futureMapList) {
-        for (int i = 0; i < futureMapList.size(); i++) {
-            String modelName = futureMapList.get(i).keySet().toString();
-            for (int j = 0; j < modelName.length(); j++) {
-                futureLetterMap.put(Character.toString(modelName.charAt(j)), ModelRenderable.builder().
-                        setSource(getActivity(), Uri.parse(modelName.charAt(j) + ".sfb")).build());
-            }
-        }
-    }
-
-    private void setModelRenderables(List<HashMap<String, CompletableFuture<ModelRenderable>>> futureModelMapList) {
-
-        for (int i = 0; i < futureModelMapList.size(); i++) {
-
-            for (Map.Entry<String, CompletableFuture<ModelRenderable>> e : futureModelMapList.get(i).entrySet()) {
-
-                HashMap<String, ModelRenderable> modelMap = new HashMap<>();
-
-                CompletableFuture.allOf(e.getValue())
-                        .handle(
-                                (notUsed, throwable) -> {
-                                    // When you build a Renderable, Sceneform loads its resources in the background while
-                                    // returning a CompletableFuture. Call handle(), thenAccept(), or check isDone()
-                                    // before calling get().
-                                    if (throwable != null) {
-                                        return null;
-                                    }
-                                    try {
-                                        modelMap.put(e.getKey(), e.getValue().get());
-                                    } catch (InterruptedException | ExecutionException ex) {
-                                    }
-                                    return null;
-                                });
-                modelMapList.add(modelMap);
-            }
-        }
-        hasFinishedLoadingModels = true;
-    }
-
-    private void setLetterRenderables(HashMap<String, CompletableFuture<ModelRenderable>> futureLetterMap) {
-        for (Map.Entry<String, CompletableFuture<ModelRenderable>> e : futureLetterMap.entrySet()) {
-
-            CompletableFuture.allOf(e.getValue())
-                    .handle(
-                            (notUsed, throwable) -> {
-                                // When you build a Renderable, Sceneform loads its resources in the background while
-                                // returning a CompletableFuture. Call handle(), thenAccept(), or check isDone()
-                                // before calling get().
-                                if (throwable != null) {
-                                    return null;
-                                }
-                                try {
-                                    letterMap.put(e.getKey(), e.getValue().get());
-                                } catch (InterruptedException | ExecutionException ex) {
-                                }
-                                return null;
-                            });
-        }
-        hasFinishedLoadingLetters = true;
-    }
 
     private int getRandom(int max, int min) {
         return r.nextInt((max - min)) + min;
@@ -850,11 +625,11 @@ public class ARHostFragmentX extends DaggerFragment {
         }
     }
 
-//    public void recreateErasedLetter(String letterToRecreate) {
+    public void recreateErasedLetter(String letterToRecreate) {
 //        if (!letterToRecreate.equals("")) {
 //            createLetter(letterToRecreate, currentWord, base, letterMap.get(letterToRecreate));
 //        }
-//    }
+    }
 
     private Node.OnTapListener getNodeOnTapListener(AnchorNode letter) {
 
