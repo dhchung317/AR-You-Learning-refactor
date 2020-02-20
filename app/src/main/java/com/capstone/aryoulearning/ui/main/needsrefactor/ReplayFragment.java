@@ -1,8 +1,7 @@
-package com.capstone.aryoulearning.view.fragment;
+package com.capstone.aryoulearning.ui.main.needsrefactor;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
 import androidx.annotation.NonNull;
@@ -15,7 +14,6 @@ import android.view.ViewGroup;
 
 import com.capstone.aryoulearning.R;
 import com.capstone.aryoulearning.util.audio.PronunciationUtil;
-import com.capstone.aryoulearning.controller.NavListenerX;
 import com.capstone.aryoulearning.model.Model;
 
 import java.util.ArrayList;

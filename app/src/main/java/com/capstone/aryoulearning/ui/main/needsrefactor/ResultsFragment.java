@@ -1,4 +1,4 @@
-package com.capstone.aryoulearning.view.fragment;
+package com.capstone.aryoulearning.ui.main.needsrefactor;
 
 import android.Manifest;
 import android.content.ActivityNotFoundException;
@@ -10,7 +10,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Parcelable;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
@@ -31,13 +30,11 @@ import android.widget.Toast;
 
 import com.capstone.aryoulearning.R;
 import com.capstone.aryoulearning.util.audio.PronunciationUtil;
-import com.capstone.aryoulearning.controller.ResultsAdapter;
+import com.capstone.aryoulearning.ui.main.controller.ResultsAdapter;
 import com.capstone.aryoulearning.model.Model;
-import com.capstone.aryoulearning.MainActivityX;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
