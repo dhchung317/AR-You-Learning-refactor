@@ -9,15 +9,13 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.capstone.aryoulearning.R;
-
 import com.capstone.aryoulearning.model.Model;
 import com.capstone.aryoulearning.model.ModelResponse;
 import com.capstone.aryoulearning.network.main.MainResource;
-
 import com.capstone.aryoulearning.ui.main.ar.ARHostFragmentX;
-import com.capstone.aryoulearning.ui.main.list.ListFragment;
-import com.capstone.aryoulearning.ui.main.controller.*;
+import com.capstone.aryoulearning.ui.main.controller.NavListener;
 import com.capstone.aryoulearning.ui.main.hint.HintFragment;
+import com.capstone.aryoulearning.ui.main.list.ListFragment;
 import com.capstone.aryoulearning.util.audio.PronunciationUtil;
 import com.capstone.aryoulearning.viewmodel.ViewModelProviderFactory;
 
@@ -54,49 +52,39 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
         progressBar = findViewById(R.id.progress_bar);
         Log.d(TAG, "onCreate");
 
-//        viewModel = ViewModelProviders.of(this,providerFactory).get(MainViewModel.class);
-        viewModel = new ViewModelProvider(getViewModelStore(),providerFactory).get(MainViewModel.class);
+        viewModel = new ViewModelProvider(getViewModelStore(), providerFactory).get(MainViewModel.class);
         subscribeObservers();
-//        viewModel.convertStream();
     }
 
-    private void subscribeObservers(){
+    private void subscribeObservers() {
         Log.d(TAG, "onChanged: subscribe method call");
-//        viewModel.observeModelResponses().removeObservers(this);
         viewModel.observeModelResponses().observe(this, new Observer<MainResource<List<ModelResponse>>>() {
             @Override
             public void onChanged(MainResource<List<ModelResponse>> listResource) {
 
-                if(listResource != null){
-                    switch (listResource.status){
+                if (listResource != null) {
+                    switch (listResource.status) {
 
-                        case LOADING:{
+                        case LOADING: {
                             Log.d(TAG, "onChanged: loading");
                             showProgressBar(true);
                             break;
                         }
 
-                        case SUCCESS:{
+                        case SUCCESS: {
                             Log.d(TAG, "onChanged: success");
                             showProgressBar(false);
                             Log.d(TAG, "onChanged: " + listResource.data.size());
-
-
-
-//                            for (Model m:listResource.data.get(0).getList()) {
-//                                Log.d(TAG, "observeModelResponses: " + m.getName());
-//                            }
-//                            adapter.setPosts(listResource.data);
                             break;
                         }
 
-                        case ERROR:{
+                        case ERROR: {
                             showProgressBar(false);
-                            Log.e(TAG, "onChanged: error: " + listResource.message );
+                            Log.e(TAG, "onChanged: error: " + listResource.message);
                             break;
                         }
 
-                        case FINISHED:{
+                        case FINISHED: {
                             showProgressBar(false);
                             moveToListFragment();
                         }
@@ -106,11 +94,12 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
             }
         });
     }
-    private void showProgressBar(boolean isVisible){
 
-        if(isVisible){
+    private void showProgressBar(boolean isVisible) {
+
+        if (isVisible) {
             progressBar.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             progressBar.setVisibility(View.GONE);
         }
 
@@ -127,7 +116,6 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
 
     @Override
     public void moveToGameFragment() {
-
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, arHostFragmentX, "ar_fragment")

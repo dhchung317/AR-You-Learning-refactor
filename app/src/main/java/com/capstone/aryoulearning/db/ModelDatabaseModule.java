@@ -7,9 +7,6 @@ import androidx.room.Room;
 import com.capstone.aryoulearning.db.dao.CategoryDao;
 import com.capstone.aryoulearning.db.dao.CurrentCategoryDao;
 import com.capstone.aryoulearning.db.dao.ModelDao;
-import com.capstone.aryoulearning.db.dao.ModelInfoDao;
-
-import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -27,16 +24,6 @@ public class ModelDatabaseModule {
                 .allowMainThreadQueries()
                 .build();
     }
-
-//    fun provideTvMazeDatabase(context:Context): TvMazeDatabase {
-//        return Room.databaseBuilder(
-//                context,
-//                TvMazeDatabase::class.java, TvMazeDatabase.DATABASE_NAME
-//        )
-//            .fallbackToDestructiveMigration()
-//                .allowMainThreadQueries()
-//                .build()
-//    }
 
     @Provides
     static ModelDao provideModelDao(ModelDatabase modelDatabase) {

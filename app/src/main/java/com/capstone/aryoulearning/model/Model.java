@@ -23,13 +23,6 @@ public class Model {
     @Ignore
     private ArrayList<String> wrongAnswerSet;
 
-//    protected Model(Parcel in) {
-//        name = in.readString();
-//        image = in.readString();
-//        isCorrect = in.readByte() != 0;
-//        wrongAnswerSet = in.createStringArrayList();
-//    }
-
     public Model(String category, String name, String image) {
         this.category = category;
         this.name = name;
@@ -66,29 +59,4 @@ public class Model {
         this.wrongAnswerSet.addAll(wrongAnswerSetEntry);
     }
 
-//    public static final Creator<Model> CREATOR = new Creator<Model>() {
-//        @Override
-//        public Model createFromParcel(Parcel in) {
-//            return new Model(in);
-//        }
-//
-//        @Override
-//        public Model[] newArray(int size) {
-//            return new Model[size];
-//        }
-//    };
-//
-//
-//    @Override
-//    public int describeContents() {
-//        return 0;
-//    }
-//
-//    @Override
-//    public void writeToParcel(Parcel dest, int flags) {
-//        dest.writeString(name);
-//        dest.writeString(image);
-//        dest.writeByte((byte) (isCorrect ? 1 : 0));
-//        dest.writeStringList(wrongAnswerSet);
-//    }
 }

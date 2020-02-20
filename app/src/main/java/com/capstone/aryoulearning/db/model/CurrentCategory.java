@@ -19,7 +19,4 @@ public class CurrentCategory {
         return currentCategory;
     }
 
-    public void setCurrentCategory(@NonNull String currentCategory) {
-        this.currentCategory = currentCategory;
-    }
 }

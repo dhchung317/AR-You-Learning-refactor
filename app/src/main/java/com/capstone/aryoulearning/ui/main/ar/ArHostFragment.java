@@ -97,22 +97,17 @@ public class ArHostFragment extends DaggerFragment {
                 mainViewModel.loadModelsByCat(s);
             }
         });
-//        mainViewModel.getModelInfoLiveData().observe(getViewLifecycleOwner(), new Observer<List<ModelInfo>>() {
-//            @Override
-//            public void onChanged(List<ModelInfo> modelInfos) {
-//                mainViewModel.convertModelInfoToModels(modelInfos);
-//            }
-//        });
+
         mainViewModel.getModelLiveData().observe(getViewLifecycleOwner(), new Observer<List<Model>>() {
             @Override
             public void onChanged(List<Model> models) {
                 modelList = models;
 
-                setListMapsOfFutureModels(modelList);
-                setMapOfFutureLetters(futureModelMapList);
-
-                setModelRenderables(futureModelMapList);
-                setLetterRenderables(futureLetterMap);
+//                setListMapsOfFutureModels(modelList);
+//                setMapOfFutureLetters(futureModelMapList);
+//
+//                setModelRenderables(futureModelMapList);
+//                setLetterRenderables(futureLetterMap);
 
                 futureLetterMap = arViewModel.getFutureLetterMap();
                 futureModelMapList = arViewModel.getFutureModelMapList();
@@ -140,7 +135,7 @@ public class ArHostFragment extends DaggerFragment {
     }
 
 
-        @Override
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 

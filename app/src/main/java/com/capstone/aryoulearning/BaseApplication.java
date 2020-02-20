@@ -5,28 +5,20 @@ import android.app.Fragment;
 
 import androidx.multidex.MultiDexApplication;
 
-import com.capstone.aryoulearning.di.AppComponent;
 import com.capstone.aryoulearning.di.DaggerAppComponent;
 
 import javax.inject.Inject;
 
-import dagger.android.AndroidInjector;
-import dagger.android.DaggerApplication;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
 import dagger.android.HasFragmentInjector;
-import dagger.android.support.AndroidSupportInjection;
 
 public class BaseApplication extends MultiDexApplication implements HasActivityInjector, HasFragmentInjector {
 
-//    @Override
-//    protected AndroidInjector<? extends DaggerApplication> applicationInjector() {
-//        return DaggerAppComponent.builder().application(this).build();
-//    }
-
     @Inject
     DispatchingAndroidInjector<Activity> activityInjector;
-    @Inject DispatchingAndroidInjector<Fragment> fragmentInjector;
+    @Inject
+    DispatchingAndroidInjector<Fragment> fragmentInjector;
 
 
     @Override

@@ -24,10 +24,6 @@ public class Category {
         return image;
     }
 
-    public void setImage(String image) {
-        this.image = image;
-    }
-
     public Category(String name, String image) {
         this.name = name;
         this.image = image;
