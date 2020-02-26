@@ -40,6 +40,7 @@ import com.google.ar.core.TrackingState;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Node;
+import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.hyunki.aryoulearning2.R;
@@ -57,6 +58,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -127,11 +129,8 @@ public class ARHostFragmentX extends DaggerFragment {
     private int roundCounter = 0;
     private int roundLimit = 5;
 
-//    private Random r = new Random();
-//    private Set<Vector3> collisionSet = new HashSet<>();
-
     private TextToSpeech textToSpeech;
-
+    private Node base;
     private Anchor mainAnchor;
     private AnchorNode mainAnchorNode;
     private HitResult mainHit;
@@ -201,57 +200,9 @@ public class ARHostFragmentX extends DaggerFragment {
 
         setUpViews(view);
 
-        gestureDetector =
-                new GestureDetector(
-                        getActivity(),
-                        new GestureDetector.SimpleOnGestureListener() {
-                            @Override
-                            public boolean onSingleTapUp(MotionEvent e) {
-                                onSingleTap(e);
-                                return true;
-                            }
+        gestureDetector = getGestureDetector();
 
-                            @Override
-                            public boolean onDown(MotionEvent e) {
-                                return true;
-                            }
-                        });
-
-        arFragment.getArSceneView()
-                .getScene()
-                .setOnTouchListener(
-                        (HitTestResult hitTestResult, MotionEvent event) -> {
-                            // If the solar system hasn't been placed yet, detect a tap and then check to see if
-                            // the tap occurred on an ARCore plane to place the solar system.
-                            if (!hasPlacedGame) {
-                                return gestureDetector.onTouchEvent(event);
-                            }
-                            // Otherwise return false so that the touch event can propagate to the scene.
-                            return false;
-                        });
-
-        arFragment.getArSceneView()
-                .getScene()
-                .addOnUpdateListener(
-                        frameTime -> {
-                            Frame frame = arFragment.getArSceneView().getArFrame();
-
-                            if (frame == null) {
-                                return;
-                            }
-                            if (frame.getCamera().getTrackingState() != TrackingState.TRACKING) {
-                                return;
-                            }
-                            if (!hasPlacedGame) {
-                                for (Plane plane : frame.getUpdatedTrackables(Plane.class)) {
-                                    if (!placedAnimation && plane.getTrackingState() == TrackingState.TRACKING) {
-                                        placedAnimation = true;
-                                        tapAnimation = lottieHelper.getAnimationView(getContext(), LottieHelper.AnimationType.TAP);
-                                        lottieHelper.addTapAnimationToScreen(tapAnimation, getActivity(), f);
-                                    }
-                                }
-                            }
-                        });
+        setUpARScene(arFragment);
 //         Lastly request CAMERA permission which is required by ARCore.
         requestCameraPermission(getActivity(), RC_PERMISSIONS);
     }
@@ -290,6 +241,181 @@ public class ARHostFragmentX extends DaggerFragment {
         );
         exitNo.setOnClickListener(v -> f.removeView(exitMenu));
         undo.setOnClickListener(v -> recreateErasedLetter(eraseLastLetter(letters)));
+    }
+
+    private GestureDetector getGestureDetector() {
+        return new GestureDetector(
+                getActivity(),
+                new GestureDetector.SimpleOnGestureListener() {
+                    @Override
+                    public boolean onSingleTapUp(MotionEvent e) {
+                        onSingleTap(e);
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onDown(MotionEvent e) {
+                        return true;
+                    }
+                });
+    }
+
+    private void setUpARScene(ArFragment arFragment) {
+        Scene scene = arFragment.getArSceneView()
+                .getScene();
+        Frame frame = arFragment.getArSceneView().getArFrame();
+
+        setOnTouchListener(scene);
+        setAddOnUpdateListener(scene, frame);
+    }
+
+    private void setOnTouchListener(Scene scene) {
+        scene.setOnTouchListener(
+                (HitTestResult hitTestResult, MotionEvent event) -> {
+                    if (!hasPlacedGame) {
+                        return gestureDetector.onTouchEvent(event);
+                    }
+                    return false;
+                });
+    }
+
+    private void setAddOnUpdateListener(Scene scene, Frame frame) {
+        scene.addOnUpdateListener(
+                frameTime -> {
+
+                    if (frame == null) {
+                        return;
+                    }
+                    if (frame.getCamera().getTrackingState() != TrackingState.TRACKING) {
+                        return;
+                    }
+                    if (!hasPlacedGame) {
+                        for (Plane plane : frame.getUpdatedTrackables(Plane.class)) {
+                            if (!placedAnimation && plane.getTrackingState() == TrackingState.TRACKING) {
+                                placedAnimation = true;
+                                tapAnimation = lottieHelper.getAnimationView(getContext(), LottieHelper.AnimationType.TAP);
+                                lottieHelper.addTapAnimationToScreen(tapAnimation, getActivity(), f);
+                            }
+                        }
+                    }
+                });
+    }
+
+    public static void requestCameraPermission(Activity activity, int requestCode) {
+        ActivityCompat.requestPermissions(
+                activity, new String[]{Manifest.permission.CAMERA}, requestCode);
+    }
+
+    private void onSingleTap(MotionEvent tap) {
+        if (!hasFinishedLoadingModels || !hasFinishedLoadingLetters) {
+            // We can't do anything yet.
+            return;
+        }
+
+        Frame frame = arFragment.getArSceneView().getArFrame();
+        if (frame != null) {
+            if (!hasPlacedGame && tryPlaceGame(tap, frame)) {
+                hasPlacedGame = true;
+                f.removeView(tapAnimation);
+            }
+        }
+    }
+
+    private boolean tryPlaceGame(MotionEvent tap, Frame frame) {
+        if (tap != null && frame.getCamera().getTrackingState() == TrackingState.TRACKING) {
+            mainHit = frame.hitTest(tap).get(0);
+            Trackable trackable = mainHit.getTrackable();
+
+            if (trackable instanceof Plane && ((Plane) trackable).isPoseInPolygon(mainHit.getHitPose())) {
+
+                if (trackable.getTrackingState() == TrackingState.TRACKING) {
+                    mainAnchor = mainHit.createAnchor();
+                }
+
+                mainAnchorNode = new AnchorNode(mainAnchor);
+                mainAnchorNode.setParent(arFragment.getArSceneView().getScene());
+
+                HashMap<String, ModelRenderable> mainModel = modelMapList.get(0);
+                createSingleGame(mainModel);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void refreshModelResources() {
+        letters = "";
+        undo.setVisibility(View.INVISIBLE);
+        mainAnchorNode.getAnchor().detach();
+        mainAnchor = null;
+        mainAnchorNode = null;
+    }
+
+    private void createSingleGame(Map<String, ModelRenderable> mainModel) {
+        for (Map.Entry<String, ModelRenderable> e : mainModel.entrySet()) {
+            base = ModelUtil.getGameAnchor(e.getValue());
+            mainAnchorNode.addChild(base);
+
+            placeLetters(e.getKey());
+        }
+    }
+
+
+    private void createNextGame(Map<String, ModelRenderable> modelMap) {
+        refreshModelResources();
+
+        Trackable trackable = mainHit.getTrackable();
+        if (trackable instanceof Plane && ((Plane) trackable).isPoseInPolygon(mainHit.getHitPose())) {
+            // Create the Anchor.
+            if (trackable.getTrackingState() == TrackingState.TRACKING) {
+                mainAnchor = mainHit.createAnchor();
+            }
+            createSingleGame(modelMap);
+        }
+
+        wordContainer.removeAllViews();
+    }
+
+    private void placeLetters(String word) {
+        for (int i = 0; i < word.length(); i++) {
+            placeSingleLetter(
+                    Character.toString(word.charAt(i)));
+        }
+    }
+
+    private void placeSingleLetter(String letter) {
+        AnchorNode letterAnchorNode = ModelUtil.getLetter(base, letterMap.get(letter), arFragment);
+        letterAnchorNode.getChildren().get(0).setOnTapListener(getNodeOnTapListener(letterAnchorNode));
+
+        Log.d("arx", "tryPlaceGame: " + letterMap.get(letter));
+        connectAnchorToBase(letterAnchorNode);
+    }
+
+    private void connectAnchorToBase(AnchorNode anchorNode) {
+        arFragment.getArSceneView().getScene().addChild(anchorNode);
+        base.addChild(anchorNode);
+    }
+
+
+    public String eraseLastLetter(String spelledOutWord) {
+        if (spelledOutWord.length() < 1) {
+            undo.setVisibility(View.INVISIBLE);
+            return spelledOutWord;
+        } else {
+            letters = letters.substring(0, spelledOutWord.length() - 1);
+            wordContainer.removeViewAt(spelledOutWord.length() - 1);
+            return spelledOutWord.substring(spelledOutWord.length() - 1);
+        }
+    }
+
+    private void recreateErasedLetter(String letterToRecreate) {
+        if (!letterToRecreate.equals("")) {
+            placeSingleLetter(letterToRecreate);
+        }
+    }
+
+    private Node.OnTapListener getNodeOnTapListener(AnchorNode letter) {
+        return (hitTestResult, motionEvent) -> Objects.requireNonNull(letter.getAnchor()).detach();
     }
 
     private void setAnimations() {
@@ -344,6 +470,16 @@ public class ARHostFragmentX extends DaggerFragment {
         });
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        textToSpeech.shutdown();
+        pronunciationUtil = null;
+//        playBalloonPop.reset();
+//        playBalloonPop.release();
+    }
+
+    //refactor methods below to use another class that handles the logic to be displayed
 
     private void setValidatorCardView(boolean isCorrect) {
 
@@ -396,94 +532,6 @@ public class ARHostFragmentX extends DaggerFragment {
 
     }
 
-    public static void requestCameraPermission(Activity activity, int requestCode) {
-        ActivityCompat.requestPermissions(
-                activity, new String[]{Manifest.permission.CAMERA}, requestCode);
-    }
-
-    private void onSingleTap(MotionEvent tap) {
-        if (!hasFinishedLoadingModels || !hasFinishedLoadingLetters) {
-            // We can't do anything yet.
-            return;
-        }
-
-        Frame frame = arFragment.getArSceneView().getArFrame();
-        if (frame != null) {
-            if (!hasPlacedGame && tryPlaceGame(tap, frame)) {
-                hasPlacedGame = true;
-                f.removeView(tapAnimation);
-            }
-        }
-    }
-
-    private boolean tryPlaceGame(MotionEvent tap, Frame frame) {
-        if (tap != null && frame.getCamera().getTrackingState() == TrackingState.TRACKING) {
-
-            mainHit = frame.hitTest(tap).get(0);
-
-            Trackable trackable = mainHit.getTrackable();
-            if (trackable instanceof Plane && ((Plane) trackable).isPoseInPolygon(mainHit.getHitPose())) {
-                // Create the Anchor.
-                if (trackable.getTrackingState() == TrackingState.TRACKING) {
-                    mainAnchor = mainHit.createAnchor();
-                }
-
-                mainAnchorNode = new AnchorNode(mainAnchor);
-                mainAnchorNode.setParent(arFragment.getArSceneView().getScene());
-//                    Node gameSystem = createGame(modelMapList.get(0));
-
-                HashMap<String, ModelRenderable> mainModel = modelMapList.get(0);
-                Log.d("arx", "tryPlaceGame: " + modelMapList.get(0).keySet());
-
-                createSingleGame(mainModel);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void createSingleGame(HashMap<String, ModelRenderable> mainModel) {
-        for (Map.Entry<String, ModelRenderable> e : mainModel.entrySet()) {
-            Node game = ModelUtil.getGameAnchor(e.getValue());
-            mainAnchorNode.addChild(game);
-
-            for (int i = 0; i < e.getKey().length(); i++) {
-                AnchorNode letter = ModelUtil.getLetter(game, letterMap.get(Character.toString(e.getKey().charAt(i))), arFragment);
-                letter.getChildren().get(0).setOnTapListener(getNodeOnTapListener(letter));
-                Log.d("arx", "tryPlaceGame: " + letterMap.get(Character.toString(e.getKey().charAt(i))));
-                arFragment.getArSceneView().getScene().addChild(letter);
-                game.addChild(letter);
-            }
-        }
-    }
-
-    private void refreshModelResources(){
-        letters = "";
-        undo.setVisibility(View.INVISIBLE);
-        mainAnchorNode.getAnchor().detach();
-        mainAnchor = null;
-        mainAnchorNode = null;
-    }
-
-    private void createNextGame(Map<String, ModelRenderable> modelMap) {
-        refreshModelResources();
-
-        Trackable trackable = mainHit.getTrackable();
-        if (trackable instanceof Plane && ((Plane) trackable).isPoseInPolygon(mainHit.getHitPose())) {
-            // Create the Anchor.
-            if (trackable.getTrackingState() == TrackingState.TRACKING) {
-                mainAnchor = mainHit.createAnchor();
-            }
-            mainAnchorNode = new AnchorNode(mainAnchor);
-            mainAnchorNode.setParent(arFragment.getArSceneView().getScene());
-//                Node gameSystem = createGame(modelMap);
-//                mainAnchorNode.addChild(gameSystem);
-        }
-
-        wordContainer.removeAllViews();
-    }
-
-
     private void addLetterToWordContainer(String letter) {
         Typeface ballonTF = ResourcesCompat.getFont(getActivity(), R.font.balloon);
         TextView t = new TextView(getActivity());
@@ -496,6 +544,7 @@ public class ARHostFragmentX extends DaggerFragment {
         wordContainer.addView(t);
     }
 
+
     public void moveToReplayFragment() {
         prefs.edit().putStringSet(ResultsFragment.CORRECT_ANSWER_FOR_USER, correctAnswerSet).apply();
         prefs.edit().putInt(ResultsFragment.TOTALSIZE, roundLimit).apply();
@@ -507,36 +556,5 @@ public class ARHostFragmentX extends DaggerFragment {
             }
         }
         listener.moveToReplayFragment(categoryList, true);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        textToSpeech.shutdown();
-        pronunciationUtil = null;
-//        playBalloonPop.reset();
-//        playBalloonPop.release();
-    }
-
-    public String eraseLastLetter(String spelledOutWord) {
-        if (spelledOutWord.length() < 1) {
-            undo.setVisibility(View.INVISIBLE);
-            return spelledOutWord;
-        } else {
-            letters = letters.substring(0, spelledOutWord.length() - 1);
-            wordContainer.removeViewAt(spelledOutWord.length() - 1);
-            return spelledOutWord.substring(spelledOutWord.length() - 1);
-        }
-    }
-
-    public void recreateErasedLetter(String letterToRecreate) {
-//        if (!letterToRecreate.equals("")) {
-//            createLetter(letterToRecreate, currentWord, base, letterMap.get(letterToRecreate));
-//        }
-    }
-
-    private Node.OnTapListener getNodeOnTapListener(AnchorNode letter) {
-
-        return (hitTestResult, motionEvent) -> letter.getAnchor().detach();
     }
 }
