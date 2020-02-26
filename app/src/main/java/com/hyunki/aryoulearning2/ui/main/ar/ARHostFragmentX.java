@@ -47,6 +47,7 @@ import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.animation.Animations;
 import com.hyunki.aryoulearning2.animation.LottieHelper;
 import com.hyunki.aryoulearning2.model.Model;
+import com.hyunki.aryoulearning2.ui.main.ar.util.ModelUtil;
 import com.hyunki.aryoulearning2.ui.main.controller.NavListener;
 import com.hyunki.aryoulearning2.ui.main.needsrefactor.ResultsFragment;
 import com.hyunki.aryoulearning2.util.audio.PronunciationUtil;
@@ -301,7 +302,7 @@ public class ARHostFragmentX extends DaggerFragment {
                 });
     }
 
-    public static void requestCameraPermission(Activity activity, int requestCode) {
+    private static void requestCameraPermission(Activity activity, int requestCode) {
         ActivityCompat.requestPermissions(
                 activity, new String[]{Manifest.permission.CAMERA}, requestCode);
     }

@@ -1,4 +1,4 @@
-package com.hyunki.aryoulearning2.ui.main.ar;
+package com.hyunki.aryoulearning2.ui.main.ar.util;
 
 import android.animation.ObjectAnimator;
 
