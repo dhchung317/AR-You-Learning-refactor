@@ -11,6 +11,7 @@ Goals will be to incorporate the most recent libraries and best pratices
 * Dagger2
 * ARCore
 * Sceneform
+* Lottie
 
 Original description below:
 
