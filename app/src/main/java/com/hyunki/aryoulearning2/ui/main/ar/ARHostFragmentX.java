@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -47,6 +48,8 @@ import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.animation.Animations;
 import com.hyunki.aryoulearning2.animation.LottieHelper;
 import com.hyunki.aryoulearning2.model.Model;
+import com.hyunki.aryoulearning2.ui.main.ar.util.GameCommandListener;
+import com.hyunki.aryoulearning2.ui.main.ar.util.GameManager;
 import com.hyunki.aryoulearning2.ui.main.ar.util.ModelUtil;
 import com.hyunki.aryoulearning2.ui.main.controller.NavListener;
 import com.hyunki.aryoulearning2.ui.main.needsrefactor.ResultsFragment;
@@ -67,9 +70,11 @@ import javax.inject.Inject;
 import dagger.android.support.AndroidSupportInjection;
 import dagger.android.support.DaggerFragment;
 
-public class ARHostFragmentX extends DaggerFragment {
+public class ARHostFragmentX extends DaggerFragment implements GameCommandListener {
+    public static final String TAG = "arfragment";
     private static final int RC_PERMISSIONS = 0x123;
     public static final String MODEL_LIST = "MODEL_LIST";
+    private GameManager gameManager;
 
     @Inject
     ViewModelProviderFactory viewModelProviderFactory;
@@ -119,7 +124,7 @@ public class ARHostFragmentX extends DaggerFragment {
     private ObjectAnimator fadeOut;
 
     private List<Model> categoryList = new ArrayList<>();
-    private List<HashMap<String, ModelRenderable>> modelMapList = new ArrayList<>();
+    private List<HashMap<String, ModelRenderable>> modelMap = new ArrayList<>();
     private HashMap<String, ModelRenderable> letterMap = new HashMap<>();
     private String letters = "";
     private String currentWord = "";
@@ -152,6 +157,47 @@ public class ARHostFragmentX extends DaggerFragment {
 //        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        arViewModel = ViewModelProviders.of(this, viewModelProviderFactory).get(ArViewModel.class);
+        arViewModel.loadModels();
+
+        arViewModel.getModelLiveData().observe(getViewLifecycleOwner(), models -> {
+            Log.d(TAG, "onViewCreated: " + models.size());
+            categoryList = models;
+            arViewModel.setMapOfFutureModels(models);
+        });
+
+        arViewModel.getFutureModelMap().observe(getViewLifecycleOwner(), hashMaps -> {
+            Log.d(TAG, "onViewCreated: Ran");
+            Log.d(TAG, "onActivityCreated: " + hashMaps.size());
+            arViewModel.setModelRenderables(hashMaps);
+            arViewModel.setMapOfFutureLetters(hashMaps);
+        });
+
+        arViewModel.getFutureLetterMap().observe(getViewLifecycleOwner(), map -> {
+            arViewModel.setLetterRenderables(map);
+            Log.d(TAG, "onViewCreated: getfuturelettermap" + map.size());
+        });
+
+        arViewModel.getModelMap().observe(getViewLifecycleOwner(), stringModelRenderableHashMap -> {
+            modelMap = stringModelRenderableHashMap;
+            Log.d(TAG, "onViewCreated: getmodelmap" + modelMap.get(0).size());
+
+            hasFinishedLoadingModels = true;
+        });
+
+
+        arViewModel.getLetterMap().observe(getViewLifecycleOwner(), returnMap -> {
+            Log.d(TAG, "onViewCreated: get lettermap" + returnMap.size());
+            letterMap = returnMap;
+            hasFinishedLoadingLetters = true;
+        });
+
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -172,32 +218,6 @@ public class ARHostFragmentX extends DaggerFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         f = view.findViewById(R.id.frame_layout);
-        arViewModel = ViewModelProviders.of(this, viewModelProviderFactory).get(ArViewModel.class);
-        arViewModel.loadModels();
-
-        arViewModel.getModelLiveData().observe(getViewLifecycleOwner(), models -> {
-            categoryList = models;
-            arViewModel.setListMapsOfFutureModels(models);
-        });
-
-        arViewModel.getFutureModelMapList().observe(getViewLifecycleOwner(), hashMaps -> {
-            arViewModel.setModelRenderables(hashMaps);
-            arViewModel.setMapOfFutureLetters(hashMaps);
-        });
-
-        arViewModel.getFutureLetterMap().observe(getViewLifecycleOwner(), map -> {
-            arViewModel.setLetterRenderables(map);
-        });
-
-        arViewModel.getModelMapList().observe(getViewLifecycleOwner(), hashMaps -> {
-            modelMapList = hashMaps;
-            hasFinishedLoadingModels = true;
-        });
-
-        arViewModel.getLetterMap().observe(getViewLifecycleOwner(), returnMap -> {
-            letterMap = returnMap;
-            hasFinishedLoadingLetters = true;
-        });
 
         setUpViews(view);
 
@@ -206,6 +226,14 @@ public class ARHostFragmentX extends DaggerFragment {
         setUpARScene(arFragment);
 //         Lastly request CAMERA permission which is required by ARCore.
         requestCameraPermission(getActivity(), RC_PERMISSIONS);
+    }
+
+    private List<String> getKeysFromModelMap(HashMap<String, ModelRenderable> modelMap) {
+        Log.d("arhost", "getKeysFromModelMap: " + modelMap.size());
+
+        List<String> keys = new ArrayList<>(modelMap.keySet());
+
+        return keys;
     }
 
     private void setUpViews(View view) {
@@ -336,8 +364,11 @@ public class ARHostFragmentX extends DaggerFragment {
                 mainAnchorNode = new AnchorNode(mainAnchor);
                 mainAnchorNode.setParent(arFragment.getArSceneView().getScene());
 
-                HashMap<String, ModelRenderable> mainModel = modelMapList.get(0);
-                createSingleGame(mainModel);
+//                ModelRenderable mainModel = modelMap.get(
+//                        gameManager().getCurrentWordAnswer());
+//
+//                createSingleGame(mainModel,
+//                        gameManager().getCurrentWordAnswer());
                 return true;
             }
         }
@@ -345,37 +376,35 @@ public class ARHostFragmentX extends DaggerFragment {
     }
 
     private void refreshModelResources() {
-        letters = "";
         undo.setVisibility(View.INVISIBLE);
         mainAnchorNode.getAnchor().detach();
         mainAnchor = null;
         mainAnchorNode = null;
     }
 
-    private void createSingleGame(Map<String, ModelRenderable> mainModel) {
-        for (Map.Entry<String, ModelRenderable> e : mainModel.entrySet()) {
-            base = ModelUtil.getGameAnchor(e.getValue());
-            mainAnchorNode.addChild(base);
+    private void createSingleGame(ModelRenderable mainModel, String name) {
 
-            placeLetters(e.getKey());
-        }
+        base = ModelUtil.getGameAnchor(mainModel);
+        mainAnchorNode.addChild(base);
+        placeLetters(name);
+
     }
 
 
-    private void createNextGame(Map<String, ModelRenderable> modelMap) {
-        refreshModelResources();
-
-        Trackable trackable = mainHit.getTrackable();
-        if (trackable instanceof Plane && ((Plane) trackable).isPoseInPolygon(mainHit.getHitPose())) {
-            // Create the Anchor.
-            if (trackable.getTrackingState() == TrackingState.TRACKING) {
-                mainAnchor = mainHit.createAnchor();
-            }
-            createSingleGame(modelMap);
-        }
-
-        wordContainer.removeAllViews();
-    }
+//    private void createNextGame(ModelRenderable model) {
+//        refreshModelResources();
+//
+//        Trackable trackable = mainHit.getTrackable();
+//        if (trackable instanceof Plane && ((Plane) trackable).isPoseInPolygon(mainHit.getHitPose())) {
+//            // Create the Anchor.
+//            if (trackable.getTrackingState() == TrackingState.TRACKING) {
+//                mainAnchor = mainHit.createAnchor();
+//            }
+//            createSingleGame(model, );
+//        }
+//
+//        wordContainer.removeAllViews();
+//    }
 
     private void placeLetters(String word) {
         for (int i = 0; i < word.length(); i++) {
@@ -386,7 +415,7 @@ public class ARHostFragmentX extends DaggerFragment {
 
     private void placeSingleLetter(String letter) {
         AnchorNode letterAnchorNode = ModelUtil.getLetter(base, letterMap.get(letter), arFragment);
-        letterAnchorNode.getChildren().get(0).setOnTapListener(getNodeOnTapListener(letterAnchorNode));
+        letterAnchorNode.getChildren().get(0).setOnTapListener(getNodeOnTapListener(letter, letterAnchorNode));
 
         Log.d("arx", "tryPlaceGame: " + letterMap.get(letter));
         connectAnchorToBase(letterAnchorNode);
@@ -415,61 +444,63 @@ public class ARHostFragmentX extends DaggerFragment {
         }
     }
 
-    private Node.OnTapListener getNodeOnTapListener(AnchorNode letter) {
-        return (hitTestResult, motionEvent) -> Objects.requireNonNull(letter.getAnchor()).detach();
+    private Node.OnTapListener getNodeOnTapListener(String letterString, AnchorNode letterAnchorNode) {
+        gameManager.addLetterToAttempt(letterString.toLowerCase());
+        return (hitTestResult, motionEvent) -> Objects.requireNonNull(letterAnchorNode.getAnchor()).detach();
     }
 
-    private void setAnimations() {
-        fadeIn = Animations.Normal.setCardFadeInAnimator(wordValidatorCv);
-        fadeIn.addListener(new Animator.AnimatorListener() {
-
-            @Override
-            public void onAnimationStart(Animator animation) {
-                f.addView(wordValidatorLayout);
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                validatorOkButton.setOnClickListener(v -> {
-                    fadeOut.setStartDelay(500);
-                    fadeOut.start();
-                });
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-            }
-        });
-
-        fadeOut = Animations.Normal.setCardFadeOutAnimator(wordValidatorCv);
-        fadeOut.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                f.removeView(wordValidatorLayout);
-                if (roundCounter < roundLimit && roundCounter < modelMapList.size()) {
-                    createNextGame(modelMapList.get(roundCounter));
-                } else {
-                    moveToReplayFragment();
-                }
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-            }
-        });
-    }
+    //TODO - factor out animations to different class
+//    private void setAnimations() {
+//        fadeIn = Animations.Normal.setCardFadeInAnimator(wordValidatorCv);
+//        fadeIn.addListener(new Animator.AnimatorListener() {
+//
+//            @Override
+//            public void onAnimationStart(Animator animation) {
+//                f.addView(wordValidatorLayout);
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animator animation) {
+//                validatorOkButton.setOnClickListener(v -> {
+//                    fadeOut.setStartDelay(500);
+//                    fadeOut.start();
+//                });
+//            }
+//
+//            @Override
+//            public void onAnimationCancel(Animator animation) {
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animator animation) {
+//            }
+//        });
+//
+//        fadeOut = Animations.Normal.setCardFadeOutAnimator(wordValidatorCv);
+//        fadeOut.addListener(new Animator.AnimatorListener() {
+//            @Override
+//            public void onAnimationStart(Animator animation) {
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animator animation) {
+//                f.removeView(wordValidatorLayout);
+////                if (roundCounter < roundLimit && roundCounter < modelMapList.size()) {
+////                    createNextGame(modelMapList.get(roundCounter));
+////                } else {
+////                    moveToReplayFragment();
+////                }
+//            }
+//
+//            @Override
+//            public void onAnimationCancel(Animator animation) {
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animator animation) {
+//            }
+//        });
+//    }
 
     @Override
     public void onDestroy() {
@@ -557,5 +588,24 @@ public class ARHostFragmentX extends DaggerFragment {
             }
         }
         listener.moveToReplayFragment(categoryList, true);
+    }
+
+    @Override
+    public void startNextGame(String s) {
+        refreshModelResources();
+
+        Trackable trackable = mainHit.getTrackable();
+        if (trackable instanceof Plane && ((Plane) trackable).isPoseInPolygon(mainHit.getHitPose())) {
+            // Create the Anchor.
+            if (trackable.getTrackingState() == TrackingState.TRACKING) {
+                mainAnchor = mainHit.createAnchor();
+            }
+            for (Map.Entry<String, ModelRenderable> e : modelMap.get(0).entrySet()) {
+                createSingleGame(e.getValue(), e.getKey());
+
+            }
+
+            wordContainer.removeAllViews();
+        }
     }
 }

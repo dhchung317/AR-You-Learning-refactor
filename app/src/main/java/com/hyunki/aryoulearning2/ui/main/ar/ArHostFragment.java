@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.model.Model;
 import com.hyunki.aryoulearning2.ui.main.MainViewModel;
+import com.hyunki.aryoulearning2.ui.main.ar.util.GameCommandListener;
 import com.hyunki.aryoulearning2.ui.main.controller.NavListener;
 import com.hyunki.aryoulearning2.util.audio.PronunciationUtil;
 import com.hyunki.aryoulearning2.viewmodel.ViewModelProviderFactory;
@@ -38,7 +39,7 @@ import javax.inject.Inject;
 import dagger.android.support.AndroidSupportInjection;
 import dagger.android.support.DaggerFragment;
 
-public class ArHostFragment extends DaggerFragment {
+public class ArHostFragment extends DaggerFragment implements GameCommandListener {
 
     @Inject
     PronunciationUtil pronunciationUtil;
@@ -217,6 +218,11 @@ public class ArHostFragment extends DaggerFragment {
     public static void requestCameraPermission(Activity activity, int requestCode) {
         ActivityCompat.requestPermissions(
                 activity, new String[]{Manifest.permission.CAMERA}, requestCode);
+    }
+
+    @Override
+    public void startNextGame(String modelKey) {
+
     }
 
 //    private void onSingleTap(MotionEvent tap) {

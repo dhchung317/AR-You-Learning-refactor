@@ -1,28 +1,38 @@
 package com.hyunki.aryoulearning2.ui.main.ar;
 
 import android.app.Application;
+import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.hyunki.aryoulearning2.model.Model;
 import com.hyunki.aryoulearning2.ui.main.MainRepository;
 import com.google.ar.sceneform.rendering.ModelRenderable;
+import com.hyunki.aryoulearning2.ui.main.ar.util.GameCommandListener;
+import com.hyunki.aryoulearning2.ui.main.ar.util.GameManager;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
 import io.reactivex.schedulers.Schedulers;
 
 public class ArViewModel extends ViewModel {
@@ -35,11 +45,11 @@ public class ArViewModel extends ViewModel {
 
     private MutableLiveData<List<Model>> modelLiveData = new MutableLiveData<>();
 
-    private MutableLiveData<List<HashMap<String, CompletableFuture<ModelRenderable>>>> futureModelMapList = new MutableLiveData<>();
-    private MutableLiveData<HashMap<String, CompletableFuture<ModelRenderable>>> futureLetterMap = new MutableLiveData<>();
+    private MutableLiveData<HashMap<String, CompletableFuture<ModelRenderable>>> futureModelMapLiveData = new MutableLiveData<>();
+    private MutableLiveData<HashMap<String, CompletableFuture<ModelRenderable>>> futureLetterMapLiveData = new MutableLiveData<>();
 
-    private MutableLiveData<List<HashMap<String, ModelRenderable>>> modelMapList = new MutableLiveData<>();
-    private MutableLiveData<HashMap<String, ModelRenderable>> letterMap = new MutableLiveData<>();
+    private MutableLiveData<List<HashMap<String, ModelRenderable>>> modelMapLiveData = new MutableLiveData<>();
+    private MutableLiveData<HashMap<String, ModelRenderable>> letterMapLiveData = new MutableLiveData<>();
 
     @Inject
     public ArViewModel(Application application, MainRepository mainRepository) {
@@ -62,47 +72,47 @@ public class ArViewModel extends ViewModel {
                 mainRepository.getCurrentCategory().subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(currentCategory -> {
+                            Log.d(TAG, "loadModels: " + currentCategory.getCurrentCategory());
                             Disposable modelDisposable =
                                     mainRepository.getModelsByCat(currentCategory.getCurrentCategory())
                                             .subscribe(this::onModelsFetched, this::onError);
                             compositeDisposable.add(modelDisposable);
                         });
         compositeDisposable.add(catDisposable);
-
     }
 
-    public void setListMapsOfFutureModels(List<Model> modelList) {
-
-        List<HashMap<String, CompletableFuture<ModelRenderable>>> returnFutureModelMapList = new ArrayList<>();
-
-        for (int i = 0; i < modelList.size(); i++) {
-            HashMap<String, CompletableFuture<ModelRenderable>> futureMap = new HashMap();
-            futureMap.put(modelList.get(i).getName(),
-                    ModelRenderable.builder().
-                            setSource(application, Uri.parse(modelList.get(i).getName() + ".sfb")).build());
-            returnFutureModelMapList.add(futureMap);
-        }
-
-        futureModelMapList.setValue(returnFutureModelMapList);
-    }
-
-    public void setMapOfFutureLetters(List<HashMap<String, CompletableFuture<ModelRenderable>>> futureMapList) {
-
+    public void setMapOfFutureModels(List<Model> modelList) {
+//        List<HashMap<String, CompletableFuture<ModelRenderable>>> returnFutureModelMapList = new ArrayList<>();
         HashMap<String, CompletableFuture<ModelRenderable>> returnMap = new HashMap<>();
 
-        for (int i = 0; i < futureMapList.size(); i++) {
+        Log.d(TAG, "setMapOfFutureModels: " + modelList.size());
+        for (int i = 0; i < modelList.size(); i++) {
+            returnMap.put(modelList.get(i).getName(),
+                    ModelRenderable.builder().
+                            setSource(application, Uri.parse(modelList.get(i).getName() + ".sfb")).build());
+        }
 
-            String modelName = futureMapList.get(i).keySet().toString();
+        futureModelMapLiveData.setValue(returnMap);
+    }
+
+    public void setMapOfFutureLetters(HashMap<String, CompletableFuture<ModelRenderable>> futureMap) {
+        HashMap<String, CompletableFuture<ModelRenderable>> returnMap = new HashMap<>();
+        for (Map.Entry<String, CompletableFuture<ModelRenderable>> e : futureMap.entrySet()) {
+
+            String modelName = e.getKey();
+            Log.d(TAG, "setMapOfFutureLetters: " + e.getKey());
             for (int j = 0; j < modelName.length(); j++) {
                 returnMap.put(Character.toString(modelName.charAt(j)), ModelRenderable.builder().
                         setSource(application, Uri.parse(modelName.charAt(j) + ".sfb")).build());
             }
         }
-        futureLetterMap.setValue(returnMap);
+
+        futureLetterMapLiveData.setValue(returnMap);
     }
 
     public void setLetterRenderables(HashMap<String, CompletableFuture<ModelRenderable>> futureLetterMap) {
         HashMap<String, ModelRenderable> returnMap = new HashMap<>();
+        Log.d(TAG, "setLetterRenderables: " + futureLetterMap.entrySet().size());
 
         for (Map.Entry<String, CompletableFuture<ModelRenderable>> e : futureLetterMap.entrySet()) {
 
@@ -116,59 +126,73 @@ public class ArViewModel extends ViewModel {
                                     return null;
                                 }
                                 try {
+                                    Log.d(TAG, "setLetterRenderables trying: " + e.getKey());
                                     returnMap.put(e.getKey(), e.getValue().get());
                                 } catch (InterruptedException | ExecutionException ex) {
                                 }
                                 return null;
                             });
         }
-        letterMap.setValue(returnMap);
+
+        Log.d(TAG, "setLetterRenderables: " + returnMap.size());
+        letterMapLiveData.setValue(returnMap);
     }
 
-    public void setModelRenderables(List<HashMap<String, CompletableFuture<ModelRenderable>>> futureModelMapList) {
-        List<HashMap<String, ModelRenderable>> returnList = new ArrayList<>();
+    public void setModelRenderables(HashMap<String, CompletableFuture<ModelRenderable>> futureModelMap) {
+//        List<HashMap<String, ModelRenderable>> mapList = new ArrayList<>();
+        Log.d(TAG, "setModelRenderables: " + futureModelMap.entrySet().size());
 
-        for (int i = 0; i < futureModelMapList.size(); i++) {
 
-            for (Map.Entry<String, CompletableFuture<ModelRenderable>> e : futureModelMapList.get(i).entrySet()) {
+        Disposable mapDisposable =
+                Observable.just(futureModelMap.entrySet())
+                        .flatMap(entries -> {
+                            HashMap<String, ModelRenderable> map = new HashMap<>();
+                            for(Map.Entry<String,CompletableFuture<ModelRenderable>> e : entries){
 
-                HashMap<String, ModelRenderable> modelMap = new HashMap<>();
+                                CompletableFuture.allOf(e.getValue())
+                                        .handle(
+                                                (notUsed, throwable) -> {
+                                                    if (throwable != null) {
+                                                        return null;
+                                                    }
+                                                    try {
+                                                        Log.d(TAG, "setModelRenderables: key from try:" + e.getKey());
+                                                        map.put(e.getKey(), e.getValue().get());
+                                                    } catch (ExecutionException ex) {
+                                                        ex.printStackTrace();
+                                                    } catch (InterruptedException ex) {
+                                                        ex.printStackTrace();
+                                                    }
+                                                    return null;
+                                                });
+                            }
+                            return Observable.just(map);
+                        }).toList()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(hashMaps -> {
+                            modelMapLiveData.setValue(hashMaps);
+                        });
 
-                CompletableFuture.allOf(e.getValue())
-                        .handle(
-                                (notUsed, throwable) -> {
-                                    // When you build a Renderable, Sceneform loads its resources in the background while
-                                    // returning a CompletableFuture. Call handle(), thenAccept(), or check isDone()
-                                    // before calling get().
-                                    if (throwable != null) {
-                                        return null;
-                                    }
-                                    try {
-                                        modelMap.put(e.getKey(), e.getValue().get());
-                                    } catch (InterruptedException | ExecutionException ex) {
-                                    }
-                                    return null;
-                                });
-                returnList.add(modelMap);
-            }
-        }
-        modelMapList.setValue(returnList);
+        compositeDisposable.add(mapDisposable);
+
     }
 
-    public MutableLiveData<List<HashMap<String, CompletableFuture<ModelRenderable>>>> getFutureModelMapList() {
-        return futureModelMapList;
+    public LiveData<HashMap<String, CompletableFuture<ModelRenderable>>> getFutureModelMap() {
+        return futureModelMapLiveData;
     }
 
-    public MutableLiveData<HashMap<String, CompletableFuture<ModelRenderable>>> getFutureLetterMap() {
-        return futureLetterMap;
+    public LiveData<HashMap<String, CompletableFuture<ModelRenderable>>> getFutureLetterMap() {
+        return futureLetterMapLiveData;
     }
 
-    public MutableLiveData<List<HashMap<String, ModelRenderable>>> getModelMapList() {
-        return modelMapList;
+    public LiveData<List<HashMap<String, ModelRenderable>>> getModelMap() {
+//        Log.d(TAG, "getModelMapList: " + modelMap.getValue().size());
+        return modelMapLiveData;
     }
 
-    public MutableLiveData<HashMap<String, ModelRenderable>> getLetterMap() {
-        return letterMap;
+    public LiveData<HashMap<String, ModelRenderable>> getLetterMap() {
+        return letterMapLiveData;
     }
 
     private void onError(Throwable throwable) {
