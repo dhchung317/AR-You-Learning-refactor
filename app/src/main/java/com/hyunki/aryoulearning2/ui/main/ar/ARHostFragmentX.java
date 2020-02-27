@@ -57,6 +57,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -64,9 +65,11 @@ import javax.inject.Inject;
 import dagger.android.support.AndroidSupportInjection;
 import dagger.android.support.DaggerFragment;
 
-public class ARHostFragmentX extends DaggerFragment {
+public class ARHostFragmentX extends DaggerFragment implements GameCommandListener {
     private static final int RC_PERMISSIONS = 0x123;
     public static final String MODEL_LIST = "MODEL_LIST";
+    GameManager gameManager;
+
 
     @Inject
     ViewModelProviderFactory viewModelProviderFactory;
@@ -132,6 +135,7 @@ public class ARHostFragmentX extends DaggerFragment {
 
     private TextToSpeech textToSpeech;
 
+    private Node base;
     private Anchor mainAnchor;
     private AnchorNode mainAnchorNode;
     private HitResult mainHit;
@@ -191,7 +195,20 @@ public class ARHostFragmentX extends DaggerFragment {
 
         arViewModel.getModelMapList().observe(getViewLifecycleOwner(), hashMaps -> {
             modelMapList = hashMaps;
+            Log.d("getmodelmaplist", "onViewCreated: " + hashMaps.size());
+
+            for (int i = 0; i < hashMaps.size(); i++) {
+                Log.d("getmodelkeyset", "onViewCreated: " + hashMaps.get(i).keySet());
+
+//                for(Map.Entry<String,ModelRenderable> e : hashMaps.get(i).entrySet()){
+//                    Log.d("getmodelloop", "onViewCreated: " + e.getKey());
+//                }
+            }
+
             hasFinishedLoadingModels = true;
+            List<String> list = getKeysFromModelMapList(hashMaps);
+//            Log.d("getmodelmaplist", "onViewCreated: " + list.get(0));
+//            gameManager = new GameManager(getKeysFromModelMapList(hashMaps),this);
         });
 
         arViewModel.getLetterMap().observe(getViewLifecycleOwner(), returnMap -> {
@@ -256,6 +273,18 @@ public class ARHostFragmentX extends DaggerFragment {
         requestCameraPermission(getActivity(), RC_PERMISSIONS);
     }
 
+    private List<String> getKeysFromModelMapList(List<HashMap<String,ModelRenderable>> mapList){
+        List<String> keys = new ArrayList<>();
+
+        for (int i = 0; i < mapList.size(); i++) {
+            for(Map.Entry<String,ModelRenderable> e : mapList.get(i).entrySet()){
+                keys.add(e.getKey());
+            }
+        }
+
+        return keys;
+    }
+
     private void setUpViews(View view) {
         initViews(view);
         setListeners();
@@ -291,110 +320,111 @@ public class ARHostFragmentX extends DaggerFragment {
         exitNo.setOnClickListener(v -> f.removeView(exitMenu));
         undo.setOnClickListener(v -> recreateErasedLetter(eraseLastLetter(letters)));
     }
+    //TODO - refactor animations to separate class
+//
+//    private void setAnimations() {
+//        fadeIn = Animations.Normal.setCardFadeInAnimator(wordValidatorCv);
+//        fadeIn.addListener(new Animator.AnimatorListener() {
+//
+//            @Override
+//            public void onAnimationStart(Animator animation) {
+//                f.addView(wordValidatorLayout);
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animator animation) {
+//                validatorOkButton.setOnClickListener(v -> {
+//                    fadeOut.setStartDelay(500);
+//                    fadeOut.start();
+//                });
+//            }
+//
+//            @Override
+//            public void onAnimationCancel(Animator animation) {
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animator animation) {
+//            }
+//        });
+//
+//        fadeOut = Animations.Normal.setCardFadeOutAnimator(wordValidatorCv);
+//        fadeOut.addListener(new Animator.AnimatorListener() {
+//            @Override
+//            public void onAnimationStart(Animator animation) {
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animator animation) {
+//                f.removeView(wordValidatorLayout);
+//                if (roundCounter < roundLimit && roundCounter < modelMapList.size()) {
+//                    createNextGame(modelMapList.get(roundCounter));
+//                } else {
+//                    moveToReplayFragment();
+//                }
+//            }
+//
+//            @Override
+//            public void onAnimationCancel(Animator animation) {
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animator animation) {
+//            }
+//        });
+//    }
 
-    private void setAnimations() {
-        fadeIn = Animations.Normal.setCardFadeInAnimator(wordValidatorCv);
-        fadeIn.addListener(new Animator.AnimatorListener() {
 
-            @Override
-            public void onAnimationStart(Animator animation) {
-                f.addView(wordValidatorLayout);
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                validatorOkButton.setOnClickListener(v -> {
-                    fadeOut.setStartDelay(500);
-                    fadeOut.start();
-                });
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-            }
-        });
-
-        fadeOut = Animations.Normal.setCardFadeOutAnimator(wordValidatorCv);
-        fadeOut.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                f.removeView(wordValidatorLayout);
-                if (roundCounter < roundLimit && roundCounter < modelMapList.size()) {
-                    createNextGame(modelMapList.get(roundCounter));
-                } else {
-                    moveToReplayFragment();
-                }
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-            }
-        });
-    }
-
-
-    private void setValidatorCardView(boolean isCorrect) {
-
-        validatorWord.setText(currentWord);
-        validatorWrongWord.setVisibility(View.INVISIBLE);
-        validatorWrongPrompt.setVisibility(View.INVISIBLE);
-
-        if (isCorrect) {
-            validatorBackgroudImage.setImageResource(R.drawable.star);
-            Picasso.get().load(categoryList.get(roundCounter - 1).getImage()).into(validatorImage);
-        } else {
-            validatorBackgroudImage.setImageResource(R.drawable.error);
-            Picasso.get().load(categoryList.get(roundCounter).getImage()).into(validatorImage);
-            validatorWrongWord.setVisibility(View.VISIBLE);
-            validatorWrongPrompt.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private void compareAnswer(String letters, String word) {
-        String validator = "";
-        boolean isCorrect;
-        if (letters.equals(word)) {
-            isCorrect = true;
-            validator = "correct";
-
-            //will run once when correct answer is entered. the method will instantiate, and add all from the current list
-            categoryList.get(roundCounter).setWrongAnswerSet((ArrayList<String>) wrongAnswerList);
-
-            //we will increment once the list is added to correct index
-            roundCounter++;
-
-            //this will remove all, seemed safer than clear, which nulls the object.
-            wrongAnswerList.removeAll(wrongAnswerList);
-
-            pronunciationUtil.textToSpeechAnnouncer(validator, textToSpeech);
-        } else {
-            isCorrect = false;
-            validator = "try again!";
-            validatorWrongWord.setText(letters);
-            correctAnswerSet.add(word);
-            //every wrong answer, until a correct answer will be added here
-            wrongAnswerList.add(letters);
-            categoryList.get(roundCounter).setCorrect(false);
-            pronunciationUtil.textToSpeechAnnouncer("incorrect, please try again", textToSpeech);
-        }
-
-        wordValidator.setText(validator);
-        setValidatorCardView(isCorrect);
-        fadeIn.start();
-
-    }
+//    private void setValidatorCardView(boolean isCorrect) {
+//
+//        validatorWord.setText(currentWord);
+//        validatorWrongWord.setVisibility(View.INVISIBLE);
+//        validatorWrongPrompt.setVisibility(View.INVISIBLE);
+//
+//        if (isCorrect) {
+//            validatorBackgroudImage.setImageResource(R.drawable.star);
+//            Picasso.get().load(categoryList.get(roundCounter - 1).getImage()).into(validatorImage);
+//        } else {
+//            validatorBackgroudImage.setImageResource(R.drawable.error);
+//            Picasso.get().load(categoryList.get(roundCounter).getImage()).into(validatorImage);
+//            validatorWrongWord.setVisibility(View.VISIBLE);
+//            validatorWrongPrompt.setVisibility(View.VISIBLE);
+//        }
+//    }
+//
+//    private void compareAnswer(String letters, String word) {
+//        String validator = "";
+//        boolean isCorrect;
+//        if (letters.equals(word)) {
+//            isCorrect = true;
+//            validator = "correct";
+//
+//            //will run once when correct answer is entered. the method will instantiate, and add all from the current list
+//            categoryList.get(roundCounter).setWrongAnswerSet((ArrayList<String>) wrongAnswerList);
+//
+//            //we will increment once the list is added to correct index
+//            roundCounter++;
+//
+//            //this will remove all, seemed safer than clear, which nulls the object.
+//            wrongAnswerList.removeAll(wrongAnswerList);
+//
+//            pronunciationUtil.textToSpeechAnnouncer(validator, textToSpeech);
+//        } else {
+//            isCorrect = false;
+//            validator = "try again!";
+//            validatorWrongWord.setText(letters);
+//            correctAnswerSet.add(word);
+//            //every wrong answer, until a correct answer will be added here
+//            wrongAnswerList.add(letters);
+//            categoryList.get(roundCounter).setCorrect(false);
+//            pronunciationUtil.textToSpeechAnnouncer("incorrect, please try again", textToSpeech);
+//        }
+//
+//        wordValidator.setText(validator);
+//        setValidatorCardView(isCorrect);
+//        fadeIn.start();
+//
+//    }
 
     public static void requestCameraPermission(Activity activity, int requestCode) {
         ActivityCompat.requestPermissions(
@@ -432,30 +462,47 @@ public class ARHostFragmentX extends DaggerFragment {
                 mainAnchorNode.setParent(arFragment.getArSceneView().getScene());
 //                    Node gameSystem = createGame(modelMapList.get(0));
 
-                HashMap<String, ModelRenderable> mainModel = modelMapList.get(0);
-                Log.d("arx", "tryPlaceGame: " + modelMapList.get(0).keySet());
+                gameManager = new GameManager(getKeysFromModelMapList(modelMapList),this);
 
-                createSingleGame(mainModel);
+                String modelKey = gameManager.getCurrentWordAnswer();
+
+                for (int i = 0; i < modelMapList.size(); i++) {
+                    for(Map.Entry<String,ModelRenderable> e : modelMapList.get(i).entrySet()){
+
+                        if(e.getKey().equals(modelKey)){
+                            createSingleGame(e.getValue(),e.getKey());
+                        }
+
+                    }
+                }
+
+//                HashMap<String, ModelRenderable> mainModel = modelMapList.get(0);
+//                String s = "";
+//                for(Map.Entry<String,ModelRenderable> e: mainModel.entrySet()){
+//                    s = e.getKey();
+//                }
+//                Log.d("arx", "tryPlaceGame: " + modelMapList.get(0).keySet());
+//
+//                gameManager = new GameManager(getKeysFromModelMapList(modelMapList),this);
+//                Log.d("gamemanager", "tryPlaceGame: " + gameManager.getCurrentWordAnswer());
+//
+//                createSingleGame(mainModel.get(s),s);
                 return true;
             }
         }
         return false;
     }
 
-    private void createSingleGame(HashMap<String, ModelRenderable> mainModel) {
-        for (Map.Entry<String, ModelRenderable> e : mainModel.entrySet()) {
-            Node game = ModelUtil.getGameAnchor(e.getValue());
-            mainAnchorNode.addChild(game);
 
-            for (int i = 0; i < e.getKey().length(); i++) {
-                AnchorNode letter = ModelUtil.getLetter(game, letterMap.get(Character.toString(e.getKey().charAt(i))), arFragment);
-                letter.getChildren().get(0).setOnTapListener(getNodeOnTapListener(letter));
-                Log.d("arx", "tryPlaceGame: " + letterMap.get(Character.toString(e.getKey().charAt(i))));
-                arFragment.getArSceneView().getScene().addChild(letter);
-                game.addChild(letter);
-            }
-        }
+
+    private void createSingleGame(ModelRenderable mainModel, String name) {
+
+        base = ModelUtil.getGameAnchor(mainModel);
+        mainAnchorNode.addChild(base);
+        placeLetters(name);
+
     }
+
 
     private void refreshModelResources(){
         letters = "";
@@ -465,49 +512,50 @@ public class ARHostFragmentX extends DaggerFragment {
         mainAnchorNode = null;
     }
 
-    private void createNextGame(Map<String, ModelRenderable> modelMap) {
-        refreshModelResources();
+//    private void createNextGame(Map<String, ModelRenderable> modelMap) {
+//        refreshModelResources();
+//
+//        Trackable trackable = mainHit.getTrackable();
+//        if (trackable instanceof Plane && ((Plane) trackable).isPoseInPolygon(mainHit.getHitPose())) {
+//            // Create the Anchor.
+//            if (trackable.getTrackingState() == TrackingState.TRACKING) {
+//                mainAnchor = mainHit.createAnchor();
+//            }
+//            mainAnchorNode = new AnchorNode(mainAnchor);
+//            mainAnchorNode.setParent(arFragment.getArSceneView().getScene());
+////                Node gameSystem = createGame(modelMap);
+////                mainAnchorNode.addChild(gameSystem);
+//        }
+//
+//        wordContainer.removeAllViews();
+//    }
 
-        Trackable trackable = mainHit.getTrackable();
-        if (trackable instanceof Plane && ((Plane) trackable).isPoseInPolygon(mainHit.getHitPose())) {
-            // Create the Anchor.
-            if (trackable.getTrackingState() == TrackingState.TRACKING) {
-                mainAnchor = mainHit.createAnchor();
-            }
-            mainAnchorNode = new AnchorNode(mainAnchor);
-            mainAnchorNode.setParent(arFragment.getArSceneView().getScene());
-//                Node gameSystem = createGame(modelMap);
-//                mainAnchorNode.addChild(gameSystem);
-        }
+    //TODO - refactor ui logic for updating wordbox as user spells and erases word letters
 
-        wordContainer.removeAllViews();
-    }
+//    private void addLetterToWordContainer(String letter) {
+//        Typeface ballonTF = ResourcesCompat.getFont(getActivity(), R.font.balloon);
+//        TextView t = new TextView(getActivity());
+//        t.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+//        t.setTypeface(ballonTF);
+//        t.setTextColor(getResources().getColor(R.color.colorWhite));
+//        t.setTextSize(100);
+//        t.setText(letter);
+//        t.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+//        wordContainer.addView(t);
+//    }
 
-
-    private void addLetterToWordContainer(String letter) {
-        Typeface ballonTF = ResourcesCompat.getFont(getActivity(), R.font.balloon);
-        TextView t = new TextView(getActivity());
-        t.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        t.setTypeface(ballonTF);
-        t.setTextColor(getResources().getColor(R.color.colorWhite));
-        t.setTextSize(100);
-        t.setText(letter);
-        t.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        wordContainer.addView(t);
-    }
-
-    public void moveToReplayFragment() {
-        prefs.edit().putStringSet(ResultsFragment.CORRECT_ANSWER_FOR_USER, correctAnswerSet).apply();
-        prefs.edit().putInt(ResultsFragment.TOTALSIZE, roundLimit).apply();
-
-        //Checks to see which words have an empty wrongAnswerSet and changes the boolean pertaining to that Model to true.
-        for (int i = 0; i < roundLimit; i++) {
-            if (categoryList.get(i).getWrongAnswerSet() == null || categoryList.get(i).getWrongAnswerSet().size() == 0) {
-                categoryList.get(i).setCorrect(true);
-            }
-        }
-        listener.moveToReplayFragment(categoryList, true);
-    }
+//    public void moveToReplayFragment() {
+//        prefs.edit().putStringSet(ResultsFragment.CORRECT_ANSWER_FOR_USER, correctAnswerSet).apply();
+//        prefs.edit().putInt(ResultsFragment.TOTALSIZE, roundLimit).apply();
+//
+//        //Checks to see which words have an empty wrongAnswerSet and changes the boolean pertaining to that Model to true.
+//        for (int i = 0; i < roundLimit; i++) {
+//            if (categoryList.get(i).getWrongAnswerSet() == null || categoryList.get(i).getWrongAnswerSet().size() == 0) {
+//                categoryList.get(i).setCorrect(true);
+//            }
+//        }
+//        listener.moveToReplayFragment(categoryList, true);
+//    }
 
     @Override
     public void onDestroy() {
@@ -517,6 +565,49 @@ public class ARHostFragmentX extends DaggerFragment {
 //        playBalloonPop.reset();
 //        playBalloonPop.release();
     }
+
+//    public String eraseLastLetter(String spelledOutWord) {
+//        if (spelledOutWord.length() < 1) {
+//            undo.setVisibility(View.INVISIBLE);
+//            return spelledOutWord;
+//        } else {
+//            letters = letters.substring(0, spelledOutWord.length() - 1);
+//            wordContainer.removeViewAt(spelledOutWord.length() - 1);
+//            return spelledOutWord.substring(spelledOutWord.length() - 1);
+//        }
+//    }
+//
+//    public void recreateErasedLetter(String letterToRecreate) {
+////        if (!letterToRecreate.equals("")) {
+////            createLetter(letterToRecreate, currentWord, base, letterMap.get(letterToRecreate));
+////        }
+//    }
+//
+//    private Node.OnTapListener getNodeOnTapListener(AnchorNode letter) {
+//
+//        return (hitTestResult, motionEvent) -> letter.getAnchor().detach();
+//    }
+
+    private void placeLetters(String word) {
+        for (int i = 0; i < word.length(); i++) {
+            placeSingleLetter(
+                    Character.toString(word.charAt(i)));
+        }
+    }
+
+    private void placeSingleLetter(String letter) {
+        AnchorNode letterAnchorNode = ModelUtil.getLetter(base, letterMap.get(letter), arFragment);
+        letterAnchorNode.getChildren().get(0).setOnTapListener(getNodeOnTapListener(letter, letterAnchorNode));
+
+        Log.d("arx", "tryPlaceGame: " + letterMap.get(letter));
+        connectAnchorToBase(letterAnchorNode);
+    }
+
+    private void connectAnchorToBase(AnchorNode anchorNode) {
+        arFragment.getArSceneView().getScene().addChild(anchorNode);
+        base.addChild(anchorNode);
+    }
+
 
     public String eraseLastLetter(String spelledOutWord) {
         if (spelledOutWord.length() < 1) {
@@ -529,14 +620,45 @@ public class ARHostFragmentX extends DaggerFragment {
         }
     }
 
-    public void recreateErasedLetter(String letterToRecreate) {
-//        if (!letterToRecreate.equals("")) {
-//            createLetter(letterToRecreate, currentWord, base, letterMap.get(letterToRecreate));
-//        }
+    private void recreateErasedLetter(String letterToRecreate) {
+        if (!letterToRecreate.equals("")) {
+            placeSingleLetter(letterToRecreate);
+        }
     }
 
-    private Node.OnTapListener getNodeOnTapListener(AnchorNode letter) {
+    private Node.OnTapListener getNodeOnTapListener(String letterString, AnchorNode letterAnchorNode) {
 
-        return (hitTestResult, motionEvent) -> letter.getAnchor().detach();
+        return (hitTestResult, motionEvent) -> {
+            gameManager.addTappedLetterToCurrentWordAttempt(letterString.toLowerCase());
+            Objects.requireNonNull(letterAnchorNode.getAnchor()).detach();
+        };
     }
+
+    @Override
+    public void startNextGame(String modelKey) {
+        Log.d("startnextgame:arhostfragment", "startNextGame: condition hit");
+        refreshModelResources();
+
+        Trackable trackable = mainHit.getTrackable();
+        if (trackable instanceof Plane && ((Plane) trackable).isPoseInPolygon(mainHit.getHitPose())) {
+            // Create the Anchor.
+            if (trackable.getTrackingState() == TrackingState.TRACKING) {
+                mainAnchor = mainHit.createAnchor();
+            }
+
+            mainAnchorNode = new AnchorNode(mainAnchor);
+            mainAnchorNode.setParent(arFragment.getArSceneView().getScene());
+
+            for (int i = 0; i < modelMapList.size(); i++) {
+                for(Map.Entry<String,ModelRenderable> e : modelMapList.get(i).entrySet()){
+                    if(e.getKey().equals(modelKey)){
+                        createSingleGame(e.getValue(),e.getKey());
+                    }
+                }
+            }
+
+            wordContainer.removeAllViews();
+        }
+    }
+
 }
