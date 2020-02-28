@@ -1,6 +1,5 @@
 package com.hyunki.aryoulearning2.di.main;
 
-import com.hyunki.aryoulearning2.ui.main.ar.ARHostFragmentX;
 import com.hyunki.aryoulearning2.ui.main.ar.ArHostFragment;
 import com.hyunki.aryoulearning2.ui.main.hint.HintFragment;
 import com.hyunki.aryoulearning2.ui.main.list.ListFragment;
@@ -18,8 +17,5 @@ public abstract class MainFragmentBuildersModule {
     abstract HintFragment contributeHintFragment();
 
     @ContributesAndroidInjector
-    abstract ArHostFragment contributeARHostFragment();
-
-    @ContributesAndroidInjector
-    abstract ARHostFragmentX contributeAXFragment();
+    abstract ArHostFragment contributeArHostFragment();
 }

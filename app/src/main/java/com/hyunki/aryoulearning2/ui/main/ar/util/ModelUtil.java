@@ -1,4 +1,4 @@
-package com.hyunki.aryoulearning2.ui.main.ar;
+package com.hyunki.aryoulearning2.ui.main.ar.util;
 
 import android.animation.ObjectAnimator;
 
@@ -23,7 +23,7 @@ public class ModelUtil {
     private static Random r = new Random();
     private static Set<Vector3> collisionSet = new HashSet<>();
 
-    static Node getGameAnchor(ModelRenderable model) {
+    public static Node getGameAnchor(ModelRenderable model) {
         Node base = new Node();
         Node mainModel = new Node();
         mainModel.setParent(base);
@@ -53,7 +53,7 @@ public class ModelUtil {
     }
 
 
-    static AnchorNode getLetter(Node parent, ModelRenderable renderable, ArFragment arFragment) {
+    public static AnchorNode getLetter(Node parent, ModelRenderable renderable, ArFragment arFragment) {
 
         float[] pos = {0,//x
                 0,//y

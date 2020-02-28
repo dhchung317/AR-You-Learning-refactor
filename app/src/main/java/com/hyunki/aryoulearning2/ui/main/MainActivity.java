@@ -12,7 +12,7 @@ import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.model.Model;
 import com.hyunki.aryoulearning2.model.ModelResponse;
 import com.hyunki.aryoulearning2.network.main.MainResource;
-import com.hyunki.aryoulearning2.ui.main.ar.ARHostFragmentX;
+import com.hyunki.aryoulearning2.ui.main.ar.ArHostFragment;
 import com.hyunki.aryoulearning2.ui.main.controller.NavListener;
 import com.hyunki.aryoulearning2.ui.main.hint.HintFragment;
 import com.hyunki.aryoulearning2.ui.main.list.ListFragment;
@@ -29,13 +29,12 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     public static final String TAG = "MainActivity";
     private MainViewModel viewModel;
     private ProgressBar progressBar;
-//    public static String currentCategory;
 
     @Inject
     PronunciationUtil pronunciationUtil;
 
     @Inject
-    ARHostFragmentX arHostFragmentX;
+    ArHostFragment arHostFragment;
 
     @Inject
     ListFragment listFragment;
@@ -71,7 +70,6 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
         setTheme(resId);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         progressBar = findViewById(R.id.progress_bar);
         Log.d(TAG, "onCreate");
@@ -142,7 +140,7 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     public void moveToGameFragment() {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, arHostFragmentX, "ar_fragment")
+                .replace(R.id.fragment_container, arHostFragment, "ar_fragment")
 //                    .addToBackStack(null)
                 .commit();
 

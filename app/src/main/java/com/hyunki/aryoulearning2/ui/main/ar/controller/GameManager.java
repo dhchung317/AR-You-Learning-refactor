@@ -1,12 +1,15 @@
-package com.hyunki.aryoulearning2.ui.main.ar;
+package com.hyunki.aryoulearning2.ui.main.ar.controller;
 
-import android.util.Log;
+import com.hyunki.aryoulearning2.ui.main.ar.controller.GameCommandListener;
+import com.hyunki.aryoulearning2.ui.main.ar.util.CurrentWord;
+import com.hyunki.aryoulearning2.ui.main.controller.NavListener;
 
 import java.util.List;
 import java.util.Stack;
 
 public class GameManager {
     private GameCommandListener gameCommands;
+    private NavListener navListener;
     private CurrentWord currentWord;
     //will dictate the number of rounds
     private int roundLimit = 5;
