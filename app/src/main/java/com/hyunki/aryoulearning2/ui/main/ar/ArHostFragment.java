@@ -547,10 +547,10 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
         }
     }
 
-    private void undo() {
-        String erasedLetter = eraseLastLetter();
-        recreateErasedLetter(erasedLetter);
-    }
+//    private void undoLastLetter() {
+//        String erasedLetter = eraseLastLetter();
+//        recreateErasedLetter(erasedLetter);
+//    }
 
     private Node.OnTapListener getNodeOnTapListener(String letterString, AnchorNode letterAnchorNode) {
 
@@ -577,5 +577,17 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
             }
         }
         wordContainer.removeAllViews();
+    }
+
+//    @Override
+    public void addLetterToWordBox(String letter) {
+
+    }
+
+//    @Override
+    public void undoLastLetter() {
+        String erasedLetter = eraseLastLetter();
+        recreateErasedLetter(erasedLetter);
+
     }
 }
