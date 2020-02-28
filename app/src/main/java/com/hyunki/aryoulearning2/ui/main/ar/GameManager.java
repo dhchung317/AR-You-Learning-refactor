@@ -38,7 +38,7 @@ public class GameManager {
                 recordWrongAnswer(attempt);
                 startNextGame(currentWord.getAnswer());
             } else {
-                if (keyStack.size() > 1) {
+                if (keyStack.size() > 0) {
                     startNextGame(keyStack.pop());
                 } else {
                     //TODO - move to next fragment
@@ -71,10 +71,13 @@ public class GameManager {
         this.attempt += letter;
     }
 
-    public void subtractLetterFromAttempt() {
+    public String subtractLetterFromAttempt() {
+        String letter = "";
         if (!attempt.isEmpty()) {
+            letter = attempt.substring(attempt.length());
             attempt = attempt.substring(0, attempt.length() - 1);
         }
+        return letter;
     }
 
     public void refreshManager(String key) {

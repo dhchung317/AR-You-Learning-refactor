@@ -40,6 +40,7 @@ import com.google.ar.core.TrackingState;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Node;
+import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.hyunki.aryoulearning2.R;
@@ -218,57 +219,61 @@ public class ARHostFragmentX extends DaggerFragment implements GameCommandListen
 
         setUpViews(view);
 
-        gestureDetector =
-                new GestureDetector(
-                        getActivity(),
-                        new GestureDetector.SimpleOnGestureListener() {
-                            @Override
-                            public boolean onSingleTapUp(MotionEvent e) {
-                                onSingleTap(e);
-                                return true;
-                            }
+        gestureDetector = getGestureDetector();
 
-                            @Override
-                            public boolean onDown(MotionEvent e) {
-                                return true;
-                            }
-                        });
+        setUpARScene(arFragment);
 
-        arFragment.getArSceneView()
-                .getScene()
-                .setOnTouchListener(
-                        (HitTestResult hitTestResult, MotionEvent event) -> {
-                            // If the solar system hasn't been placed yet, detect a tap and then check to see if
-                            // the tap occurred on an ARCore plane to place the solar system.
-                            if (!hasPlacedGame) {
-                                return gestureDetector.onTouchEvent(event);
-                            }
-                            // Otherwise return false so that the touch event can propagate to the scene.
-                            return false;
-                        });
-
-        arFragment.getArSceneView()
-                .getScene()
-                .addOnUpdateListener(
-                        frameTime -> {
-                            Frame frame = arFragment.getArSceneView().getArFrame();
-
-                            if (frame == null) {
-                                return;
-                            }
-                            if (frame.getCamera().getTrackingState() != TrackingState.TRACKING) {
-                                return;
-                            }
-                            if (!hasPlacedGame) {
-                                for (Plane plane : frame.getUpdatedTrackables(Plane.class)) {
-                                    if (!placedAnimation && plane.getTrackingState() == TrackingState.TRACKING) {
-                                        placedAnimation = true;
-                                        tapAnimation = lottieHelper.getAnimationView(getContext(), LottieHelper.AnimationType.TAP);
-                                        lottieHelper.addTapAnimationToScreen(tapAnimation, getActivity(), f);
-                                    }
-                                }
-                            }
-                        });
+//        gestureDetector =
+//                new GestureDetector(
+//                        getActivity(),
+//                        new GestureDetector.SimpleOnGestureListener() {
+//                            @Override
+//                            public boolean onSingleTapUp(MotionEvent e) {
+//                                onSingleTap(e);
+//                                return true;
+//                            }
+//
+//                            @Override
+//                            public boolean onDown(MotionEvent e) {
+//                                return true;
+//                            }
+//                        });
+//
+//        arFragment.getArSceneView()
+//                .getScene()
+//                .setOnTouchListener(
+//                        (HitTestResult hitTestResult, MotionEvent event) -> {
+//                            // If the solar system hasn't been placed yet, detect a tap and then check to see if
+//                            // the tap occurred on an ARCore plane to place the solar system.
+//                            if (!hasPlacedGame) {
+//                                return gestureDetector.onTouchEvent(event);
+//                            }
+//                            // Otherwise return false so that the touch event can propagate to the scene.
+//                            return false;
+//                        });
+//
+//        arFragment.getArSceneView()
+//                .getScene()
+//                .addOnUpdateListener(
+//                        frameTime -> {
+//                            Frame frame = arFragment.getArSceneView().getArFrame();
+//
+//                            if (frame == null) {
+//                                return;
+//                            }
+//                            if (frame.getCamera().getTrackingState() != TrackingState.TRACKING) {
+//                                return;
+//                            }
+//                            if (!hasPlacedGame) {
+//                                for (Plane plane : frame.getUpdatedTrackables(Plane.class)) {
+//                                    if (!placedAnimation && plane.getTrackingState() == TrackingState.TRACKING) {
+//                                        placedAnimation = true;
+//                                        tapAnimation = lottieHelper.getAnimationView(getContext(), LottieHelper.AnimationType.TAP);
+//                                        lottieHelper.addTapAnimationToScreen(tapAnimation, getActivity(), f);
+//                                    }
+//                                }
+//                            }
+//                        });
 //         Lastly request CAMERA permission which is required by ARCore.
         requestCameraPermission(getActivity(), RC_PERMISSIONS);
     }
@@ -289,6 +294,64 @@ public class ARHostFragmentX extends DaggerFragment implements GameCommandListen
         initViews(view);
         setListeners();
 //        setAnimations();
+    }
+
+    private GestureDetector getGestureDetector() {
+        return new GestureDetector(
+                getActivity(),
+                new GestureDetector.SimpleOnGestureListener() {
+                    @Override
+                    public boolean onSingleTapUp(MotionEvent e) {
+                        onSingleTap(e);
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onDown(MotionEvent e) {
+                        return true;
+                    }
+                });
+    }
+
+    private void setUpARScene(ArFragment arFragment) {
+        Scene scene = arFragment.getArSceneView()
+                .getScene();
+        Frame frame = arFragment.getArSceneView().getArFrame();
+
+        setOnTouchListener(scene);
+        setAddOnUpdateListener(scene, frame);
+    }
+
+    private void setOnTouchListener(Scene scene) {
+        scene.setOnTouchListener(
+                (HitTestResult hitTestResult, MotionEvent event) -> {
+                    if (!hasPlacedGame) {
+                        return gestureDetector.onTouchEvent(event);
+                    }
+                    return false;
+                });
+    }
+
+    private void setAddOnUpdateListener(Scene scene, Frame frame) {
+        scene.addOnUpdateListener(
+                frameTime -> {
+
+                    if (frame == null) {
+                        return;
+                    }
+                    if (frame.getCamera().getTrackingState() != TrackingState.TRACKING) {
+                        return;
+                    }
+                    if (!hasPlacedGame) {
+                        for (Plane plane : frame.getUpdatedTrackables(Plane.class)) {
+                            if (!placedAnimation && plane.getTrackingState() == TrackingState.TRACKING) {
+                                placedAnimation = true;
+                                tapAnimation = lottieHelper.getAnimationView(getContext(), LottieHelper.AnimationType.TAP);
+                                lottieHelper.addTapAnimationToScreen(tapAnimation, getActivity(), f);
+                            }
+                        }
+                    }
+                });
     }
 
     private void initViews(View view) {
@@ -318,61 +381,62 @@ public class ARHostFragmentX extends DaggerFragment implements GameCommandListen
                 }
         );
         exitNo.setOnClickListener(v -> f.removeView(exitMenu));
-        undo.setOnClickListener(v -> recreateErasedLetter(eraseLastLetter(letters)));
+//        undo.setOnClickListener(v -> recreateErasedLetter(eraseLastLetter(letters)));
     }
     //TODO - refactor animations to separate class
 //
-//    private void setAnimations() {
-//        fadeIn = Animations.Normal.setCardFadeInAnimator(wordValidatorCv);
-//        fadeIn.addListener(new Animator.AnimatorListener() {
-//
-//            @Override
-//            public void onAnimationStart(Animator animation) {
-//                f.addView(wordValidatorLayout);
-//            }
-//
-//            @Override
-//            public void onAnimationEnd(Animator animation) {
-//                validatorOkButton.setOnClickListener(v -> {
-//                    fadeOut.setStartDelay(500);
-//                    fadeOut.start();
-//                });
-//            }
-//
-//            @Override
-//            public void onAnimationCancel(Animator animation) {
-//            }
-//
-//            @Override
-//            public void onAnimationRepeat(Animator animation) {
-//            }
-//        });
-//
-//        fadeOut = Animations.Normal.setCardFadeOutAnimator(wordValidatorCv);
-//        fadeOut.addListener(new Animator.AnimatorListener() {
-//            @Override
-//            public void onAnimationStart(Animator animation) {
-//            }
-//
-//            @Override
-//            public void onAnimationEnd(Animator animation) {
-//                f.removeView(wordValidatorLayout);
+    private void setAnimations() {
+        fadeIn = Animations.Normal.setCardFadeInAnimator(wordValidatorCv);
+
+        fadeIn.addListener(new Animator.AnimatorListener() {
+
+            @Override
+            public void onAnimationStart(Animator animation) {
+                f.addView(wordValidatorLayout);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                validatorOkButton.setOnClickListener(v -> {
+                    fadeOut.setStartDelay(500);
+                    fadeOut.start();
+                });
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+            }
+        });
+
+        fadeOut = Animations.Normal.setCardFadeOutAnimator(wordValidatorCv);
+        fadeOut.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                f.removeView(wordValidatorLayout);
 //                if (roundCounter < roundLimit && roundCounter < modelMapList.size()) {
 //                    createNextGame(modelMapList.get(roundCounter));
 //                } else {
 //                    moveToReplayFragment();
 //                }
-//            }
-//
-//            @Override
-//            public void onAnimationCancel(Animator animation) {
-//            }
-//
-//            @Override
-//            public void onAnimationRepeat(Animator animation) {
-//            }
-//        });
-//    }
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+            }
+        });
+    }
 
 
 //    private void setValidatorCardView(boolean isCorrect) {
@@ -609,21 +673,27 @@ public class ARHostFragmentX extends DaggerFragment implements GameCommandListen
     }
 
 
-    public String eraseLastLetter(String spelledOutWord) {
-        if (spelledOutWord.length() < 1) {
-            undo.setVisibility(View.INVISIBLE);
-            return spelledOutWord;
-        } else {
-            letters = letters.substring(0, spelledOutWord.length() - 1);
-            wordContainer.removeViewAt(spelledOutWord.length() - 1);
-            return spelledOutWord.substring(spelledOutWord.length() - 1);
-        }
+    public String eraseLastLetter() {
+//        if (spelledOutWord.length() < 1) {
+//            undo.setVisibility(View.INVISIBLE);
+//            return spelledOutWord;
+//        } else {
+//            letters = letters.substring(0, spelledOutWord.length() - 1);
+//            wordContainer.removeViewAt(spelledOutWord.length() - 1);
+//            return spelledOutWord.substring(spelledOutWord.length() - 1);
+//        }
+        return gameManager.subtractLetterFromAttempt();
     }
 
     private void recreateErasedLetter(String letterToRecreate) {
         if (!letterToRecreate.equals("")) {
             placeSingleLetter(letterToRecreate);
         }
+    }
+
+    private void undo(){
+        String erasedLetter = eraseLastLetter();
+        recreateErasedLetter(erasedLetter);
     }
 
     private Node.OnTapListener getNodeOnTapListener(String letterString, AnchorNode letterAnchorNode) {
