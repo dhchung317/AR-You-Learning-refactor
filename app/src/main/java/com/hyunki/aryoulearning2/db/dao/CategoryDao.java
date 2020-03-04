@@ -7,6 +7,7 @@ import androidx.room.Query;
 
 import com.hyunki.aryoulearning2.db.model.Category;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Single;
@@ -15,7 +16,7 @@ import io.reactivex.Single;
 public interface CategoryDao {
 
     @Query("SELECT * FROM category")
-    Single<List<Category>> getAllCategories();
+    Single<ArrayList<Category>> getAllCategories();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Category category);

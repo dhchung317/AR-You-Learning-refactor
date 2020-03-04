@@ -1,22 +1,25 @@
-package com.hyunki.aryoulearning2.ui.main.ar;
+package com.hyunki.aryoulearning2.ui.main.ar.controller;
 
-import android.util.Log;
+import com.hyunki.aryoulearning2.ui.main.ar.util.CurrentWord;
+import com.hyunki.aryoulearning2.ui.main.controller.NavListener;
 
 import java.util.List;
 import java.util.Stack;
 
 public class GameManager {
     private GameCommandListener gameCommands;
+    private NavListener navListener;
     private CurrentWord currentWord;
     //will dictate the number of rounds
-    private int roundLimit = 5;
+    private int roundLimit = 1;
     private Stack<String> keyStack = new Stack<>();
     private String attempt = "";
 
     //TODO - logic to rerun round when answer is incorrect
 
-    public GameManager(List<String> modelMapKeys, GameCommandListener gameCommands) {
+    public GameManager(List<String> modelMapKeys, GameCommandListener gameCommands, NavListener navListener) {
         this.gameCommands = gameCommands;
+        this.navListener = navListener;
         for (int i = 0; i < roundLimit; i++) {
             keyStack.add(modelMapKeys.get(i));
         }
@@ -38,10 +41,10 @@ public class GameManager {
                 recordWrongAnswer(attempt);
                 startNextGame(currentWord.getAnswer());
             } else {
-                if (keyStack.size() > 1) {
+                if (keyStack.size() > 0) {
                     startNextGame(keyStack.pop());
                 } else {
-                    //TODO - move to next fragment
+                    navListener.moveToReplayFragment();
                 }
             }
         }
@@ -60,7 +63,6 @@ public class GameManager {
         refreshManager(key);
         //TODO - record wronganswers into a map of retrievable data
         gameCommands.startNextGame(key);
-
     }
 
     public String getAttempt() {
@@ -71,14 +73,19 @@ public class GameManager {
         this.attempt += letter;
     }
 
-    public void subtractLetterFromAttempt() {
+    public String subtractLetterFromAttempt() {
+        String letter = "";
         if (!attempt.isEmpty()) {
+            letter = attempt.substring(attempt.length());
             attempt = attempt.substring(0, attempt.length() - 1);
         }
+        return letter;
     }
 
     public void refreshManager(String key) {
         attempt = "";
-        setCurrentWord(new CurrentWord(key));
+        if(!currentWord.getAnswer().equals(key)) {
+            setCurrentWord(new CurrentWord(key));
+        }
     }
 }

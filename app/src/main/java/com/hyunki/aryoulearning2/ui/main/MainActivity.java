@@ -7,15 +7,17 @@ import android.widget.ProgressBar;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.model.Model;
 import com.hyunki.aryoulearning2.model.ModelResponse;
 import com.hyunki.aryoulearning2.network.main.MainResource;
-import com.hyunki.aryoulearning2.ui.main.ar.ARHostFragmentX;
+import com.hyunki.aryoulearning2.ui.main.ar.ArHostFragment;
 import com.hyunki.aryoulearning2.ui.main.controller.NavListener;
 import com.hyunki.aryoulearning2.ui.main.hint.HintFragment;
 import com.hyunki.aryoulearning2.ui.main.list.ListFragment;
+import com.hyunki.aryoulearning2.ui.main.replay.ReplayFragment;
 import com.hyunki.aryoulearning2.util.audio.PronunciationUtil;
 import com.hyunki.aryoulearning2.viewmodel.ViewModelProviderFactory;
 
@@ -29,19 +31,21 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     public static final String TAG = "MainActivity";
     private MainViewModel viewModel;
     private ProgressBar progressBar;
-//    public static String currentCategory;
 
     @Inject
     PronunciationUtil pronunciationUtil;
 
     @Inject
-    ARHostFragmentX arHostFragmentX;
+    ArHostFragment arHostFragment;
 
     @Inject
     ListFragment listFragment;
 
     @Inject
     HintFragment hintFragment;
+
+    @Inject
+    ReplayFragment replayFragment;
 
     @Inject
     int resId;
@@ -72,52 +76,55 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         progressBar = findViewById(R.id.progress_bar);
         Log.d(TAG, "onCreate");
 
-        viewModel = new ViewModelProvider(getViewModelStore(), providerFactory).get(MainViewModel.class);
-        subscribeObservers();
+        viewModel = ViewModelProviders.of(this,providerFactory).get(MainViewModel.class);
+//        subscribeObservers();
+
+        viewModel.loadModelResponses();
+        viewModel.
     }
 
-    private void subscribeObservers() {
-        Log.d(TAG, "onChanged: subscribe method call");
-        viewModel.observeModelResponses().observe(this, new Observer<MainResource<List<ModelResponse>>>() {
-            @Override
-            public void onChanged(MainResource<List<ModelResponse>> listResource) {
+//    private void loadModelResponses() {
 
-                if (listResource != null) {
-                    switch (listResource.status) {
-
-                        case LOADING: {
-                            Log.d(TAG, "onChanged: loading");
-                            showProgressBar(true);
-                            break;
-                        }
-
-                        case SUCCESS: {
-                            Log.d(TAG, "onChanged: success");
-                            showProgressBar(false);
-                            Log.d(TAG, "onChanged: " + listResource.data.size());
-                            break;
-                        }
-
-                        case ERROR: {
-                            showProgressBar(false);
-                            Log.e(TAG, "onChanged: error: " + listResource.message);
-                            break;
-                        }
-
-                        case FINISHED: {
-                            showProgressBar(false);
-                            moveToListFragment();
-                        }
-
-                    }
-                }
-            }
-        });
-    }
+//        Log.d(TAG, "onChanged: subscribe method call");
+//        viewModel.observeModelResponses().observe(this, new Observer<MainResource<List<ModelResponse>>>() {
+//            @Override
+//            public void onChanged(MainResource<List<ModelResponse>> listResource) {
+//
+//                if (listResource != null) {
+//                    switch (listResource.status) {
+//
+//                        case LOADING: {
+//                            Log.d(TAG, "onChanged: loading");
+//                            showProgressBar(true);
+//                            break;
+//                        }
+//
+//                        case SUCCESS: {
+//                            Log.d(TAG, "onChanged: success");
+//                            showProgressBar(false);
+//                            Log.d(TAG, "onChanged: " + listResource.data.size());
+//                            break;
+//                        }
+//
+//                        case ERROR: {
+//                            showProgressBar(false);
+//                            Log.e(TAG, "onChanged: error: " + listResource.message);
+//                            break;
+//                        }
+//
+//                        case FINISHED: {
+//                            showProgressBar(false);
+//                            moveToListFragment();
+//                        }
+//
+//                    }
+//                }
+//            }
+//        });
+//    }
 
     private void showProgressBar(boolean isVisible) {
 
@@ -142,7 +149,7 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     public void moveToGameFragment() {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, arHostFragmentX, "ar_fragment")
+                .replace(R.id.fragment_container, arHostFragment, "ar_fragment")
 //                    .addToBackStack(null)
                 .commit();
 
@@ -164,8 +171,11 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     }
 
     @Override
-    public void moveToReplayFragment(List<Model> modelList, boolean wasPreviousGameTypeAR) {
-
+    public void moveToReplayFragment() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, replayFragment)
+                .commit();
     }
 
     @Override

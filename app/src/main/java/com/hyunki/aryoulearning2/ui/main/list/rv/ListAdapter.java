@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.CategoryViewHolder> {
-    private List<Category> categories = new ArrayList<>();
+    private ArrayList<Category> categories = new ArrayList<>();
     private NavListener listener;
 
     @NonNull
@@ -50,7 +50,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.CategoryViewHo
         return categories.size();
     }
 
-    public void setLists(List<Category> categories) {
+    public void setLists(ArrayList<Category> categories) {
         this.categories = categories;
         notifyDataSetChanged();
     }

@@ -13,7 +13,7 @@ public interface NavListener {
 
     void moveToHintFragment();
 
-    void moveToReplayFragment(final List<Model> modelList, final boolean wasPreviousGameTypeAR);
+    void moveToReplayFragment();
 
     void backToHintFragment(final List<Model> animalResponseList);
 

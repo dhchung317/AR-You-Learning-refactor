@@ -14,6 +14,7 @@ import com.hyunki.aryoulearning2.model.Model;
 import com.hyunki.aryoulearning2.model.ModelResponse;
 import com.hyunki.aryoulearning2.network.main.MainApi;
 import com.hyunki.aryoulearning2.network.main.MainResource;
+import com.hyunki.aryoulearning2.ui.main.ar.State;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,56 +35,89 @@ public class MainViewModel extends ViewModel {
     private final MainRepository mainRepository;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-    private final MainApi mainApi;
 
-    private MediatorLiveData<MainResource<List<ModelResponse>>> modelResponsesData = new MediatorLiveData<>();
+    public MutableLiveData<State> getModelResponsesData() {
+        return modelResponsesData;
+    }
 
-    private MutableLiveData<List<Model>> modelLiveData = new MediatorLiveData<>();
-    private MutableLiveData<List<Category>> catLiveData = new MutableLiveData<>();
-    private MutableLiveData<String> curCatLiveData = new MutableLiveData<>();
+    private MutableLiveData<State> modelResponsesData = new MutableLiveData<>();
+    private MutableLiveData<State> modelLiveData = new MutableLiveData<>();
+    private MutableLiveData<State> catLiveData = new MutableLiveData<>();
+    private MutableLiveData<State> curCatLiveData = new MutableLiveData<>();
 
     @Inject
-    public MainViewModel(MainApi mainApi, MainRepository mainRepository) {
-        this.mainApi = mainApi;
+    public MainViewModel(MainRepository mainRepository) {
         this.mainRepository = mainRepository;
     }
 
-    public LiveData<MainResource<List<ModelResponse>>> observeModelResponses() {
+    public void loadModelResponses() {
 
-        modelResponsesData.setValue(MainResource.loading(new ArrayList<>()));
+        modelResponsesData.setValue(State.Loading.INSTANCE);
 
-        LiveData<MainResource<List<ModelResponse>>> data = LiveDataReactiveStreams.fromPublisher(
-                mainApi.getModels()
+        compositeDisposable.add(
+                mainRepository.getModelResponses()
                         .subscribeOn(Schedulers.io())
-                        .map(modelResponses -> {
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(modelResponses -> {
                             if (modelResponses.size() > 0) {
-                                if (modelResponses.get(0).getError() == -1) {
-                                    return MainResource.error("error", null);
-                                }
-                                for (int i = 0; i < modelResponses.size(); i++) {
-                                    mainRepository.insertCat(new Category(
-                                            modelResponses.get(i).getCategory(),
-                                            modelResponses.get(i).getBackground()
-                                    ));
-                                    for (int j = 0; j < modelResponses.get(i).getList().size(); j++) {
-                                        Log.d(TAG, "observeModelResponses: " + modelResponses.get(i).getList().get(j).getName());
-                                        mainRepository.insertModel(new Model(
-                                                modelResponses.get(i).getCategory(),
-                                                modelResponses.get(i).getList().get(j).getName(),
-                                                modelResponses.get(i).getList().get(j).getImage()
-                                        ));
-                                    }
-                                }
+                                saveModelResponseData(modelResponses);
+                                modelResponsesData.setValue(
+                                        new State.Success.OnModelResponsesLoaded(modelResponses));
                             }
-                            return MainResource.success(modelResponses);
-                        })
+
+                        },throwable -> modelResponsesData.setValue(State.Error.INSTANCE))
         );
-        modelResponsesData.addSource(data, listResource -> {
-            modelResponsesData.setValue(MainResource.finished(listResource.data));
-            modelResponsesData.removeSource(data);
-        });
-        return modelResponsesData;
     }
+
+    public void saveModelResponseData(ArrayList<ModelResponse> modelResponses) {
+        for (int i = 0; i < modelResponses.size(); i++) {
+            mainRepository.insertCat(new Category(
+                    modelResponses.get(i).getCategory(),
+                    modelResponses.get(i).getBackground()
+            ));
+            for (int j = 0; j < modelResponses.get(i).getList().size(); j++) {
+                Log.d(TAG, "observeModelResponses: " + modelResponses.get(i).getList().get(j).getName());
+                mainRepository.insertModel(new Model(
+                        modelResponses.get(i).getCategory(),
+                        modelResponses.get(i).getList().get(j).getName(),
+                        modelResponses.get(i).getList().get(j).getImage()
+                ));
+            }
+        }
+    }
+
+//        LiveData<MainResource<List<ModelResponse>>> data = LiveDataReactiveStreams.fromPublisher(
+//                mainApi.getModels()
+//                        .subscribeOn(Schedulers.io())
+//                        .map(modelResponses -> {
+//                            if (modelResponses.size() > 0) {
+//                                if (modelResponses.get(0).getError() == -1) {
+//                                    return MainResource.error("error", null);
+//                                }
+//                                for (int i = 0; i < modelResponses.size(); i++) {
+//                                    mainRepository.insertCat(new Category(
+//                                            modelResponses.get(i).getCategory(),
+//                                            modelResponses.get(i).getBackground()
+//                                    ));
+//                                    for (int j = 0; j < modelResponses.get(i).getList().size(); j++) {
+//                                        Log.d(TAG, "observeModelResponses: " + modelResponses.get(i).getList().get(j).getName());
+//                                        mainRepository.insertModel(new Model(
+//                                                modelResponses.get(i).getCategory(),
+//                                                modelResponses.get(i).getList().get(j).getName(),
+//                                                modelResponses.get(i).getList().get(j).getImage()
+//                                        ));
+//                                    }
+//                                }
+//                            }
+//                            return MainResource.success(modelResponses);
+//                        })
+//        );
+//        modelResponsesData.addSource(data, listResource -> {
+//            modelResponsesData.setValue(MainResource.finished(listResource.data));
+//            modelResponsesData.removeSource(data);
+//        });
+//        return modelResponsesData;
+
 
     public void loadModelsByCat(String cat) {
         Disposable modelDisposable =
@@ -110,15 +144,15 @@ public class MainViewModel extends ViewModel {
         compositeDisposable.add(curCatDisposable);
     }
 
-    public MutableLiveData<List<Model>> getModelLiveData() {
+    public LiveData<State> getModelLiveData() {
         return modelLiveData;
     }
 
-    public MutableLiveData<List<Category>> getCatLiveData() {
+    public LiveData<State> getCatLiveData() {
         return catLiveData;
     }
 
-    public MutableLiveData<String> getCurCatLiveData() {
+    public LiveData<State> getCurCatLiveData() {
         return curCatLiveData;
     }
 
@@ -134,17 +168,18 @@ public class MainViewModel extends ViewModel {
         Log.d("MainViewModel", throwable.getMessage());
     }
 
-    private void onModelsFetched(List<Model> models) {
+    private void onModelsFetched(ArrayList<Model> models) {
         Log.d(TAG, "onModelsFetched: " + models.size());
-        modelLiveData.setValue(models);
+        modelLiveData.setValue(new State.Success.OnModelsLoaded(models));
     }
 
-    private void onCatsFetched(List<Category> categories) {
-        catLiveData.setValue(categories);
+    private void onCatsFetched(ArrayList<Category> categories) {
+        catLiveData.setValue(new State.Success.OnCategoriesLoaded(categories));
     }
 
     private void onCurCatsFetched(CurrentCategory category) {
-        curCatLiveData.setValue(category.getCurrentCategory());
+        curCatLiveData.setValue(
+                new State.Success.OnCurrentCategoryStringLoaded(category.getCurrentCategory()));
     }
 
     @Override

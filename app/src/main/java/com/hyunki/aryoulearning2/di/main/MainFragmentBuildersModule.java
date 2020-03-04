@@ -1,9 +1,9 @@
 package com.hyunki.aryoulearning2.di.main;
 
-import com.hyunki.aryoulearning2.ui.main.ar.ARHostFragmentX;
 import com.hyunki.aryoulearning2.ui.main.ar.ArHostFragment;
 import com.hyunki.aryoulearning2.ui.main.hint.HintFragment;
 import com.hyunki.aryoulearning2.ui.main.list.ListFragment;
+import com.hyunki.aryoulearning2.ui.main.replay.ReplayFragment;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -18,8 +18,8 @@ public abstract class MainFragmentBuildersModule {
     abstract HintFragment contributeHintFragment();
 
     @ContributesAndroidInjector
-    abstract ArHostFragment contributeARHostFragment();
+    abstract ArHostFragment contributeArHostFragment();
 
     @ContributesAndroidInjector
-    abstract ARHostFragmentX contributeAXFragment();
+    abstract ReplayFragment contributeReplayFragment();
 }

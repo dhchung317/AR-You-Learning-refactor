@@ -6,11 +6,15 @@ import com.hyunki.aryoulearning2.db.dao.ModelDao;
 import com.hyunki.aryoulearning2.db.model.Category;
 import com.hyunki.aryoulearning2.db.model.CurrentCategory;
 import com.hyunki.aryoulearning2.model.Model;
+import com.hyunki.aryoulearning2.model.ModelResponse;
+import com.hyunki.aryoulearning2.network.RetrofitSingleton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 public class MainRepository {
@@ -25,11 +29,11 @@ public class MainRepository {
         this.currentCategoryDao = currentCategoryDao;
     }
 
-    public Single<List<Model>> getAllModels() {
+    public Single<ArrayList<Model>> getAllModels() {
         return modelDao.getAllModels();
     }
 
-    public Single<List<Model>> getModelsByCat(String cat) {
+    public Single<ArrayList<Model>> getModelsByCat(String cat) {
         return modelDao.getModelsByCat(cat);
     }
 
@@ -38,11 +42,11 @@ public class MainRepository {
     }
 
     //
-    void insertAllModels(List<Model> models) {
+    void insertAllModels(ArrayList<Model> models) {
         modelDao.insertAll(models);
     }
 
-    Single<List<Category>> getAllCats() {
+    Single<ArrayList<Category>> getAllCats() {
         return categoryDao.getAllCategories();
     }
 
@@ -58,10 +62,14 @@ public class MainRepository {
         currentCategoryDao.insert(category);
     }
 
+    public Observable<ArrayList<ModelResponse>> getModelResponses() {
+        return RetrofitSingleton.getService().getModels();
+
+    }
+
     void clearEntireDatabase() {
         modelDao.deleteAll();
         categoryDao.deleteAll();
         currentCategoryDao.deleteAll();
     }
-
 }

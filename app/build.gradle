@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.google.ar.sceneform.plugin'
 
 
@@ -77,6 +79,9 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
     implementation "com.google.android.material:material:1.1.0"
     implementation "android.arch.lifecycle:reactivestreams:1.1.1"
+    compile "androidx.core:core-ktx:+"
+    compile "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
 }
 
@@ -279,3 +284,6 @@ sceneform.asset('sampledata/animal/Mesh_Cow.obj',
         'default',
         'sampledata/animal/Mesh_Cow.sfa',
         'src/main/assets/cow')
+repositories {
+    mavenCentral()
+}
