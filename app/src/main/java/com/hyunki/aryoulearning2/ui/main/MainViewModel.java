@@ -14,6 +14,7 @@ import com.hyunki.aryoulearning2.model.Model;
 import com.hyunki.aryoulearning2.model.ModelResponse;
 import com.hyunki.aryoulearning2.network.main.MainApi;
 import com.hyunki.aryoulearning2.network.main.MainResource;
+import com.hyunki.aryoulearning2.ui.main.ar.State;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,11 +37,10 @@ public class MainViewModel extends ViewModel {
 
     private final MainApi mainApi;
 
-    private MediatorLiveData<MainResource<List<ModelResponse>>> modelResponsesData = new MediatorLiveData<>();
-
-    private MutableLiveData<List<Model>> modelLiveData = new MediatorLiveData<>();
-    private MutableLiveData<List<Category>> catLiveData = new MutableLiveData<>();
-    private MutableLiveData<String> curCatLiveData = new MutableLiveData<>();
+    private MutableLiveData<State> modelResponsesData = new MutableLiveData<>();
+    private MutableLiveData<State> modelLiveData = new MutableLiveData<>();
+    private MutableLiveData<State> catLiveData = new MutableLiveData<>();
+    private MutableLiveData<State> curCatLiveData = new MutableLiveData<>();
 
     @Inject
     public MainViewModel(MainApi mainApi, MainRepository mainRepository) {
@@ -50,7 +50,7 @@ public class MainViewModel extends ViewModel {
 
     public LiveData<MainResource<List<ModelResponse>>> observeModelResponses() {
 
-        modelResponsesData.setValue(MainResource.loading(new ArrayList<>()));
+        modelResponsesData.setValue(State.Loading.INSTANCE);
 
         LiveData<MainResource<List<ModelResponse>>> data = LiveDataReactiveStreams.fromPublisher(
                 mainApi.getModels()

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ReplayFragment extends Fragment {
+public class ReplayFragmentx extends Fragment {
 
     private static final String MODEL_LIST = "MODEL_LIST";
     private static final String PREVIOUS_GAME_STATUS = "GAME_STATUS";
@@ -36,11 +36,11 @@ public class ReplayFragment extends Fragment {
     private boolean previousGameTypeIsAR;
 
 
-    public ReplayFragment() {
+    public ReplayFragmentx() {
     }
 
-    public static ReplayFragment newInstance(final List<Model> modelList, final boolean wasPreviousGameTypeAR) {
-        ReplayFragment fragment = new ReplayFragment();
+    public static ReplayFragmentx newInstance(final List<Model> modelList, final boolean wasPreviousGameTypeAR) {
+        ReplayFragmentx fragment = new ReplayFragmentx();
         Bundle args = new Bundle();
 //        args.putParcelableArrayList(MODEL_LIST, (ArrayList<? extends Parcelable>) modelList);
         args.putBoolean(PREVIOUS_GAME_STATUS,wasPreviousGameTypeAR);

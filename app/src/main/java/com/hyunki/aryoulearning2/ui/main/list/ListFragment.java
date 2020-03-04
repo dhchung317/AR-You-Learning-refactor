@@ -79,4 +79,15 @@ public class ListFragment extends DaggerFragment {
                         false));
         recyclerView.setAdapter(listAdapter);
     }
+
+    @Override
+    public void onResume() {
+        Log.d(TAG, "onResume: called");
+
+        super.onResume();
+//        mainViewModel.loadCategories();
+        mainViewModel.getCatLiveData().observe(getViewLifecycleOwner(), categories -> {
+            listAdapter.setLists(categories);
+        });
+    }
 }

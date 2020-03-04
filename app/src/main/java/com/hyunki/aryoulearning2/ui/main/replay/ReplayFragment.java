@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
-import androidx.fragment.app.Fragment;
 
 import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.model.Model;
@@ -21,7 +20,12 @@ import com.hyunki.aryoulearning2.util.audio.PronunciationUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReplayFragment extends Fragment {
+import javax.inject.Inject;
+
+import dagger.android.support.AndroidSupportInjection;
+import dagger.android.support.DaggerFragment;
+
+public class ReplayFragment extends DaggerFragment {
     private NavListener listener;
 
     private CardView resultsButtonCard, homeButtonCard, playAgainButtonCard;
@@ -31,6 +35,7 @@ public class ReplayFragment extends Fragment {
     private TextToSpeech textToSpeech;
     private PronunciationUtil pronunciationUtil;
 
+    @Inject
     public ReplayFragment() {
     }
 
@@ -47,6 +52,7 @@ public class ReplayFragment extends Fragment {
         if (context instanceof NavListener) {
             listener = (NavListener) context;
         }
+//        AndroidSupportInjection.inject(this);
 //        pronunciationUtil = new PronunciationUtil();
     }
 
@@ -85,8 +91,8 @@ public class ReplayFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        textToSpeech.shutdown();
-        pronunciationUtil = null;
+//        textToSpeech.shutdown();
+//        pronunciationUtil = null;
 //        listener = null;
     }
 
@@ -96,7 +102,7 @@ public class ReplayFragment extends Fragment {
         if(getFragmentManager().findFragmentByTag("result_fragment") != null){
             getFragmentManager().beginTransaction().remove(getFragmentManager().findFragmentByTag("result_fragment")).commit();
         }
-        getActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+//        getActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
     }
 
     @Override

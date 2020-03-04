@@ -3,7 +3,7 @@ package com.hyunki.aryoulearning2.di.main;
 import com.hyunki.aryoulearning2.ui.main.ar.ArHostFragment;
 import com.hyunki.aryoulearning2.ui.main.hint.HintFragment;
 import com.hyunki.aryoulearning2.ui.main.list.ListFragment;
-import com.hyunki.aryoulearning2.ui.main.needsrefactor.ReplayFragment;
+import com.hyunki.aryoulearning2.ui.main.replay.ReplayFragment;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;

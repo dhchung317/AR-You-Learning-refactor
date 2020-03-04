@@ -429,7 +429,7 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
                 mainAnchorNode.setParent(arFragment.getArSceneView().getScene());
 //                    Node gameSystem = createGame(modelMapList.get(0));
 
-                gameManager = new GameManager(getKeysFromModelMapList(modelMapList), this);
+                gameManager = new GameManager(getKeysFromModelMapList(modelMapList), this, listener);
 
                 String modelKey = gameManager.getCurrentWordAnswer();
 

@@ -7,6 +7,7 @@ import android.widget.ProgressBar;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.model.Model;
@@ -16,7 +17,7 @@ import com.hyunki.aryoulearning2.ui.main.ar.ArHostFragment;
 import com.hyunki.aryoulearning2.ui.main.controller.NavListener;
 import com.hyunki.aryoulearning2.ui.main.hint.HintFragment;
 import com.hyunki.aryoulearning2.ui.main.list.ListFragment;
-import com.hyunki.aryoulearning2.ui.main.needsrefactor.ReplayFragment;
+import com.hyunki.aryoulearning2.ui.main.replay.ReplayFragment;
 import com.hyunki.aryoulearning2.util.audio.PronunciationUtil;
 import com.hyunki.aryoulearning2.viewmodel.ViewModelProviderFactory;
 
@@ -78,7 +79,7 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
         progressBar = findViewById(R.id.progress_bar);
         Log.d(TAG, "onCreate");
 
-        viewModel = new ViewModelProvider(getViewModelStore(), providerFactory).get(MainViewModel.class);
+        viewModel = ViewModelProviders.of(this,providerFactory).get(MainViewModel.class);
         subscribeObservers();
     }
 
