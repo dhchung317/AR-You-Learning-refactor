@@ -1,6 +1,9 @@
 package com.hyunki.aryoulearning2.network;
 
+import com.hyunki.aryoulearning2.network.main.MainApi;
+
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public final class RetrofitSingleton {
@@ -13,6 +16,7 @@ public final class RetrofitSingleton {
             instance = new Retrofit.Builder()
                     .baseUrl(BASEURL)
                     .addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .build();
         }
         return instance;
@@ -21,7 +25,7 @@ public final class RetrofitSingleton {
     private RetrofitSingleton() {
     }
 
-    public static ModelService getService() {
-        return getInstance().create(ModelService.class);
+    public static MainApi getService() {
+        return getInstance().create(MainApi.class);
     }
 }

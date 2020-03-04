@@ -80,47 +80,51 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
         Log.d(TAG, "onCreate");
 
         viewModel = ViewModelProviders.of(this,providerFactory).get(MainViewModel.class);
-        subscribeObservers();
+//        subscribeObservers();
+
+        viewModel.loadModelResponses();
+        viewModel.
     }
 
-    private void subscribeObservers() {
-        Log.d(TAG, "onChanged: subscribe method call");
-        viewModel.observeModelResponses().observe(this, new Observer<MainResource<List<ModelResponse>>>() {
-            @Override
-            public void onChanged(MainResource<List<ModelResponse>> listResource) {
+//    private void loadModelResponses() {
 
-                if (listResource != null) {
-                    switch (listResource.status) {
-
-                        case LOADING: {
-                            Log.d(TAG, "onChanged: loading");
-                            showProgressBar(true);
-                            break;
-                        }
-
-                        case SUCCESS: {
-                            Log.d(TAG, "onChanged: success");
-                            showProgressBar(false);
-                            Log.d(TAG, "onChanged: " + listResource.data.size());
-                            break;
-                        }
-
-                        case ERROR: {
-                            showProgressBar(false);
-                            Log.e(TAG, "onChanged: error: " + listResource.message);
-                            break;
-                        }
-
-                        case FINISHED: {
-                            showProgressBar(false);
-                            moveToListFragment();
-                        }
-
-                    }
-                }
-            }
-        });
-    }
+//        Log.d(TAG, "onChanged: subscribe method call");
+//        viewModel.observeModelResponses().observe(this, new Observer<MainResource<List<ModelResponse>>>() {
+//            @Override
+//            public void onChanged(MainResource<List<ModelResponse>> listResource) {
+//
+//                if (listResource != null) {
+//                    switch (listResource.status) {
+//
+//                        case LOADING: {
+//                            Log.d(TAG, "onChanged: loading");
+//                            showProgressBar(true);
+//                            break;
+//                        }
+//
+//                        case SUCCESS: {
+//                            Log.d(TAG, "onChanged: success");
+//                            showProgressBar(false);
+//                            Log.d(TAG, "onChanged: " + listResource.data.size());
+//                            break;
+//                        }
+//
+//                        case ERROR: {
+//                            showProgressBar(false);
+//                            Log.e(TAG, "onChanged: error: " + listResource.message);
+//                            break;
+//                        }
+//
+//                        case FINISHED: {
+//                            showProgressBar(false);
+//                            moveToListFragment();
+//                        }
+//
+//                    }
+//                }
+//            }
+//        });
+//    }
 
     private void showProgressBar(boolean isVisible) {
 

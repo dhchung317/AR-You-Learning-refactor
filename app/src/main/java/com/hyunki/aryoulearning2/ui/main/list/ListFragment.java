@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.ui.main.MainViewModel;
+import com.hyunki.aryoulearning2.ui.main.ar.State;
 import com.hyunki.aryoulearning2.ui.main.list.rv.ListAdapter;
 import com.hyunki.aryoulearning2.viewmodel.ViewModelProviderFactory;
 
@@ -68,7 +69,8 @@ public class ListFragment extends DaggerFragment {
         initRecyclerView();
 
         mainViewModel.getCatLiveData().observe(getViewLifecycleOwner(), categories -> {
-            listAdapter.setLists(categories);
+//            listAdapter.setLists(categories);
+
         });
     }
 
@@ -80,14 +82,7 @@ public class ListFragment extends DaggerFragment {
         recyclerView.setAdapter(listAdapter);
     }
 
-    @Override
-    public void onResume() {
-        Log.d(TAG, "onResume: called");
-
-        super.onResume();
-//        mainViewModel.loadCategories();
-        mainViewModel.getCatLiveData().observe(getViewLifecycleOwner(), categories -> {
-            listAdapter.setLists(categories);
-        });
+    private void renderCategories(State state){
+        //TODO if else logic to render categories/set adapter list
     }
 }
