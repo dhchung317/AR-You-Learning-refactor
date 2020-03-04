@@ -16,6 +16,7 @@ import com.hyunki.aryoulearning2.ui.main.ar.ArHostFragment;
 import com.hyunki.aryoulearning2.ui.main.controller.NavListener;
 import com.hyunki.aryoulearning2.ui.main.hint.HintFragment;
 import com.hyunki.aryoulearning2.ui.main.list.ListFragment;
+import com.hyunki.aryoulearning2.ui.main.needsrefactor.ReplayFragment;
 import com.hyunki.aryoulearning2.util.audio.PronunciationUtil;
 import com.hyunki.aryoulearning2.viewmodel.ViewModelProviderFactory;
 
@@ -41,6 +42,9 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
 
     @Inject
     HintFragment hintFragment;
+
+    @Inject
+    ReplayFragment replayFragment;
 
     @Inject
     int resId;
@@ -162,8 +166,11 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     }
 
     @Override
-    public void moveToReplayFragment(List<Model> modelList, boolean wasPreviousGameTypeAR) {
-
+    public void moveToReplayFragment() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, replayFragment)
+                .commit();
     }
 
     @Override

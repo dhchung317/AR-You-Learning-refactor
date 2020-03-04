@@ -16,6 +16,7 @@ public class GameManager {
     private Stack<String> keyStack = new Stack<>();
     private String attempt = "";
 
+
     //TODO - logic to rerun round when answer is incorrect
 
     public GameManager(List<String> modelMapKeys, GameCommandListener gameCommands) {
@@ -44,6 +45,7 @@ public class GameManager {
                 if (keyStack.size() > 0) {
                     startNextGame(keyStack.pop());
                 } else {
+
                     //TODO - move to next fragment
                 }
             }
@@ -63,7 +65,6 @@ public class GameManager {
         refreshManager(key);
         //TODO - record wronganswers into a map of retrievable data
         gameCommands.startNextGame(key);
-
     }
 
     public String getAttempt() {
@@ -85,6 +86,8 @@ public class GameManager {
 
     public void refreshManager(String key) {
         attempt = "";
-        setCurrentWord(new CurrentWord(key));
+        if(!currentWord.getAnswer().equals(key)) {
+            setCurrentWord(new CurrentWord(key));
+        }
     }
 }

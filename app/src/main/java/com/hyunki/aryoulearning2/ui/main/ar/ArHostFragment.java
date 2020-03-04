@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -45,6 +46,7 @@ import com.google.ar.sceneform.ux.ArFragment;
 import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.animation.Animations;
 import com.hyunki.aryoulearning2.animation.LottieHelper;
+import com.hyunki.aryoulearning2.ui.main.MainViewModel;
 import com.hyunki.aryoulearning2.ui.main.ar.controller.GameCommandListener;
 import com.hyunki.aryoulearning2.ui.main.ar.controller.GameManager;
 import com.hyunki.aryoulearning2.ui.main.ar.util.ModelUtil;
@@ -66,8 +68,8 @@ import dagger.android.support.DaggerFragment;
 public class ArHostFragment extends DaggerFragment implements GameCommandListener {
     private static final int RC_PERMISSIONS = 0x123;
     public static final String MODEL_LIST = "MODEL_LIST";
-    GameManager gameManager;
-
+    private GameManager gameManager;
+    private NavListener listener;
 
     @Inject
     ViewModelProviderFactory viewModelProviderFactory;
@@ -76,10 +78,10 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
     LottieHelper lottieHelper;
 
     private ArViewModel arViewModel;
+    private MainViewModel mainViewModel;
 
     private ArFragment arFragment;
 
-    private NavListener listener;
     private GestureDetector gestureDetector;
     private PronunciationUtil pronunciationUtil;
     private MediaPlayer playBalloonPop;
@@ -91,7 +93,7 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
     private boolean hasPlacedGame = false;
     private boolean placedAnimation;
 
-    private FrameLayout f;
+    private FrameLayout frameLayout;
 
     private LinearLayout wordContainer;
     private View wordValidatorLayout;
@@ -129,6 +131,7 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mainViewModel = ViewModelProviders.of(this,viewModelProviderFactory).get(MainViewModel.class);
         arViewModel = ViewModelProviders.of(this, viewModelProviderFactory).get(ArViewModel.class);
         arViewModel.loadModels();
 
@@ -147,20 +150,7 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
 
         arViewModel.getModelMapList().observe(getViewLifecycleOwner(), hashMaps -> {
             modelMapList = hashMaps;
-            Log.d("getmodelmaplist", "onViewCreated: " + hashMaps.size());
-
-            for (int i = 0; i < hashMaps.size(); i++) {
-                Log.d("getmodelkeyset", "onViewCreated: " + hashMaps.get(i).keySet());
-
-//                for(Map.Entry<String,ModelRenderable> e : hashMaps.get(i).entrySet()){
-//                    Log.d("getmodelloop", "onViewCreated: " + e.getKey());
-//                }
-            }
-
             hasFinishedLoadingModels = true;
-            List<String> list = getKeysFromModelMapList(hashMaps);
-//            Log.d("getmodelmaplist", "onViewCreated: " + list.get(0));
-//            gameManager = new GameManager(getKeysFromModelMapList(hashMaps),this);
         });
 
         arViewModel.getLetterMap().observe(getViewLifecycleOwner(), returnMap -> {
@@ -199,7 +189,7 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        f = view.findViewById(R.id.frame_layout);
+        frameLayout = view.findViewById(R.id.frame_layout);
 
         setUpViews(view);
 
@@ -279,7 +269,7 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
                             if (!placedAnimation && plane.getTrackingState() == TrackingState.TRACKING) {
                                 placedAnimation = true;
                                 tapAnimation = lottieHelper.getAnimationView(getContext(), LottieHelper.AnimationType.TAP);
-                                lottieHelper.addTapAnimationToScreen(tapAnimation, getActivity(), f);
+                                lottieHelper.addTapAnimationToScreen(tapAnimation, getActivity(), frameLayout);
                             }
                         }
                     }
@@ -289,7 +279,7 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
     private void initViews(View view) {
         wordCardView = view.findViewById(R.id.card_wordContainer);
         wordContainer = view.findViewById(R.id.word_container);
-        wordValidatorLayout = getLayoutInflater().inflate(R.layout.validator_card, f, false);
+        wordValidatorLayout = getLayoutInflater().inflate(R.layout.validator_card, frameLayout, false);
 //        wordValidatorCv = wordValidatorLayout.findViewById(R.id.word_validator_cv);
         wordValidator = wordValidatorLayout.findViewById(R.id.word_validator);
         validatorImage = wordValidatorLayout.findViewById(R.id.validator_imageView);
@@ -299,7 +289,7 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
         validatorWrongWord = wordValidatorLayout.findViewById(R.id.validator_wrong_word);
         validatorOkButton = wordValidatorLayout.findViewById(R.id.button_validator_ok);
 //        wordValidatorCv.setVisibility(View.INVISIBLE);
-        exitMenu = getLayoutInflater().inflate(R.layout.exit_menu_card, f, false);
+        exitMenu = getLayoutInflater().inflate(R.layout.exit_menu_card, frameLayout, false);
         exit = view.findViewById(R.id.exit_imageButton);
         exitYes = exitMenu.findViewById(R.id.exit_button_yes);
         exitNo = exitMenu.findViewById(R.id.exit_button_no);
@@ -307,12 +297,12 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
     }
 
     private void setListeners() {
-        exit.setOnClickListener(v -> f.addView(exitMenu));
+        exit.setOnClickListener(v -> frameLayout.addView(exitMenu));
         exitYes.setOnClickListener(v -> {
                     listener.moveToListFragment();
                 }
         );
-        exitNo.setOnClickListener(v -> f.removeView(exitMenu));
+        exitNo.setOnClickListener(v -> frameLayout.removeView(exitMenu));
 //        undo.setOnClickListener(v -> recreateErasedLetter(eraseLastLetter(letters)));
     }
 
@@ -324,7 +314,7 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
         fadeIn.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation){
-                f.addView(wordValidatorLayout);
+                frameLayout.addView(wordValidatorLayout);
             }
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -341,7 +331,7 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
-                f.removeView(wordValidatorLayout);
+                frameLayout.removeView(wordValidatorLayout);
 //                if (roundCounter < roundLimit && roundCounter < modelMapList.size()) {
 //                    createNextGame(modelMapList.get(roundCounter));
 //                } else {
@@ -418,7 +408,7 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
         if (frame != null) {
             if (!hasPlacedGame && tryPlaceGame(tap, frame)) {
                 hasPlacedGame = true;
-                f.removeView(tapAnimation);
+                frameLayout.removeView(tapAnimation);
             }
         }
     }
@@ -486,7 +476,11 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
 //        wordContainer.addView(t);
 //    }
 
-//    public void moveToReplayFragment() {
+    public void moveToReplayFragment() {
+        //TODO grab the set of wrongs answers from gamemanager, and set it in mainviewmodel
+        // move to replayfragment
+
+
 //        prefs.edit().putStringSet(ResultsFragment.CORRECT_ANSWER_FOR_USER, correctAnswerSet).apply();
 //        prefs.edit().putInt(ResultsFragment.TOTALSIZE, roundLimit).apply();
 //
@@ -496,8 +490,8 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
 //                categoryList.get(i).setCorrect(true);
 //            }
 //        }
-//        listener.moveToReplayFragment(categoryList, true);
-//    }
+        listener.moveToReplayFragment();
+    }
 
     @Override
     public void onDestroy() {
@@ -528,33 +522,16 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
         base.addChild(anchorNode);
     }
 
-
-    public String eraseLastLetter() {
-//        if (spelledOutWord.length() < 1) {
-//            undo.setVisibility(View.INVISIBLE);
-//            return spelledOutWord;
-//        } else {
-//            letters = letters.substring(0, spelledOutWord.length() - 1);
-//            wordContainer.removeViewAt(spelledOutWord.length() - 1);
-//            return spelledOutWord.substring(spelledOutWord.length() - 1);
-//        }
-        return gameManager.subtractLetterFromAttempt();
-    }
-
     private void recreateErasedLetter(String letterToRecreate) {
         if (!letterToRecreate.equals("")) {
             placeSingleLetter(letterToRecreate);
         }
     }
 
-//    private void undoLastLetter() {
-//        String erasedLetter = eraseLastLetter();
-//        recreateErasedLetter(erasedLetter);
-//    }
-
     private Node.OnTapListener getNodeOnTapListener(String letterString, AnchorNode letterAnchorNode) {
 
         return (hitTestResult, motionEvent) -> {
+            addLetterToWordBox(letterString.toLowerCase());
             gameManager.addTappedLetterToCurrentWordAttempt(letterString.toLowerCase());
             Objects.requireNonNull(letterAnchorNode.getAnchor()).detach();
         };
@@ -581,13 +558,13 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
 
 //    @Override
     public void addLetterToWordBox(String letter) {
-
+        //TODO add tapped letter to view
     }
 
 //    @Override
     public void undoLastLetter() {
-        String erasedLetter = eraseLastLetter();
+        String erasedLetter = gameManager.subtractLetterFromAttempt();
         recreateErasedLetter(erasedLetter);
-
+    //TODO remove letter in word box from view;
     }
 }
