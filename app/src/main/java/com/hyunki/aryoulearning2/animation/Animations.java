@@ -4,10 +4,13 @@ import android.animation.ObjectAnimator;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.BounceInterpolator;
 import android.view.animation.LinearInterpolator;
 
 import androidx.cardview.widget.CardView;
 
+import com.google.ar.sceneform.Node;
+import com.google.ar.sceneform.math.Vector3Evaluator;
 import com.hyunki.aryoulearning2.R;
 import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.QuaternionEvaluator;
@@ -42,7 +45,39 @@ public class Animations {
 
             return orbitAnimation;
         }
+
+        public static ObjectAnimator createFloatAnimator(Node animatedNode) {
+            // Node's setLocalRotation method accepts Quaternions as parameters.
+            // First, set up orientations that will animate a circle.
+            Vector3 orientation1 =new Vector3(
+                    animatedNode.getLocalPosition().x,
+                    animatedNode.getLocalPosition().y,
+                    animatedNode.getLocalPosition().z);
+            Vector3 orientation2 =new Vector3(
+                    animatedNode.getLocalPosition().x,
+                    animatedNode.getLocalPosition().y + 2,
+                    animatedNode.getLocalPosition().z);
+
+            ObjectAnimator orbitAnimation = new ObjectAnimator();
+            orbitAnimation.setObjectValues(orientation1, orientation2);
+
+            // Next, give it the localRotation property.
+            orbitAnimation.setPropertyName("floating");
+
+            // Use Sceneform's QuaternionEvaluator.
+            orbitAnimation.setEvaluator(new Vector3Evaluator());
+
+            //  Allow orbitAnimation to repeat forever
+            orbitAnimation.setRepeatCount(ObjectAnimator.INFINITE);
+            orbitAnimation.setRepeatMode(ObjectAnimator.REVERSE);
+            orbitAnimation.setInterpolator(new LinearInterpolator());
+            orbitAnimation.setAutoCancel(true);
+
+            return orbitAnimation;
+        }
     }
+
+
 
     public static class Normal {
         public static ObjectAnimator setCardFadeInAnimator(CardView cv) {

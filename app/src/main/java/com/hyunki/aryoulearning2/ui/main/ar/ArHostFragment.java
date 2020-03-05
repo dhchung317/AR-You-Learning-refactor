@@ -131,32 +131,7 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mainViewModel = ViewModelProviders.of(this,viewModelProviderFactory).get(MainViewModel.class);
-        arViewModel = ViewModelProviders.of(this, viewModelProviderFactory).get(ArViewModel.class);
-        arViewModel.loadModels();
 
-        arViewModel.getModelLiveData().observe(getViewLifecycleOwner(), models -> {
-            arViewModel.setListMapsOfFutureModels(models);
-        });
-
-        arViewModel.getFutureModelMapList().observe(getViewLifecycleOwner(), hashMaps -> {
-            arViewModel.setModelRenderables(hashMaps);
-            arViewModel.setMapOfFutureLetters(hashMaps);
-        });
-
-        arViewModel.getFutureLetterMap().observe(getViewLifecycleOwner(), map -> {
-            arViewModel.setLetterRenderables(map);
-        });
-
-        arViewModel.getModelMapList().observe(getViewLifecycleOwner(), hashMaps -> {
-            modelMapList = hashMaps;
-            hasFinishedLoadingModels = true;
-        });
-
-        arViewModel.getLetterMap().observe(getViewLifecycleOwner(), returnMap -> {
-            letterMap = returnMap;
-            hasFinishedLoadingLetters = true;
-        });
 
     }
 
@@ -198,6 +173,35 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
         setUpARScene(arFragment);
 
         requestCameraPermission(getActivity(), RC_PERMISSIONS);
+
+        mainViewModel = ViewModelProviders.of(this,viewModelProviderFactory).get(MainViewModel.class);
+        arViewModel = ViewModelProviders.of(this, viewModelProviderFactory).get(ArViewModel.class);
+
+        arViewModel.getModelLiveData().observe(getViewLifecycleOwner(), models -> {
+            arViewModel.setListMapsOfFutureModels(models);
+        });
+
+        arViewModel.getFutureModelMapList().observe(getViewLifecycleOwner(), hashMaps -> {
+            arViewModel.setModelRenderables(hashMaps);
+            arViewModel.setMapOfFutureLetters(hashMaps);
+        });
+
+        arViewModel.getFutureLetterMap().observe(getViewLifecycleOwner(), map -> {
+            arViewModel.setLetterRenderables(map);
+        });
+
+        arViewModel.getModelMapList().observe(getViewLifecycleOwner(), hashMaps -> {
+            modelMapList = hashMaps;
+
+            hasFinishedLoadingModels = true;
+        });
+
+        arViewModel.getLetterMap().observe(getViewLifecycleOwner(), returnMap -> {
+            letterMap = returnMap;
+            hasFinishedLoadingLetters = true;
+        });
+
+        arViewModel.loadModels();
     }
 
     private List<String> getKeysFromModelMapList(List<HashMap<String, ModelRenderable>> mapList) {
@@ -428,9 +432,8 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
                 mainAnchorNode = new AnchorNode(mainAnchor);
                 mainAnchorNode.setParent(arFragment.getArSceneView().getScene());
 //                    Node gameSystem = createGame(modelMapList.get(0));
-
-                gameManager = new GameManager(getKeysFromModelMapList(modelMapList), this, listener);
-
+                gameManager = new GameManager(getKeysFromModelMapList(arViewModel.getModelMapList().getValue()), this, listener);
+                Log.d("arhostfrag", "tryPlaceGame: " + arViewModel.getModelMapList().getValue().size());
                 String modelKey = gameManager.getCurrentWordAnswer();
 
                 for (int i = 0; i < modelMapList.size(); i++) {
@@ -566,5 +569,12 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
         String erasedLetter = gameManager.subtractLetterFromAttempt();
         recreateErasedLetter(erasedLetter);
     //TODO remove letter in word box from view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        hasPlacedGame = false;
+
     }
 }

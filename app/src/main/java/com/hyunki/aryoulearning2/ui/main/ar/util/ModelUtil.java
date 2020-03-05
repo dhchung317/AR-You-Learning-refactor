@@ -80,14 +80,25 @@ public class ModelUtil {
         trNode.setRenderable(renderable);
         trNode.setParent(base);
 
-
         Vector3 coordinates = getRandomCoordinates();
 
         while (checkDoesLetterCollide(coordinates, parent.getLocalPosition())) {
             coordinates = getRandomCoordinates();
         }
-
         trNode.setLocalPosition(coordinates);
+        trNode.setLookDirection(new Vector3(0, 0, 0));
+        trNode.setLocalScale(new Vector3(1.0f, 1.0f, 1.0f));
+
+        ObjectAnimator floating = Animations.AR.createFloatAnimator(trNode);
+        ObjectAnimator rotate = Animations.AR.createRotationAnimator();
+
+//        rotate.setTarget(trNode);
+        rotate.setDuration(7000);
+        rotate.start();
+
+        floating.setTarget(trNode);
+        floating.setDuration(500);
+        floating.start();
 
         return base;
     }
@@ -109,7 +120,7 @@ public class ModelUtil {
         }
 
         for (Vector3 v : collisionSet) {
-            //if the coordinates are within a range of any exisiting coordinates
+            //if the coordinates are within a range of any existing coordinates
             if (((newV3.x < v.x + 2 && newV3.x > v.x - 2)
                     && (newV3.y < v.y + 3 && newV3.y > v.y - 3))) {
                 return true;
