@@ -15,16 +15,16 @@ import io.reactivex.Single;
 @Dao
 public interface ModelInfoDao {
     @Query("SELECT category, name, image FROM model_info")
-    Single<ArrayList<ModelInfo>> getAllModelInfo();
+    Single<List<ModelInfo>> getAllModelInfo();
 
     @Query("SELECT category, name, image FROM model_info WHERE category = :category")
-    Single<ArrayList<ModelInfo>> getModelInfoByCat(String category);
+    Single<List<ModelInfo>> getModelInfoByCat(String category);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(ModelInfo modelInfo);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertAll(ArrayList<ModelInfo> modelInfos);
+    void insertAll(List<ModelInfo> modelInfos);
 
     @Query("DELETE FROM model_info")
     void deleteAll();

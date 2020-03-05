@@ -16,16 +16,16 @@ import io.reactivex.Single;
 public interface ModelDao {
 
     @Query("SELECT name, image FROM models")
-    Single<ArrayList<Model>> getAllModels();
+    Single<List<Model>> getAllModels();
 
     @Query("SELECT name, image FROM models WHERE category = :category")
-    Single<ArrayList<Model>> getModelsByCat(String category);
+    Single<List<Model>> getModelsByCat(String category);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Model model);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertAll(ArrayList<Model> models);
+    void insertAll(List<Model> models);
 
     @Query("DELETE FROM models")
     void deleteAll();

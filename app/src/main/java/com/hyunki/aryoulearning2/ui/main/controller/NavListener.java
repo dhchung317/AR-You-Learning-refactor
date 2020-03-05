@@ -1,5 +1,6 @@
 package com.hyunki.aryoulearning2.ui.main.controller;
 
+import com.hyunki.aryoulearning2.db.model.Category;
 import com.hyunki.aryoulearning2.model.Model;
 
 import java.util.List;
@@ -19,5 +20,5 @@ public interface NavListener {
 
     void moveToTutorialScreen(final List<Model> modelList);
 
-    void setCategoryFromFragment(String category);
+    void setCategoryFromFragment(Category category);
 }

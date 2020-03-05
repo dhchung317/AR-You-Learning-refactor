@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.model.Model;
 import com.hyunki.aryoulearning2.ui.main.MainViewModel;
+import com.hyunki.aryoulearning2.ui.main.State;
 import com.hyunki.aryoulearning2.ui.main.controller.NavListener;
 import com.hyunki.aryoulearning2.ui.main.hint.rv.HintAdapter;
 import com.hyunki.aryoulearning2.viewmodel.ViewModelProviderFactory;
@@ -39,6 +41,7 @@ public class HintFragment extends DaggerFragment {
     private NavListener listener;
     private Button startGameButton, tutorialButton;
     private FloatingActionButton backFAB;
+    private ProgressBar progressBar;
 
     private MainViewModel mainViewModel;
 
@@ -59,10 +62,12 @@ public class HintFragment extends DaggerFragment {
         this.hintAdapter = hintAdapter;
     }
 
-    //    public static HintFragment newInstance() {
-//
-//        return new HintFragment();
-//    }
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        progressBar = getActivity().findViewById(R.id.progress_bar);
+
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -83,18 +88,16 @@ public class HintFragment extends DaggerFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mainViewModel = ViewModelProviders.of(getActivity(), viewModelProviderFactory).get(MainViewModel.class);
-        mainViewModel.loadCurrentCategoryName();
-
-        mainViewModel.getCurCatLiveData().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-//                currentCategory = s;
-                mainViewModel.loadModelsByCat(s);
-            }
-        });
         enableViews(constraintLayout);
 
+        mainViewModel = ViewModelProviders.of(getActivity(), viewModelProviderFactory).get(MainViewModel.class);
+
+        mainViewModel.getCurCatLiveData().observe(getViewLifecycleOwner(), state -> {
+            renderCurrentCategory(state);
+        });
+        mainViewModel.getModelLiveData().observe(getViewLifecycleOwner(), state -> renderModelsByCategory(state));
+
+        mainViewModel.loadCurrentCategoryName();
 //        textToSpeech = pronunciationUtil.getTTS(requireContext());
         initializeViews(view);
 
@@ -105,18 +108,6 @@ public class HintFragment extends DaggerFragment {
                         false));
 
         hintRecyclerView.setAdapter(hintAdapter);
-
-        mainViewModel.getModelLiveData().observe(getViewLifecycleOwner(), new Observer<List<Model>>() {
-            @Override
-            public void onChanged(List<Model> models) {
-//                        modelList = models;
-                for (int i = 0; i < models.size(); i++) {
-                    Log.d("hint fragmetn", "onChanged: " + models.get(i).getName());
-                }
-
-                hintAdapter.setList(models);
-            }
-        });
 
 
 //        Log.d("hint frag", "onViewCreated: " + modelList.get(0).getName());
@@ -170,7 +161,10 @@ public class HintFragment extends DaggerFragment {
         });
 
         tutorialButton.setOnClickListener(v -> listener.moveToTutorialScreen(modelList));
-        backFAB.setOnClickListener(v -> getActivity().onBackPressed());
+        backFAB.setOnClickListener(v -> {
+            getActivity().onBackPressed();
+//            listener.setCategoryFromFragment(null);
+        });
     }
 
     public void setHintRV() {
@@ -193,4 +187,55 @@ public class HintFragment extends DaggerFragment {
 
     }
 
+    private void renderCurrentCategory(State state){
+        Log.d("rendercurcat", "renderCurrentCategory: " + state.getClass());
+
+        if (state == State.Loading.INSTANCE) {
+            showProgressBar(true);
+
+        } else if (state == State.Error.INSTANCE) {
+            showProgressBar(false);
+
+        } else if (state.getClass() == State.Success.OnCurrentCategoryStringLoaded.class) {
+            showProgressBar(false);
+            State.Success.OnCurrentCategoryStringLoaded s = (State.Success.OnCurrentCategoryStringLoaded) state;
+            mainViewModel.loadModelsByCat(s.getCurrentCategoryString());
+            Log.d("hint", "renderCurrentCategory: " + s.getCurrentCategoryString());
+//            mainViewModel.getCurCatLiveData().removeObservers(getViewLifecycleOwner());
+        }
+    }
+
+    private void renderModelsByCategory(State state){
+        if (state == State.Loading.INSTANCE) {
+            progressBar.bringToFront();
+            showProgressBar(true);
+
+        } else if (state == State.Error.INSTANCE) {
+            showProgressBar(false);
+
+        } else if (state.getClass() == State.Success.OnModelsLoaded.class) {
+            showProgressBar(false);
+            State.Success.OnModelsLoaded s = (State.Success.OnModelsLoaded) state;
+            hintAdapter.setList(s.getModels());
+//            mainViewModel.getModelLiveData().removeObservers(getViewLifecycleOwner());
+        }
+
+    }
+
+    void showProgressBar(boolean isVisible) {
+        if (isVisible) {
+            progressBar.setVisibility(View.VISIBLE);
+        } else {
+            progressBar.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+//        if(mainViewModel.getCurCatLiveData().hasObservers() && mainViewModel.getModelLiveData().hasObservers()){
+//            mainViewModel.getModelLiveData().removeObservers(getViewLifecycleOwner());
+//            mainViewModel.getCurCatLiveData().removeObservers(getViewLifecycleOwner());
+//        }
+    }
 }

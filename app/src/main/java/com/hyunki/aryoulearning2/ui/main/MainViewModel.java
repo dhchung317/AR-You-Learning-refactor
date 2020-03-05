@@ -3,8 +3,6 @@ package com.hyunki.aryoulearning2.ui.main;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.LiveDataReactiveStreams;
-import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -12,12 +10,10 @@ import com.hyunki.aryoulearning2.db.model.Category;
 import com.hyunki.aryoulearning2.db.model.CurrentCategory;
 import com.hyunki.aryoulearning2.model.Model;
 import com.hyunki.aryoulearning2.model.ModelResponse;
-import com.hyunki.aryoulearning2.network.main.MainApi;
-import com.hyunki.aryoulearning2.network.main.MainResource;
-import com.hyunki.aryoulearning2.ui.main.ar.State;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -65,7 +61,7 @@ public class MainViewModel extends ViewModel {
                                         new State.Success.OnModelResponsesLoaded(modelResponses));
                             }
 
-                        },throwable -> modelResponsesData.setValue(State.Error.INSTANCE))
+                        }, throwable -> modelResponsesData.setValue(State.Error.INSTANCE))
         );
     }
 
@@ -118,8 +114,10 @@ public class MainViewModel extends ViewModel {
 //        });
 //        return modelResponsesData;
 
-
     public void loadModelsByCat(String cat) {
+        modelLiveData.setValue(State.Loading.INSTANCE);
+        Log.d(TAG, "loadModelsByCat: loading models by cat");
+
         Disposable modelDisposable =
                 mainRepository.getModelsByCat(cat)
                         .subscribeOn(Schedulers.io())
@@ -129,6 +127,8 @@ public class MainViewModel extends ViewModel {
     }
 
     public void loadCategories() {
+        catLiveData.setValue(State.Loading.INSTANCE);
+
         Disposable catDisposable = mainRepository.getAllCats()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -137,6 +137,8 @@ public class MainViewModel extends ViewModel {
     }
 
     public void loadCurrentCategoryName() {
+        curCatLiveData.setValue(State.Loading.INSTANCE);
+
         Disposable curCatDisposable = mainRepository.getCurrentCategory()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -156,8 +158,8 @@ public class MainViewModel extends ViewModel {
         return curCatLiveData;
     }
 
-    public void setCurrentCategory(String currentCategory) {
-        mainRepository.setCurrentCategory(new CurrentCategory(currentCategory));
+    public void setCurrentCategory(Category category) {
+        mainRepository.setCurrentCategory(new CurrentCategory(category.getName()));
     }
 
     public void clearEntireDatabase() {
@@ -165,21 +167,24 @@ public class MainViewModel extends ViewModel {
     }
 
     private void onError(Throwable throwable) {
+
         Log.d("MainViewModel", throwable.getMessage());
     }
 
-    private void onModelsFetched(ArrayList<Model> models) {
+    private void onModelsFetched(List<Model> models) {
         Log.d(TAG, "onModelsFetched: " + models.size());
         modelLiveData.setValue(new State.Success.OnModelsLoaded(models));
     }
 
-    private void onCatsFetched(ArrayList<Category> categories) {
+    private void onCatsFetched(List<Category> categories) {
         catLiveData.setValue(new State.Success.OnCategoriesLoaded(categories));
     }
 
     private void onCurCatsFetched(CurrentCategory category) {
+        Log.d(TAG, "onCurCatsFetched: " + category.getCurrentCategory());
         curCatLiveData.setValue(
                 new State.Success.OnCurrentCategoryStringLoaded(category.getCurrentCategory()));
+        Log.d(TAG, "onCurCatsFetched: " + new State.Success.OnCurrentCategoryStringLoaded(category.getCurrentCategory()).getClass());
     }
 
     @Override
@@ -188,5 +193,4 @@ public class MainViewModel extends ViewModel {
         compositeDisposable.clear();
         clearEntireDatabase();
     }
-
 }
