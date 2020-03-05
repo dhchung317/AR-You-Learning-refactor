@@ -138,8 +138,6 @@ public class ResultsFragment extends Fragment {
                 ResultsFragment.this.takeScreenshotAndShare(v);
             }
         });
-
-
     }
 
     public void backFABClick(){

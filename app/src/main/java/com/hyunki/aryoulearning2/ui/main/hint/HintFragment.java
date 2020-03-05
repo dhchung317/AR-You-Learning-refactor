@@ -160,7 +160,7 @@ public class HintFragment extends DaggerFragment {
 //            });
         });
 
-        tutorialButton.setOnClickListener(v -> listener.moveToTutorialScreen(modelList));
+        tutorialButton.setOnClickListener(v -> listener.moveToTutorialFragment());
         backFAB.setOnClickListener(v -> {
             getActivity().onBackPressed();
 //            listener.setCategoryFromFragment(null);

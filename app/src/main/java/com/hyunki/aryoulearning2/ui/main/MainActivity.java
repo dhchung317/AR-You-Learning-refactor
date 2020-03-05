@@ -16,6 +16,7 @@ import com.hyunki.aryoulearning2.ui.main.controller.NavListener;
 import com.hyunki.aryoulearning2.ui.main.hint.HintFragment;
 import com.hyunki.aryoulearning2.ui.main.list.ListFragment;
 import com.hyunki.aryoulearning2.ui.main.replay.ReplayFragment;
+import com.hyunki.aryoulearning2.ui.main.tutorial.TutorialFragment;
 import com.hyunki.aryoulearning2.util.audio.PronunciationUtil;
 import com.hyunki.aryoulearning2.viewmodel.ViewModelProviderFactory;
 
@@ -46,6 +47,9 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     ReplayFragment replayFragment;
 
     @Inject
+    TutorialFragment tutorialFragment;
+
+    @Inject
     int resId;
 
     @Inject
@@ -65,7 +69,6 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
                             | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                             | View.SYSTEM_UI_FLAG_IMMERSIVE);
         }
-
     }
 
     @Override
@@ -99,48 +102,7 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
         } else if (state.getClass() == State.Success.OnModelResponsesLoaded.class) {
             moveToListFragment();
         }
-
     }
-
-//    private void loadModelResponses() {
-
-//        Log.d(TAG, "onChanged: subscribe method call");
-//        viewModel.observeModelResponses().ombserve(this, new Observer<MainResource<List<ModelResponse>>>() {
-//            @Override
-//            public void onChanged(MainResource<List<ModelResponse>> listResource) {
-//
-//                if (listResource != null) {
-//                    switch (listResource.status) {
-//
-//                        case LOADING: {
-//                            Log.d(TAG, "onChanged: loading");
-//                            showProgressBar(true);
-//                            break;
-//                        }
-//
-//                        case SUCCESS: {
-//                            Log.d(TAG, "onChanged: success");
-//                            showProgressBar(false);
-//                            Log.d(TAG, "onChanged: " + listResource.data.size());
-//                            break;
-//                        }
-//
-//                        case ERROR: {
-//                            showProgressBar(false);
-//                            Log.e(TAG, "onChanged: error: " + listResource.message);
-//                            break;
-//                        }
-//
-//                        case FINISHED: {
-//                            showProgressBar(false);
-//                            moveToListFragment();
-//                        }
-//
-//                    }
-//                }
-//            }
-//        });
-//    }
 
     private void showProgressBar(boolean isVisible) {
 
@@ -195,13 +157,12 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     }
 
     @Override
-    public void backToHintFragment(List<Model> animalResponseList) {
-
-    }
-
-    @Override
-    public void moveToTutorialScreen(List<Model> modelList) {
-
+    public void moveToTutorialFragment() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, tutorialFragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override

@@ -16,9 +16,7 @@ public interface NavListener {
 
     void moveToReplayFragment();
 
-    void backToHintFragment(final List<Model> animalResponseList);
-
-    void moveToTutorialScreen(final List<Model> modelList);
+    void moveToTutorialFragment();
 
     void setCategoryFromFragment(Category category);
 }

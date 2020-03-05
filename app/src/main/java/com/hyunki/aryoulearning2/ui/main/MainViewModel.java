@@ -27,11 +27,6 @@ public class MainViewModel extends ViewModel {
     private final MainRepository mainRepository;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-
-    MutableLiveData<State> getModelResponsesData() {
-        return modelResponsesData;
-    }
-
     private MutableLiveData<State> modelResponsesData = new MutableLiveData<>();
     private MutableLiveData<State> modelLiveData = new MutableLiveData<>();
     private MutableLiveData<State> catLiveData = new MutableLiveData<>();
@@ -122,12 +117,12 @@ public class MainViewModel extends ViewModel {
         return curCatLiveData;
     }
 
-    void setCurrentCategory(Category category) {
-        mainRepository.setCurrentCategory(new CurrentCategory(category.getName()));
+    LiveData<State> getModelResponsesData() {
+        return modelResponsesData;
     }
 
-    public void clearEntireDatabase() {
-        mainRepository.clearEntireDatabase();
+    void setCurrentCategory(Category category) {
+        mainRepository.setCurrentCategory(new CurrentCategory(category.getName()));
     }
 
     private void onError(Throwable throwable) {
@@ -149,6 +144,10 @@ public class MainViewModel extends ViewModel {
         curCatLiveData.setValue(
                 new State.Success.OnCurrentCategoryStringLoaded(category.getCurrentCategory()));
         Log.d(TAG, "onCurCatsFetched: " + new State.Success.OnCurrentCategoryStringLoaded(category.getCurrentCategory()).getClass());
+    }
+
+    public void clearEntireDatabase() {
+        mainRepository.clearEntireDatabase();
     }
 
     @Override
