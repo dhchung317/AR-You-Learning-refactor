@@ -1,4 +1,4 @@
-package com.hyunki.aryoulearning2.ui.main.needsrefactor;
+package com.hyunki.aryoulearning2.ui.main.tutorial;
 
 
 import android.content.Context;
@@ -17,33 +17,36 @@ import android.widget.VideoView;
 
 import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.model.Model;
+import com.hyunki.aryoulearning2.ui.main.controller.NavListener;
 
 import java.util.List;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
 public class TutorialFragment extends Fragment {
     public static final String MODEL_LIST = "MODEL_LIST";
     private Button backButton, playVideoButton, startGameButton;
-//    private NavListenerX listener;
-    private List<Model> modelList;
+    private NavListener listener;
     private VideoView tutorialVideoView;
 
+    @Inject
     public TutorialFragment() {}
 
-    public static TutorialFragment newInstance(final List<Model> modelList) {
-        TutorialFragment tutorialFragment = new TutorialFragment();
-        Bundle args = new Bundle();
-//        args.putParcelableArrayList(MODEL_LIST, (ArrayList<? extends Parcelable>) modelList);
-        tutorialFragment.setArguments(args);
-        return tutorialFragment;
-    }
+//    public static TutorialFragment newInstance(final List<Model> modelList) {
+//        TutorialFragment tutorialFragment = new TutorialFragment();
+//        Bundle args = new Bundle();
+////        args.putParcelableArrayList(MODEL_LIST, (ArrayList<? extends Parcelable>) modelList);
+//        tutorialFragment.setArguments(args);
+//        return tutorialFragment;
+//    }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-//        if (context instanceof NavListenerX) {
-//            listener = (NavListenerX) context;
-//        }
+        if (context instanceof NavListener) {
+            listener = (NavListener) context;
+        }
     }
 
     @Override
@@ -70,27 +73,27 @@ public class TutorialFragment extends Fragment {
     }
 
     public void viewClickListeners(){
-//        startGameButton.setOnClickListener(v -> {
-//            if (isVideoViewPlaying()) {
-//                tutorialVideoView.pause();
-//            }
-//            listener.moveToGameOrARFragment(modelList, true);
-//        });
-//        backButton.setOnClickListener(v -> {
-//            if (isVideoViewPlaying()) {
-//                tutorialVideoView.pause();
-//            }
-//            listener.backToHintFragment(modelList);
-//        });
-//        playVideoButton.setOnClickListener(v -> {
-//            if(isVideoViewPlaying()){
-//                tutorialVideoView.pause();
-//                playVideoButton.setBackgroundResource(R.drawable.play_button_paused);
-//            } else {
-//                tutorialVideoView.start();
-//                playVideoButton.setBackgroundResource(R.drawable.play_button_playing);
-//            }
-//        });
+        startGameButton.setOnClickListener(v -> {
+            if (isVideoViewPlaying()) {
+                tutorialVideoView.pause();
+            }
+            listener.moveToGameFragment();
+        });
+        backButton.setOnClickListener(v -> {
+            if (isVideoViewPlaying()) {
+                tutorialVideoView.pause();
+            }
+            getActivity().onBackPressed();
+        });
+        playVideoButton.setOnClickListener(v -> {
+            if(isVideoViewPlaying()){
+                tutorialVideoView.pause();
+                playVideoButton.setBackgroundResource(R.drawable.play_button_paused);
+            } else {
+                tutorialVideoView.start();
+                playVideoButton.setBackgroundResource(R.drawable.play_button_playing);
+            }
+        });
     }
 
     private boolean isVideoViewPlaying() {
