@@ -51,6 +51,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.CategoryViewHo
     }
 
     public void setLists(List<Category> categories) {
+        Log.d("setLists in list adapter", "setLists: " + categories.size());
         this.categories = categories;
         notifyDataSetChanged();
     }

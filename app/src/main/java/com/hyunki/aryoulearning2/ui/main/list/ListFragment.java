@@ -42,6 +42,15 @@ public class ListFragment extends DaggerFragment {
 
     private ListAdapter listAdapter;
 
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Log.d(TAG, "onAttach: on attach ran");
+        AndroidSupportInjection.inject(this);
+    }
+
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -56,16 +65,9 @@ public class ListFragment extends DaggerFragment {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        Log.d(TAG, "onAttach: on attach ran");
-        AndroidSupportInjection.inject(this);
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onAttach: on create ran");
+        Log.d(TAG, " on create ran");
     }
 
     @Nullable
@@ -76,19 +78,23 @@ public class ListFragment extends DaggerFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "onAttach: on viewcreated ran");
+        Log.d(TAG, " on viewcreated ran");
 
         recyclerView = view.findViewById(R.id.category_rv);
         mainViewModel = ViewModelProviders.of(getActivity(), viewModelProviderFactory).get(MainViewModel.class);
         mainViewModel.loadCategories();
-        initRecyclerView();
 
         mainViewModel.getCatLiveData().observe(getViewLifecycleOwner(), categories -> {
 //            listAdapter.setLists(categories);
             renderCategories(categories);
+            Log.d(TAG, "onViewCreated: " + mainViewModel.getCatLiveData().getValue().getClass());
 
         });
+
+
+        initRecyclerView();
     }
+
 
     private void initRecyclerView() {
         recyclerView.setLayoutManager(
@@ -112,7 +118,8 @@ public class ListFragment extends DaggerFragment {
             State.Success.OnCategoriesLoaded s = (State.Success.OnCategoriesLoaded) state;
             List<Category> categories = s.getCategories();
             listAdapter.setLists(categories);
-            mainViewModel.getCatLiveData().removeObservers(getViewLifecycleOwner());
+
+            Log.d(TAG, "renderCategories: " + categories.size());
         }
     }
 
@@ -122,5 +129,11 @@ public class ListFragment extends DaggerFragment {
         } else {
             progressBar.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        renderCategories(mainViewModel.getCatLiveData().getValue());
     }
 }

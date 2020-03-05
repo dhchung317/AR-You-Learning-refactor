@@ -13,7 +13,6 @@ import com.hyunki.aryoulearning2.model.ModelResponse;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -22,9 +21,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-//import java.util.Observable;
-
-
 public class MainViewModel extends ViewModel {
     public static final String TAG = "MainViewModel";
 
@@ -32,7 +28,7 @@ public class MainViewModel extends ViewModel {
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
 
-    public MutableLiveData<State> getModelResponsesData() {
+    MutableLiveData<State> getModelResponsesData() {
         return modelResponsesData;
     }
 
@@ -42,11 +38,11 @@ public class MainViewModel extends ViewModel {
     private MutableLiveData<State> curCatLiveData = new MutableLiveData<>();
 
     @Inject
-    public MainViewModel(MainRepository mainRepository) {
+    MainViewModel(MainRepository mainRepository) {
         this.mainRepository = mainRepository;
     }
 
-    public void loadModelResponses() {
+    void loadModelResponses() {
 
         modelResponsesData.setValue(State.Loading.INSTANCE);
 
@@ -81,38 +77,6 @@ public class MainViewModel extends ViewModel {
             }
         }
     }
-
-//        LiveData<MainResource<List<ModelResponse>>> data = LiveDataReactiveStreams.fromPublisher(
-//                mainApi.getModels()
-//                        .subscribeOn(Schedulers.io())
-//                        .map(modelResponses -> {
-//                            if (modelResponses.size() > 0) {
-//                                if (modelResponses.get(0).getError() == -1) {
-//                                    return MainResource.error("error", null);
-//                                }
-//                                for (int i = 0; i < modelResponses.size(); i++) {
-//                                    mainRepository.insertCat(new Category(
-//                                            modelResponses.get(i).getCategory(),
-//                                            modelResponses.get(i).getBackground()
-//                                    ));
-//                                    for (int j = 0; j < modelResponses.get(i).getList().size(); j++) {
-//                                        Log.d(TAG, "observeModelResponses: " + modelResponses.get(i).getList().get(j).getName());
-//                                        mainRepository.insertModel(new Model(
-//                                                modelResponses.get(i).getCategory(),
-//                                                modelResponses.get(i).getList().get(j).getName(),
-//                                                modelResponses.get(i).getList().get(j).getImage()
-//                                        ));
-//                                    }
-//                                }
-//                            }
-//                            return MainResource.success(modelResponses);
-//                        })
-//        );
-//        modelResponsesData.addSource(data, listResource -> {
-//            modelResponsesData.setValue(MainResource.finished(listResource.data));
-//            modelResponsesData.removeSource(data);
-//        });
-//        return modelResponsesData;
 
     public void loadModelsByCat(String cat) {
         modelLiveData.setValue(State.Loading.INSTANCE);
@@ -158,7 +122,7 @@ public class MainViewModel extends ViewModel {
         return curCatLiveData;
     }
 
-    public void setCurrentCategory(Category category) {
+    void setCurrentCategory(Category category) {
         mainRepository.setCurrentCategory(new CurrentCategory(category.getName()));
     }
 
@@ -167,7 +131,6 @@ public class MainViewModel extends ViewModel {
     }
 
     private void onError(Throwable throwable) {
-
         Log.d("MainViewModel", throwable.getMessage());
     }
 
@@ -177,6 +140,7 @@ public class MainViewModel extends ViewModel {
     }
 
     private void onCatsFetched(List<Category> categories) {
+        Log.d(TAG, "onCatsFetched: " + categories.size());
         catLiveData.setValue(new State.Success.OnCategoriesLoaded(categories));
     }
 
@@ -191,6 +155,6 @@ public class MainViewModel extends ViewModel {
     protected void onCleared() {
         super.onCleared();
         compositeDisposable.clear();
-        clearEntireDatabase();
+//        clearEntireDatabase();
     }
 }
