@@ -29,11 +29,11 @@ public class MainRepository {
         this.currentCategoryDao = currentCategoryDao;
     }
 
-    public Single<ArrayList<Model>> getAllModels() {
-        return modelDao.getAllModels();
-    }
+//    public Single<ArrayList<Model>> getAllModels() {
+//        return modelDao.getAllModels();
+//    }
 
-    public Single<ArrayList<Model>> getModelsByCat(String cat) {
+    public Single<List<Model>> getModelsByCat(String cat) {
         return modelDao.getModelsByCat(cat);
     }
 
@@ -42,11 +42,11 @@ public class MainRepository {
     }
 
     //
-    void insertAllModels(ArrayList<Model> models) {
-        modelDao.insertAll(models);
-    }
+//    void insertAllModels(ArrayList<Model> models) {
+//        modelDao.insertAll(models);
+//    }
 
-    Single<ArrayList<Category>> getAllCats() {
+    Single<List<Category>> getAllCats() {
         return categoryDao.getAllCategories();
     }
 

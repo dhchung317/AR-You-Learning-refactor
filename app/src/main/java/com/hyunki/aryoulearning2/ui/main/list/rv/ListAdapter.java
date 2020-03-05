@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.CategoryViewHolder> {
-    private ArrayList<Category> categories = new ArrayList<>();
+    private List<Category> categories = new ArrayList<>();
     private NavListener listener;
 
     @NonNull
@@ -50,7 +50,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.CategoryViewHo
         return categories.size();
     }
 
-    public void setLists(ArrayList<Category> categories) {
+    public void setLists(List<Category> categories) {
         this.categories = categories;
         notifyDataSetChanged();
     }
@@ -74,12 +74,14 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.CategoryViewHo
                     .into(categoryImage);
 
             Log.d("TAG", category.getImage());
+
             categoryCard.setOnClickListener(v -> {
                 Log.d("list adapter", "onBind: " + category.getName());
                 if (!category.getName().isEmpty()) {
-                    listener.setCategoryFromFragment(category.getName());
+                    Log.d("listadapter", "onBind: onclicklistener " + category.getName());
+                    listener.setCategoryFromFragment(category);
+                    listener.moveToHintFragment();
                 }
-                listener.moveToHintFragment();
                 makeVibration();
             });
         }

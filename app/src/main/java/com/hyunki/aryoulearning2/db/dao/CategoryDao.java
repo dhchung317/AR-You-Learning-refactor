@@ -16,7 +16,7 @@ import io.reactivex.Single;
 public interface CategoryDao {
 
     @Query("SELECT * FROM category")
-    Single<ArrayList<Category>> getAllCategories();
+    Single<List<Category>> getAllCategories();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Category category);

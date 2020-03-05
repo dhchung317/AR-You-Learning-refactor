@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,10 +15,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hyunki.aryoulearning2.R;
+import com.hyunki.aryoulearning2.db.model.Category;
 import com.hyunki.aryoulearning2.ui.main.MainViewModel;
-import com.hyunki.aryoulearning2.ui.main.ar.State;
+import com.hyunki.aryoulearning2.ui.main.State;
 import com.hyunki.aryoulearning2.ui.main.list.rv.ListAdapter;
 import com.hyunki.aryoulearning2.viewmodel.ViewModelProviderFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -28,11 +33,21 @@ public class ListFragment extends DaggerFragment {
     public static final String TAG = "ListFragmentX";
 
     private MainViewModel mainViewModel;
+
     private RecyclerView recyclerView;
 
     private ViewModelProviderFactory viewModelProviderFactory;
 
+    private ProgressBar progressBar;
+
     private ListAdapter listAdapter;
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        progressBar = getActivity().findViewById(R.id.progress_bar);
+
+    }
 
     @Inject
     public ListFragment(ViewModelProviderFactory viewModelProviderFactory, ListAdapter listAdapter) {
@@ -70,6 +85,7 @@ public class ListFragment extends DaggerFragment {
 
         mainViewModel.getCatLiveData().observe(getViewLifecycleOwner(), categories -> {
 //            listAdapter.setLists(categories);
+            renderCategories(categories);
 
         });
     }
@@ -82,7 +98,29 @@ public class ListFragment extends DaggerFragment {
         recyclerView.setAdapter(listAdapter);
     }
 
-    private void renderCategories(State state){
+    private void renderCategories(State state) {
         //TODO if else logic to render categories/set adapter list
+        if (state == State.Loading.INSTANCE) {
+            progressBar.bringToFront();
+            showProgressBar(true);
+
+        } else if (state == State.Error.INSTANCE) {
+            showProgressBar(false);
+
+        } else if (state.getClass() == State.Success.OnCategoriesLoaded.class) {
+            showProgressBar(false);
+            State.Success.OnCategoriesLoaded s = (State.Success.OnCategoriesLoaded) state;
+            List<Category> categories = s.getCategories();
+            listAdapter.setLists(categories);
+            mainViewModel.getCatLiveData().removeObservers(getViewLifecycleOwner());
+        }
+    }
+
+    private void showProgressBar(boolean isVisible) {
+        if (isVisible) {
+            progressBar.setVisibility(View.VISIBLE);
+        } else {
+            progressBar.setVisibility(View.GONE);
+        }
     }
 }

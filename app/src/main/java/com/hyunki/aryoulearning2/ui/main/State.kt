@@ -1,4 +1,4 @@
-package com.hyunki.aryoulearning2.ui.main.ar
+package com.hyunki.aryoulearning2.ui.main
 
 import com.hyunki.aryoulearning2.db.model.Category
 import com.hyunki.aryoulearning2.model.Model
@@ -14,15 +14,15 @@ sealed class State {
     sealed class Success : State() {
 
         data class OnModelResponsesLoaded(
-                val responses: ArrayList<ModelResponse>
+                val responses: List<ModelResponse>
         ) : Success()
 
         data class OnModelsLoaded(
-                val models: ArrayList<Model>
+                val models: List<Model>
         ) : Success()
 
         data class OnCategoriesLoaded(
-                val categories: ArrayList<Category>
+                val categories: List<Category>
         ) : Success()
 
         data class OnCurrentCategoryStringLoaded(

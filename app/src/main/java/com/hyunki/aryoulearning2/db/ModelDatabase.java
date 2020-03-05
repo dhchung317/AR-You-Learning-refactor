@@ -10,7 +10,7 @@ import com.hyunki.aryoulearning2.db.model.Category;
 import com.hyunki.aryoulearning2.db.model.CurrentCategory;
 import com.hyunki.aryoulearning2.model.Model;
 
-@Database(entities = {Model.class, Category.class, CurrentCategory.class}, version = 1, exportSchema = false)
+@Database(entities = {Model.class, Category.class, CurrentCategory.class}, version = 3, exportSchema = false)
 abstract class ModelDatabase extends RoomDatabase {
 
     public static final String DATABASE_NAME = "data.db";

@@ -8,29 +8,29 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "category")
-public class Category implements Parcelable {
+public class Category {
     @PrimaryKey
     @NonNull
     String name;
 
     String image;
 
-    protected Category(Parcel in) {
-        name = in.readString();
-        image = in.readString();
-    }
+//    protected Category(Parcel in) {
+//        name = in.readString();
+//        image = in.readString();
+//    }
 
-    public static final Creator<Category> CREATOR = new Creator<Category>() {
-        @Override
-        public Category createFromParcel(Parcel in) {
-            return new Category(in);
-        }
-
-        @Override
-        public Category[] newArray(int size) {
-            return new Category[size];
-        }
-    };
+//    public static final Creator<Category> CREATOR = new Creator<Category>() {
+//        @Override
+//        public Category createFromParcel(Parcel in) {
+//            return new Category(in);
+//        }
+//
+//        @Override
+//        public Category[] newArray(int size) {
+//            return new Category[size];
+//        }
+//    };
 
     public String getName() {
         return name;
@@ -49,14 +49,14 @@ public class Category implements Parcelable {
         this.image = image;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(name);
-        dest.writeString(image);
-    }
+//    @Override
+//    public int describeContents() {
+//        return 0;
+//    }
+//
+//    @Override
+//    public void writeToParcel(Parcel dest, int flags) {
+//        dest.writeString(name);
+//        dest.writeString(image);
+//    }
 }

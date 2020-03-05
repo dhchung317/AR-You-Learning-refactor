@@ -6,13 +6,11 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.hyunki.aryoulearning2.R;
+import com.hyunki.aryoulearning2.db.model.Category;
 import com.hyunki.aryoulearning2.model.Model;
-import com.hyunki.aryoulearning2.model.ModelResponse;
-import com.hyunki.aryoulearning2.network.main.MainResource;
 import com.hyunki.aryoulearning2.ui.main.ar.ArHostFragment;
 import com.hyunki.aryoulearning2.ui.main.controller.NavListener;
 import com.hyunki.aryoulearning2.ui.main.hint.HintFragment;
@@ -83,13 +81,31 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
 //        subscribeObservers();
 
         viewModel.loadModelResponses();
-        viewModel.
+        viewModel.getModelResponsesData().observe(this, new Observer<State>() {
+            @Override
+            public void onChanged(State state) {
+                renderModelResponses(state);
+            }
+        });
+    }
+
+    private void renderModelResponses(State state){
+        if (state == State.Loading.INSTANCE) {
+            showProgressBar(true);
+
+        } else if (state == State.Error.INSTANCE) {
+            showProgressBar(false);
+
+        } else if (state.getClass() == State.Success.OnModelResponsesLoaded.class) {
+            moveToListFragment();
+        }
+
     }
 
 //    private void loadModelResponses() {
 
 //        Log.d(TAG, "onChanged: subscribe method call");
-//        viewModel.observeModelResponses().observe(this, new Observer<MainResource<List<ModelResponse>>>() {
+//        viewModel.observeModelResponses().ombserve(this, new Observer<MainResource<List<ModelResponse>>>() {
 //            @Override
 //            public void onChanged(MainResource<List<ModelResponse>> listResource) {
 //
@@ -189,7 +205,7 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     }
 
     @Override
-    public void setCategoryFromFragment(String category) {
+    public void setCategoryFromFragment(Category category) {
         viewModel.setCurrentCategory(category);
     }
 }
