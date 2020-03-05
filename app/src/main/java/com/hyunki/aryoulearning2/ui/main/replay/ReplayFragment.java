@@ -74,7 +74,7 @@ public class ReplayFragment extends DaggerFragment {
     public void viewClickListeners(){
         resultsButtonCard.setOnClickListener(v -> {
 //            pronunciationUtil.textToSpeechAnnouncer("Showing progress", textToSpeech);
-            listener.moveToResultsFragment(modelList);
+            listener.moveToResultsFragment();
         });
 
         homeButtonCard.setOnClickListener(v -> {

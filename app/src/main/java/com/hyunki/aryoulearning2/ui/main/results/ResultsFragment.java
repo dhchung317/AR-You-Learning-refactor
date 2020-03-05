@@ -1,4 +1,4 @@
-package com.hyunki.aryoulearning2.ui.main.needsrefactor;
+package com.hyunki.aryoulearning2.ui.main.results;
 
 import android.Manifest;
 import android.content.ActivityNotFoundException;
@@ -40,6 +40,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
+import javax.inject.Inject;
 
 
 public class ResultsFragment extends Fragment {
@@ -59,15 +60,15 @@ public class ResultsFragment extends Fragment {
     private PronunciationUtil pronunciationUtil;
     private TextToSpeech textToSpeech;
 
+//    public static ResultsFragment newInstance(final List<Model> modelList) {
+//        ResultsFragment resultsFragment = new ResultsFragment();
+//        Bundle args = new Bundle();
+////        args.putParcelableArrayList(MODEL_LIST, (ArrayList<? extends Parcelable>) modelList);
+//        resultsFragment.setArguments(args);
+//        return resultsFragment;
+//    }
 
-    public static ResultsFragment newInstance(final List<Model> modelList) {
-        ResultsFragment resultsFragment = new ResultsFragment();
-        Bundle args = new Bundle();
-//        args.putParcelableArrayList(MODEL_LIST, (ArrayList<? extends Parcelable>) modelList);
-        resultsFragment.setArguments(args);
-        return resultsFragment;
-    }
-
+    @Inject
     public ResultsFragment() {}
 
 

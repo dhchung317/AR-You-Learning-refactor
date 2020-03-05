@@ -16,11 +16,10 @@ import com.hyunki.aryoulearning2.ui.main.controller.NavListener;
 import com.hyunki.aryoulearning2.ui.main.hint.HintFragment;
 import com.hyunki.aryoulearning2.ui.main.list.ListFragment;
 import com.hyunki.aryoulearning2.ui.main.replay.ReplayFragment;
+import com.hyunki.aryoulearning2.ui.main.results.ResultsFragment;
 import com.hyunki.aryoulearning2.ui.main.tutorial.TutorialFragment;
 import com.hyunki.aryoulearning2.util.audio.PronunciationUtil;
 import com.hyunki.aryoulearning2.viewmodel.ViewModelProviderFactory;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -45,6 +44,9 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
 
     @Inject
     ReplayFragment replayFragment;
+
+    @Inject
+    ResultsFragment resultsFragment;
 
     @Inject
     TutorialFragment tutorialFragment;
@@ -127,15 +129,19 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     public void moveToGameFragment() {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, arHostFragment, "ar_fragment")
+                .replace(R.id.fragment_container, arHostFragment)
 //                    .addToBackStack(null)
                 .commit();
 
     }
 
     @Override
-    public void moveToResultsFragment(List<Model> categoryList) {
-
+    public void moveToResultsFragment() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, resultsFragment)
+//                    .addToBackStack(null)
+                .commit();
     }
 
     @Override

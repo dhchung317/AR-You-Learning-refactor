@@ -10,7 +10,7 @@ public interface NavListener {
 
     void moveToGameFragment();
 
-    void moveToResultsFragment(final List<Model> categoryList);
+    void moveToResultsFragment();
 
     void moveToHintFragment();
 
