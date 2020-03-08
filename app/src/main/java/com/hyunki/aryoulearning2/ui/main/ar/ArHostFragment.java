@@ -480,23 +480,6 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
 //        wordContainer.addView(t);
 //    }
 
-    public void moveToReplayFragment() {
-        //TODO grab the set of wrongs answers from gamemanager, and set it in mainviewmodel
-        // move to replayfragment
-
-
-//        prefs.edit().putStringSet(ResultsFragment.CORRECT_ANSWER_FOR_USER, correctAnswerSet).apply();
-//        prefs.edit().putInt(ResultsFragment.TOTALSIZE, roundLimit).apply();
-//
-//        //Checks to see which words have an empty wrongAnswerSet and changes the boolean pertaining to that Model to true.
-//        for (int i = 0; i < roundLimit; i++) {
-//            if (categoryList.get(i).getWrongAnswerSet() == null || categoryList.get(i).getWrongAnswerSet().size() == 0) {
-//                categoryList.get(i).setCorrect(true);
-//            }
-//        }
-        listener.moveToReplayFragment();
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();

@@ -21,8 +21,6 @@ public class GameManager {
     private List<CurrentWord> wordHistoryList = new ArrayList<>();
     private String attempt = "";
 
-    //TODO - logic to rerun round when answer is incorrect
-
     public GameManager(List<String> modelMapKeys, GameCommandListener gameCommands, NavListener navListener) {
         this.gameCommands = gameCommands;
         this.navListener = navListener;
@@ -72,7 +70,6 @@ public class GameManager {
 
     public void startNextGame(String key) {
         refreshManager(key);
-        //TODO - record wronganswers into a map of retrievable data
         gameCommands.startNextGame(key);
     }
 
