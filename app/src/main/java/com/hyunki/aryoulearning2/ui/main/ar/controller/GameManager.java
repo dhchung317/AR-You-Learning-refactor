@@ -3,7 +3,11 @@ package com.hyunki.aryoulearning2.ui.main.ar.controller;
 import com.hyunki.aryoulearning2.ui.main.ar.util.CurrentWord;
 import com.hyunki.aryoulearning2.ui.main.controller.NavListener;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 public class GameManager {
@@ -13,6 +17,8 @@ public class GameManager {
     //will dictate the number of rounds
     private int roundLimit = 1;
     private Stack<String> keyStack = new Stack<>();
+    private Map<String, Set<String>> answerMap = new HashMap<>();
+    private List<CurrentWord> wordHistoryList = new ArrayList<>();
     private String attempt = "";
 
     //TODO - logic to rerun round when answer is incorrect
@@ -42,8 +48,12 @@ public class GameManager {
                 startNextGame(currentWord.getAnswer());
             } else {
                 if (keyStack.size() > 0) {
+                    wordHistoryList.add(currentWord);
+//                    answerMap.put(currentWord.getAnswer(),currentWord.getAttempts());
                     startNextGame(keyStack.pop());
                 } else {
+//                    answerMap.put(currentWord.getAnswer(),currentWord.getAttempts());
+                    wordHistoryList.add(currentWord);
                     navListener.moveToReplayFragment();
                 }
             }

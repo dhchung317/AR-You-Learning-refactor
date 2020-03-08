@@ -18,11 +18,6 @@ public class Model {
 
     private String category;
 
-    @Ignore
-    private boolean isCorrect;
-    @Ignore
-    private ArrayList<String> wrongAnswerSet;
-
     public Model(String category, String name, String image) {
         this.category = category;
         this.name = name;
@@ -41,22 +36,4 @@ public class Model {
     public String getImage() {
         return image;
     }
-
-    public boolean isCorrect() {
-        return isCorrect;
-    }
-
-    public void setCorrect(boolean correct) {
-        isCorrect = correct;
-    }
-
-    public ArrayList<String> getWrongAnswerSet() {
-        return wrongAnswerSet;
-    }
-
-    public void setWrongAnswerSet(ArrayList<String> wrongAnswerSetEntry) {
-        wrongAnswerSet = new ArrayList<>();
-        this.wrongAnswerSet.addAll(wrongAnswerSetEntry);
-    }
-
 }
