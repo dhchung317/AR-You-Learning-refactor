@@ -33,14 +33,6 @@ public class TutorialFragment extends Fragment {
     @Inject
     public TutorialFragment() {}
 
-//    public static TutorialFragment newInstance(final List<Model> modelList) {
-//        TutorialFragment tutorialFragment = new TutorialFragment();
-//        Bundle args = new Bundle();
-////        args.putParcelableArrayList(MODEL_LIST, (ArrayList<? extends Parcelable>) modelList);
-//        tutorialFragment.setArguments(args);
-//        return tutorialFragment;
-//    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

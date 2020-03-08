@@ -22,22 +22,19 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsViewHolder> {
-    private Map<String,Model> modelMap;
+    private Map<String, Model> modelMap;
     private List<CurrentWord> wordHistory;
-//    private int listSize;
     private PronunciationUtil pronunUtil;
     private TextToSpeech TTS;
 
 
-    public ResultsAdapter(List<CurrentWord> wordHistory, Map<String,Model> modelMap, PronunciationUtil pronunciationUtil, TextToSpeech TTS) {
+    public ResultsAdapter(List<CurrentWord> wordHistory, Map<String, Model> modelMap, PronunciationUtil pronunciationUtil, TextToSpeech TTS) {
         this.wordHistory = wordHistory;
         this.modelMap = modelMap;
         this.pronunUtil = pronunciationUtil;
         this.TTS = TTS;
-//        this.listSize = listSize;
     }
 
     @NonNull
@@ -50,7 +47,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 
     @Override
     public void onBindViewHolder(@NonNull ResultsViewHolder resultsViewHolder, int position) {
-        resultsViewHolder.onBind(wordHistory.get(position),modelMap.get(wordHistory.get(position).getAnswer()), pronunUtil, TTS);
+        resultsViewHolder.onBind(wordHistory.get(position), modelMap.get(wordHistory.get(position).getAnswer()), pronunUtil, TTS);
     }
 
 

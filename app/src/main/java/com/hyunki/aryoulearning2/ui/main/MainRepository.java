@@ -23,15 +23,11 @@ public class MainRepository {
     private final CurrentCategoryDao currentCategoryDao;
 
     @Inject
-    public MainRepository(ModelDao modelDao, CategoryDao categoryDao, CurrentCategoryDao currentCategoryDao) {
+    MainRepository(ModelDao modelDao, CategoryDao categoryDao, CurrentCategoryDao currentCategoryDao) {
         this.modelDao = modelDao;
         this.categoryDao = categoryDao;
         this.currentCategoryDao = currentCategoryDao;
     }
-
-//    public Single<ArrayList<Model>> getAllModels() {
-//        return modelDao.getAllModels();
-//    }
 
     public Single<List<Model>> getModelsByCat(String cat) {
         return modelDao.getModelsByCat(cat);
@@ -40,11 +36,6 @@ public class MainRepository {
     void insertModel(Model model) {
         modelDao.insert(model);
     }
-
-    //
-//    void insertAllModels(ArrayList<Model> models) {
-//        modelDao.insertAll(models);
-//    }
 
     Single<List<Category>> getAllCats() {
         return categoryDao.getAllCategories();
@@ -64,7 +55,6 @@ public class MainRepository {
 
     public Observable<ArrayList<ModelResponse>> getModelResponses() {
         return RetrofitSingleton.getService().getModels();
-
     }
 
     void clearEntireDatabase() {

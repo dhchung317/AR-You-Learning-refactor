@@ -23,9 +23,4 @@ public class CurrentCategory {
         return currentCategory;
     }
 
-    @NonNull
-    public String getCURRENT() {
-        return CURRENT;
-    }
-
 }

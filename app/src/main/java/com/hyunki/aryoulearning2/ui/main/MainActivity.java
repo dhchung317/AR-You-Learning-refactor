@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.db.model.Category;
-import com.hyunki.aryoulearning2.model.Model;
 import com.hyunki.aryoulearning2.ui.main.ar.ArHostFragment;
 import com.hyunki.aryoulearning2.ui.main.ar.util.CurrentWord;
 import com.hyunki.aryoulearning2.ui.main.controller.NavListener;
@@ -23,8 +22,6 @@ import com.hyunki.aryoulearning2.util.audio.PronunciationUtil;
 import com.hyunki.aryoulearning2.viewmodel.ViewModelProviderFactory;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -87,9 +84,7 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
         progressBar = findViewById(R.id.progress_bar);
         Log.d(TAG, "onCreate");
 
-        viewModel = ViewModelProviders.of(this,providerFactory).get(MainViewModel.class);
-//        subscribeObservers();
-
+        viewModel = ViewModelProviders.of(this, providerFactory).get(MainViewModel.class);
         viewModel.loadModelResponses();
         viewModel.getModelResponsesData().observe(this, new Observer<State>() {
             @Override
@@ -99,7 +94,7 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
         });
     }
 
-    private void renderModelResponses(State state){
+    private void renderModelResponses(State state) {
         if (state == State.Loading.INSTANCE) {
             showProgressBar(true);
 
@@ -118,7 +113,6 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
         } else {
             progressBar.setVisibility(View.GONE);
         }
-
     }
 
     @Override
@@ -127,7 +121,6 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
                 .beginTransaction()
                 .replace(R.id.fragment_container, listFragment)
                 .commit();
-
     }
 
     @Override
@@ -137,7 +130,6 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
                 .replace(R.id.fragment_container, arHostFragment)
 //                    .addToBackStack(null)
                 .commit();
-
     }
 
     @Override
@@ -156,7 +148,6 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
                 .replace(R.id.fragment_container, hintFragment)
                 .addToBackStack(null)
                 .commit();
-
     }
 
     @Override
@@ -171,7 +162,6 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     public void setWordHistoryFromGameFragment(List<CurrentWord> wordHistory) {
         viewModel.setWordHistory(wordHistory);
     }
-
 
     @Override
     public void moveToTutorialFragment() {

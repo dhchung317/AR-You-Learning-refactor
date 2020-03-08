@@ -55,16 +55,9 @@ import javax.inject.Inject;
 
 //TODO- refactor resultsfragment
 public class ResultsFragment extends Fragment {
-    public static final String TOTALSIZE = "TOTALSIZE";
     private static final int REQUEST_CODE = 1;
-    public static final String CORRECT_ANSWER_FOR_USER = "correct answer for user";
-    public static final String MODEL_LIST = "modelList";
-    private SharedPreferences sharedPreferences;
-    private HashSet correctAnswersStringSet = new HashSet();
-    private int totalSize;
     private RatingBar rainbowRatingBar;
     private TextView categoryTextView;
-    private List<Model> modelList;
     private Map<String,Model> modelMap = new HashMap<>();
     FloatingActionButton shareFAB;
     FloatingActionButton backFAB;
@@ -73,14 +66,6 @@ public class ResultsFragment extends Fragment {
     private TextToSpeech textToSpeech;
     private MainViewModel viewModel;
     private ProgressBar progressBar;
-
-//    public static ResultsFragment newInstance(final List<Model> modelList) {
-//        ResultsFragment resultsFragment = new ResultsFragment();
-//        Bundle args = new Bundle();
-////        args.putParcelableArrayList(MODEL_LIST, (ArrayList<? extends Parcelable>) modelList);
-//        resultsFragment.setArguments(args);
-//        return resultsFragment;
-//    }
 
     private ViewModelProviderFactory viewModelProviderFactory;
 
@@ -97,22 +82,9 @@ public class ResultsFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(getArguments() != null){
-//            modelList = getArguments().getParcelableArrayList(MODEL_LIST);
-        }
 //        pronunciationUtil = new PronunciationUtil();
 //        textToSpeech = pronunciationUtil.getTTS(getContext());
-//        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-//        extractSharedPrefs();
     }
-
-
-
-
-//    public void extractSharedPrefs() {
-//        correctAnswersStringSet = (HashSet) sharedPreferences.getStringSet(CORRECT_ANSWER_FOR_USER, null);
-//        totalSize = sharedPreferences.getInt(TOTALSIZE, 0);
-//    }
 
     private void initializeViews(@NonNull final View view) {
         rainbowRatingBar = view.findViewById(R.id.rainbow_correctword_ratingbar);
