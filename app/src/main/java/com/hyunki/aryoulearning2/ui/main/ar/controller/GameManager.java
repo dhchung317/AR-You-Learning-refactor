@@ -15,13 +15,11 @@ public class GameManager {
     private NavListener navListener;
     private CurrentWord currentWord;
     //will dictate the number of rounds
-    private int roundLimit = 1;
+    private int roundLimit = 2;
     private Stack<String> keyStack = new Stack<>();
     private Map<String, Set<String>> answerMap = new HashMap<>();
     private List<CurrentWord> wordHistoryList = new ArrayList<>();
     private String attempt = "";
-
-    //TODO - logic to rerun round when answer is incorrect
 
     public GameManager(List<String> modelMapKeys, GameCommandListener gameCommands, NavListener navListener) {
         this.gameCommands = gameCommands;
@@ -41,7 +39,8 @@ public class GameManager {
     }
 
     public void addTappedLetterToCurrentWordAttempt(String letter) {
-        addLetterToAttempt(letter);
+
+
         if (attempt.length() == getCurrentWordAnswer().length()) {
             if (!attempt.toLowerCase().equals(getCurrentWordAnswer().toLowerCase())) {
                 recordWrongAnswer(attempt);
@@ -66,13 +65,11 @@ public class GameManager {
     }
 
     public void recordWrongAnswer(String wrongAnswer) {
-        attempt = "";
         currentWord.addWrongAnswerToSet(wrongAnswer);
     }
 
     public void startNextGame(String key) {
         refreshManager(key);
-        //TODO - record wronganswers into a map of retrievable data
         gameCommands.startNextGame(key);
     }
 
@@ -87,16 +84,16 @@ public class GameManager {
     public String subtractLetterFromAttempt() {
         String letter = "";
         if (!attempt.isEmpty()) {
-            letter = attempt.substring(attempt.length());
+            letter = attempt.substring(attempt.length() - 1);
             attempt = attempt.substring(0, attempt.length() - 1);
         }
         return letter;
     }
 
     public void refreshManager(String key) {
-        attempt = "";
         if(!currentWord.getAnswer().equals(key)) {
             setCurrentWord(new CurrentWord(key));
         }
+        attempt = "";
     }
 }

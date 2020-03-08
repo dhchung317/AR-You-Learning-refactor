@@ -105,7 +105,6 @@ public class ListFragment extends DaggerFragment {
     }
 
     private void renderCategories(State state) {
-        //TODO if else logic to render categories/set adapter list
         if (state == State.Loading.INSTANCE) {
             progressBar.bringToFront();
             showProgressBar(true);

@@ -7,6 +7,7 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -27,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -308,6 +310,7 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
                 }
         );
         exitNo.setOnClickListener(v -> frameLayout.removeView(exitMenu));
+        undo.setOnClickListener(v -> undoLastLetter());
 //        undo.setOnClickListener(v -> recreateErasedLetter(eraseLastLetter(letters)));
     }
 
@@ -437,6 +440,8 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
                 Log.d("arhostfrag", "tryPlaceGame: " + arViewModel.getModelMapList().getValue().size());
                 String modelKey = gameManager.getCurrentWordAnswer();
 
+                wordCardView.setVisibility(View.VISIBLE);
+
                 for (int i = 0; i < modelMapList.size(); i++) {
                     for (Map.Entry<String, ModelRenderable> e : modelMapList.get(i).entrySet()) {
 
@@ -460,41 +465,21 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
     }
 
     private void refreshModelResources() {
-        undo.setVisibility(View.INVISIBLE);
         mainAnchorNode.getAnchor().detach();
         mainAnchor = null;
         mainAnchorNode = null;
     }
 
-    //TODO - refactor ui logic for updating wordbox as user spells and erases word letters
-
-//    private void addLetterToWordContainer(String letter) {
-//        Typeface ballonTF = ResourcesCompat.getFont(getActivity(), R.font.balloon);
-//        TextView t = new TextView(getActivity());
-//        t.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-//        t.setTypeface(ballonTF);
-//        t.setTextColor(getResources().getColor(R.color.colorWhite));
-//        t.setTextSize(100);
-//        t.setText(letter);
-//        t.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-//        wordContainer.addView(t);
-//    }
-
-    public void moveToReplayFragment() {
-        //TODO grab the set of wrongs answers from gamemanager, and set it in mainviewmodel
-        // move to replayfragment
-
-
-//        prefs.edit().putStringSet(ResultsFragment.CORRECT_ANSWER_FOR_USER, correctAnswerSet).apply();
-//        prefs.edit().putInt(ResultsFragment.TOTALSIZE, roundLimit).apply();
-//
-//        //Checks to see which words have an empty wrongAnswerSet and changes the boolean pertaining to that Model to true.
-//        for (int i = 0; i < roundLimit; i++) {
-//            if (categoryList.get(i).getWrongAnswerSet() == null || categoryList.get(i).getWrongAnswerSet().size() == 0) {
-//                categoryList.get(i).setCorrect(true);
-//            }
-//        }
-        listener.moveToReplayFragment();
+    private void addLetterToWordContainer(String letter) {
+        Typeface ballonTF = ResourcesCompat.getFont(getActivity(), R.font.balloon);
+        TextView t = new TextView(getActivity());
+        t.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        t.setTypeface(ballonTF);
+        t.setTextColor(getResources().getColor(R.color.colorWhite));
+        t.setTextSize(100);
+        t.setText(letter);
+        t.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        wordContainer.addView(t);
     }
 
     @Override
@@ -535,10 +520,45 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
     private Node.OnTapListener getNodeOnTapListener(String letterString, AnchorNode letterAnchorNode) {
 
         return (hitTestResult, motionEvent) -> {
+
+            gameManager.addLetterToAttempt(letterString);
+
+            lottieHelper.addAnimationViewOnTopOfLetter(
+                    getLetterTapAnimation(
+                            checkIfTappedLetterIsCorrect(letterString)),
+                    Math.round(motionEvent.getX() - 7),
+                    Math.round(motionEvent.getY() + 7),
+                    frameLayout);
+
             addLetterToWordBox(letterString.toLowerCase());
             gameManager.addTappedLetterToCurrentWordAttempt(letterString.toLowerCase());
             Objects.requireNonNull(letterAnchorNode.getAnchor()).detach();
         };
+    }
+
+    private boolean checkIfTappedLetterIsCorrect(String tappedLetter){
+        String correctLetter = Character.toString(
+                gameManager.getCurrentWordAnswer()
+                        .charAt(gameManager.getAttempt().length()-1));
+
+        if(tappedLetter.toLowerCase().equals(correctLetter.toLowerCase())){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    private LottieAnimationView getLetterTapAnimation(boolean isCorrect){
+        LottieAnimationView lav;
+
+        if(isCorrect) {
+            lav = lottieHelper.getAnimationView(
+                    getActivity(),LottieHelper.AnimationType.SPARKLES);
+        }else{
+            lav = lottieHelper.getAnimationView(
+                    getActivity(),LottieHelper.AnimationType.ERROR);
+        }
+        return lav;
     }
 
     @Override
@@ -562,20 +582,21 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
 
 //    @Override
     public void addLetterToWordBox(String letter) {
-        //TODO add tapped letter to view
+        addLetterToWordContainer(letter);
     }
 
 //    @Override
     public void undoLastLetter() {
         String erasedLetter = gameManager.subtractLetterFromAttempt();
         recreateErasedLetter(erasedLetter);
-    //TODO remove letter in word box from view;
+        if(wordContainer.getChildCount() > 0){
+            wordContainer.removeViewAt(wordContainer.getChildCount() - 1);
+        }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         hasPlacedGame = false;
-
     }
 }
