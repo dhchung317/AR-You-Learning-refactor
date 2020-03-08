@@ -54,6 +54,7 @@ public class GameManager {
                 } else {
 //                    answerMap.put(currentWord.getAnswer(),currentWord.getAttempts());
                     wordHistoryList.add(currentWord);
+                    navListener.setWordHistoryFromGameFragment(wordHistoryList);
                     navListener.moveToReplayFragment();
                 }
             }

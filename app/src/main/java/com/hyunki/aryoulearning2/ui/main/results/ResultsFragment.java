@@ -246,6 +246,7 @@ public class ResultsFragment extends Fragment {
     }
 
     private void renderModelList(State state){
+        Log.d("results", "renderModelList: " + state.getClass());
         if (state == State.Loading.INSTANCE) {
             progressBar.bringToFront();
             showProgressBar(true);
@@ -259,7 +260,7 @@ public class ResultsFragment extends Fragment {
             for (int i = 0; i < s.getModels().size(); i++) {
                 modelMap.put(s.getModels().get(i).getName(),s.getModels().get(i));
             }
-            Log.d("resultsAdapter", "renderModelList: ");
+            Log.d("resultsAdapter", "renderModelList: " + s.getModels().size());
             setResultRV();
         }
     }

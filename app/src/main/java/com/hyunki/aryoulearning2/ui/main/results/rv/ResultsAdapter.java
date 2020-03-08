@@ -3,6 +3,7 @@ package com.hyunki.aryoulearning2.ui.main.results.rv;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,6 +79,8 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
         void onBind(final CurrentWord currentWord, final Model model, final PronunciationUtil pronunUtil, final TextToSpeech TTS) {
             String correct = "Correct";
 
+            Log.d("resultsadapter", "onBind currentword: " + currentWord.getAnswer());
+            Log.d("resultsadapter", "onBind model: " + model.getName());
             String wrong = "";
             for (String s : currentWord.getAttempts()) {
                 wrong += s + ", ";
