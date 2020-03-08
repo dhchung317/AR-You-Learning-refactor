@@ -36,6 +36,7 @@ import android.widget.Toast;
 import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.ui.main.MainViewModel;
 import com.hyunki.aryoulearning2.ui.main.State;
+import com.hyunki.aryoulearning2.ui.main.ar.util.CurrentWord;
 import com.hyunki.aryoulearning2.ui.main.results.rv.ResultsAdapter;
 import com.hyunki.aryoulearning2.util.audio.PronunciationUtil;
 import com.hyunki.aryoulearning2.model.Model;
@@ -239,10 +240,13 @@ public class ResultsFragment extends Fragment {
     }
 
     private void displayRatingBarAttempts() {
-//        rainbowRatingBar.setNumStars(totalSize);
+
+        rainbowRatingBar.setNumStars(viewModel.getWordHistory().size());
         rainbowRatingBar.setStepSize(1);
-//        rainbowRatingBar.setRating(totalSize - correctAnswersStringSet.size());
-//        rainbowRatingBar.setIsIndicator(true);
+        rainbowRatingBar.setRating(
+                getCorrectAnswerCount(viewModel.getWordHistory())
+        );
+        rainbowRatingBar.setIsIndicator(true);
     }
 
     private void renderModelList(State state){
@@ -280,5 +284,14 @@ public class ResultsFragment extends Fragment {
         pronunciationUtil = null;
     }
 
+    public int getCorrectAnswerCount(List<CurrentWord> wordHistory){
+        int count = 0;
 
+        for (int i = 0; i < wordHistory.size(); i++) {
+            if(wordHistory.get(i).getAttempts().size() < 1){
+                count++;
+            }
+        }
+        return count;
+    }
 }

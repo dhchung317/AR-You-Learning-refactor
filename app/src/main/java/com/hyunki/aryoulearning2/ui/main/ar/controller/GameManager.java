@@ -15,7 +15,7 @@ public class GameManager {
     private NavListener navListener;
     private CurrentWord currentWord;
     //will dictate the number of rounds
-    private int roundLimit = 1;
+    private int roundLimit = 2;
     private Stack<String> keyStack = new Stack<>();
     private Map<String, Set<String>> answerMap = new HashMap<>();
     private List<CurrentWord> wordHistoryList = new ArrayList<>();

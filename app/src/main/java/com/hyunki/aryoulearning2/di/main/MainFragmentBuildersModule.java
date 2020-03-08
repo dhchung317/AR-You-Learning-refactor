@@ -29,5 +29,5 @@ public abstract class MainFragmentBuildersModule {
     abstract ResultsFragment contributeResultsFragment();
 
     @ContributesAndroidInjector
-    abstract TutorialFragment contributeTutorialFragmen();
+    abstract TutorialFragment contributeTutorialFragment();
 }
