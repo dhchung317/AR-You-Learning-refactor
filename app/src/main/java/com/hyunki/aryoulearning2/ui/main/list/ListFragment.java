@@ -21,7 +21,6 @@ import com.hyunki.aryoulearning2.ui.main.State;
 import com.hyunki.aryoulearning2.ui.main.list.rv.ListAdapter;
 import com.hyunki.aryoulearning2.viewmodel.ViewModelProviderFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -50,12 +49,10 @@ public class ListFragment extends DaggerFragment {
         AndroidSupportInjection.inject(this);
     }
 
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         progressBar = getActivity().findViewById(R.id.progress_bar);
-
     }
 
     @Inject
@@ -85,13 +82,10 @@ public class ListFragment extends DaggerFragment {
         mainViewModel.loadCategories();
 
         mainViewModel.getCatLiveData().observe(getViewLifecycleOwner(), categories -> {
-//            listAdapter.setLists(categories);
             renderCategories(categories);
             Log.d(TAG, "onViewCreated: " + mainViewModel.getCatLiveData().getValue().getClass());
 
         });
-
-
         initRecyclerView();
     }
 

@@ -22,7 +22,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import dagger.android.support.AndroidSupportInjection;
 import dagger.android.support.DaggerFragment;
 
 public class ReplayFragment extends DaggerFragment {
@@ -45,7 +44,6 @@ public class ReplayFragment extends DaggerFragment {
         return inflater.inflate(R.layout.fragment_replay, container, false);
     }
 
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -55,7 +53,6 @@ public class ReplayFragment extends DaggerFragment {
 //        AndroidSupportInjection.inject(this);
 //        pronunciationUtil = new PronunciationUtil();
     }
-
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -71,7 +68,7 @@ public class ReplayFragment extends DaggerFragment {
         resultsButtonCard = view.findViewById(R.id.cardView_results);
     }
 
-    public void viewClickListeners(){
+    public void viewClickListeners() {
         resultsButtonCard.setOnClickListener(v -> {
 //            pronunciationUtil.textToSpeechAnnouncer("Showing progress", textToSpeech);
             listener.moveToResultsFragment();
@@ -99,7 +96,7 @@ public class ReplayFragment extends DaggerFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if(getFragmentManager().findFragmentByTag("result_fragment") != null){
+        if (getFragmentManager().findFragmentByTag("result_fragment") != null) {
             getFragmentManager().beginTransaction().remove(getFragmentManager().findFragmentByTag("result_fragment")).commit();
         }
 //        getActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);

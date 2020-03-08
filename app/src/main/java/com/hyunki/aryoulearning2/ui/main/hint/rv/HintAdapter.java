@@ -88,9 +88,7 @@ public class HintAdapter extends RecyclerView.Adapter<HintAdapter.HintViewHolder
     }
 
     public void setList(List<Model> modelList) {
-
         this.modelList = modelList;
-
         notifyDataSetChanged();
     }
 }

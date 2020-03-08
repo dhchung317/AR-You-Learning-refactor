@@ -13,10 +13,7 @@ import com.hyunki.aryoulearning2.model.ModelResponse;
 import com.hyunki.aryoulearning2.ui.main.ar.util.CurrentWord;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Inject;
 

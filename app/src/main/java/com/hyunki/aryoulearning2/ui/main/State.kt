@@ -3,7 +3,6 @@ package com.hyunki.aryoulearning2.ui.main
 import com.hyunki.aryoulearning2.db.model.Category
 import com.hyunki.aryoulearning2.model.Model
 import com.hyunki.aryoulearning2.model.ModelResponse
-import java.util.*
 
 sealed class State {
 
@@ -31,8 +30,3 @@ sealed class State {
 
     }
 }
-
-//private MediatorLiveData<MainResource<List<ModelResponse>>> modelResponsesData = new MutableLiveData<>();
-//private MutableLiveData<List<Model>> modelLiveData = new MutableLiveData<>();
-//private MutableLiveData<List<Category>> catLiveData = new MutableLiveData<>();
-//private MutableLiveData<String> curCatLiveData = new MutableLiveData<>();
