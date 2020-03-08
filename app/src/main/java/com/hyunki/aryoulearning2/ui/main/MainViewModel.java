@@ -10,9 +10,13 @@ import com.hyunki.aryoulearning2.db.model.Category;
 import com.hyunki.aryoulearning2.db.model.CurrentCategory;
 import com.hyunki.aryoulearning2.model.Model;
 import com.hyunki.aryoulearning2.model.ModelResponse;
+import com.hyunki.aryoulearning2.ui.main.ar.util.CurrentWord;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -31,6 +35,7 @@ public class MainViewModel extends ViewModel {
     private MutableLiveData<State> modelLiveData = new MutableLiveData<>();
     private MutableLiveData<State> catLiveData = new MutableLiveData<>();
     private MutableLiveData<State> curCatLiveData = new MutableLiveData<>();
+    private List<CurrentWord> wordHistory = new ArrayList<>();
 
     @Inject
     MainViewModel(MainRepository mainRepository) {
@@ -123,6 +128,14 @@ public class MainViewModel extends ViewModel {
 
     void setCurrentCategory(Category category) {
         mainRepository.setCurrentCategory(new CurrentCategory(category.getName()));
+    }
+
+    public List<CurrentWord> getWordHistory() {
+        return wordHistory;
+    }
+
+    public void setWordHistory(List<CurrentWord> wordHistory) {
+        this.wordHistory = wordHistory;
     }
 
     private void onError(Throwable throwable) {

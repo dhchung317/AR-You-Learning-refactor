@@ -12,6 +12,7 @@ import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.db.model.Category;
 import com.hyunki.aryoulearning2.model.Model;
 import com.hyunki.aryoulearning2.ui.main.ar.ArHostFragment;
+import com.hyunki.aryoulearning2.ui.main.ar.util.CurrentWord;
 import com.hyunki.aryoulearning2.ui.main.controller.NavListener;
 import com.hyunki.aryoulearning2.ui.main.hint.HintFragment;
 import com.hyunki.aryoulearning2.ui.main.list.ListFragment;
@@ -20,6 +21,10 @@ import com.hyunki.aryoulearning2.ui.main.results.ResultsFragment;
 import com.hyunki.aryoulearning2.ui.main.tutorial.TutorialFragment;
 import com.hyunki.aryoulearning2.util.audio.PronunciationUtil;
 import com.hyunki.aryoulearning2.viewmodel.ViewModelProviderFactory;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -163,6 +168,12 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     }
 
     @Override
+    public void setWordHistoryFromGameFragment(List<CurrentWord> wordHistory) {
+        viewModel.setWordHistory(wordHistory);
+    }
+
+
+    @Override
     public void moveToTutorialFragment() {
         getSupportFragmentManager()
                 .beginTransaction()
@@ -172,7 +183,7 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     }
 
     @Override
-    public void setCategoryFromFragment(Category category) {
+    public void setCategoryFromListFragment(Category category) {
         viewModel.setCurrentCategory(category);
     }
 }

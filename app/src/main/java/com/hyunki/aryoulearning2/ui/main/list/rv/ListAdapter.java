@@ -80,7 +80,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.CategoryViewHo
                 Log.d("list adapter", "onBind: " + category.getName());
                 if (!category.getName().isEmpty()) {
                     Log.d("listadapter", "onBind: onclicklistener " + category.getName());
-                    listener.setCategoryFromFragment(category);
+                    listener.setCategoryFromListFragment(category);
                     listener.moveToHintFragment();
                 }
                 makeVibration();

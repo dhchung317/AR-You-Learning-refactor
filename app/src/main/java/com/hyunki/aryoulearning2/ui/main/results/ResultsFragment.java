@@ -19,30 +19,40 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hyunki.aryoulearning2.R;
+import com.hyunki.aryoulearning2.ui.main.MainViewModel;
+import com.hyunki.aryoulearning2.ui.main.State;
+import com.hyunki.aryoulearning2.ui.main.results.rv.ResultsAdapter;
 import com.hyunki.aryoulearning2.util.audio.PronunciationUtil;
-import com.hyunki.aryoulearning2.ui.main.controller.ResultsAdapter;
 import com.hyunki.aryoulearning2.model.Model;
+import com.hyunki.aryoulearning2.viewmodel.ViewModelProviderFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.inject.Inject;
 
-
+//TODO- refactor resultsfragment
 public class ResultsFragment extends Fragment {
     public static final String TOTALSIZE = "TOTALSIZE";
     private static final int REQUEST_CODE = 1;
@@ -54,11 +64,14 @@ public class ResultsFragment extends Fragment {
     private RatingBar rainbowRatingBar;
     private TextView categoryTextView;
     private List<Model> modelList;
+    private Map<String,Model> modelMap = new HashMap<>();
     FloatingActionButton shareFAB;
     FloatingActionButton backFAB;
     private RecyclerView resultRV;
     private PronunciationUtil pronunciationUtil;
     private TextToSpeech textToSpeech;
+    private MainViewModel viewModel;
+    private ProgressBar progressBar;
 
 //    public static ResultsFragment newInstance(final List<Model> modelList) {
 //        ResultsFragment resultsFragment = new ResultsFragment();
@@ -68,9 +81,17 @@ public class ResultsFragment extends Fragment {
 //        return resultsFragment;
 //    }
 
-    @Inject
-    public ResultsFragment() {}
+    private ViewModelProviderFactory viewModelProviderFactory;
 
+    @Inject
+    public ResultsFragment(ViewModelProviderFactory viewModelProviderFactory) {
+        this.viewModelProviderFactory = viewModelProviderFactory;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,15 +101,17 @@ public class ResultsFragment extends Fragment {
         }
 //        pronunciationUtil = new PronunciationUtil();
 //        textToSpeech = pronunciationUtil.getTTS(getContext());
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        extractSharedPrefs();
+//        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+//        extractSharedPrefs();
     }
 
 
-    public void extractSharedPrefs() {
-        correctAnswersStringSet = (HashSet) sharedPreferences.getStringSet(CORRECT_ANSWER_FOR_USER, null);
-        totalSize = sharedPreferences.getInt(TOTALSIZE, 0);
-    }
+
+
+//    public void extractSharedPrefs() {
+//        correctAnswersStringSet = (HashSet) sharedPreferences.getStringSet(CORRECT_ANSWER_FOR_USER, null);
+//        totalSize = sharedPreferences.getInt(TOTALSIZE, 0);
+//    }
 
     private void initializeViews(@NonNull final View view) {
         rainbowRatingBar = view.findViewById(R.id.rainbow_correctword_ratingbar);
@@ -107,8 +130,11 @@ public class ResultsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        viewModel = ViewModelProviders.of(getActivity(),viewModelProviderFactory).get(MainViewModel.class);
+        progressBar = getActivity().findViewById(R.id.progress_bar);
         initializeViews(view);
         setViews();
+        renderModelList(viewModel.getModelLiveData().getValue());
     }
 
     public void setViews(){
@@ -117,11 +143,10 @@ public class ResultsFragment extends Fragment {
         shareFAB.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.share_button_color)));
         backFABClick();
         shareFABClick();
-        setResultRV();
     }
 
     private void setResultRV() {
-        resultRV.setAdapter(new ResultsAdapter(modelList, pronunciationUtil, textToSpeech, totalSize));
+        resultRV.setAdapter(new ResultsAdapter(viewModel.getWordHistory(), modelMap, pronunciationUtil, textToSpeech));
         resultRV.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
 
     }
@@ -214,10 +239,37 @@ public class ResultsFragment extends Fragment {
     }
 
     private void displayRatingBarAttempts() {
-        rainbowRatingBar.setNumStars(totalSize);
+//        rainbowRatingBar.setNumStars(totalSize);
         rainbowRatingBar.setStepSize(1);
-        rainbowRatingBar.setRating(totalSize - correctAnswersStringSet.size());
-        rainbowRatingBar.setIsIndicator(true);
+//        rainbowRatingBar.setRating(totalSize - correctAnswersStringSet.size());
+//        rainbowRatingBar.setIsIndicator(true);
+    }
+
+    private void renderModelList(State state){
+        if (state == State.Loading.INSTANCE) {
+            progressBar.bringToFront();
+            showProgressBar(true);
+
+        } else if (state == State.Error.INSTANCE) {
+            showProgressBar(false);
+
+        } else if (state.getClass() == State.Success.OnModelsLoaded.class) {
+            showProgressBar(false);
+            State.Success.OnModelsLoaded s = (State.Success.OnModelsLoaded) state;
+            for (int i = 0; i < s.getModels().size(); i++) {
+                modelMap.put(s.getModels().get(i).getName(),s.getModels().get(i));
+            }
+            Log.d("resultsAdapter", "renderModelList: ");
+            setResultRV();
+        }
+    }
+
+    private void showProgressBar(boolean isVisible) {
+        if (isVisible) {
+            progressBar.setVisibility(View.VISIBLE);
+        } else {
+            progressBar.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -226,4 +278,6 @@ public class ResultsFragment extends Fragment {
         textToSpeech.shutdown();
         pronunciationUtil = null;
     }
+
+
 }

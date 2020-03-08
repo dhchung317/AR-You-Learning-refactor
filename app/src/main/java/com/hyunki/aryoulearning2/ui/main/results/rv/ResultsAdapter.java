@@ -1,4 +1,4 @@
-package com.hyunki.aryoulearning2.ui.main.controller;
+package com.hyunki.aryoulearning2.ui.main.results.rv;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
@@ -15,23 +15,28 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.model.Model;
+import com.hyunki.aryoulearning2.ui.main.ar.util.CurrentWord;
 import com.hyunki.aryoulearning2.util.audio.PronunciationUtil;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsViewHolder> {
-    private List<Model> modelList;
-    private int listSize;
+    private Map<String,Model> modelMap;
+    private List<CurrentWord> wordHistory;
+//    private int listSize;
     private PronunciationUtil pronunUtil;
     private TextToSpeech TTS;
 
 
-    public ResultsAdapter(List<Model> modelList, PronunciationUtil pronunciationUtil, TextToSpeech TTS, int listSize) {
-        this.modelList = modelList;
+    public ResultsAdapter(List<CurrentWord> wordHistory, Map<String,Model> modelMap, PronunciationUtil pronunciationUtil, TextToSpeech TTS) {
+        this.wordHistory = wordHistory;
+        this.modelMap = modelMap;
         this.pronunUtil = pronunciationUtil;
         this.TTS = TTS;
-        this.listSize = listSize;
+//        this.listSize = listSize;
     }
 
     @NonNull
@@ -44,13 +49,13 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 
     @Override
     public void onBindViewHolder(@NonNull ResultsViewHolder resultsViewHolder, int position) {
-        resultsViewHolder.onBind(modelList.get(position), pronunUtil, TTS);
+        resultsViewHolder.onBind(wordHistory.get(position),modelMap.get(wordHistory.get(position).getAnswer()), pronunUtil, TTS);
     }
 
 
     @Override
     public int getItemCount() {
-        return listSize;
+        return wordHistory.size();
     }
 
     class ResultsViewHolder extends RecyclerView.ViewHolder {
@@ -70,11 +75,11 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
         }
 
         @SuppressLint("ResourceAsColor")
-        void onBind(final Model model, final PronunciationUtil pronunUtil, final TextToSpeech TTS) {
+        void onBind(final CurrentWord currentWord, final Model model, final PronunciationUtil pronunUtil, final TextToSpeech TTS) {
             String correct = "Correct";
 
             String wrong = "";
-            for (String s : model.getWrongAnswerSet()) {
+            for (String s : currentWord.getAttempts()) {
                 wrong += s + ", ";
             }
 
@@ -85,7 +90,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 
             Picasso.get().load(model.getImage()).into(modelImageview);
 
-            if (model.isCorrect()) {
+            if (currentWord.getAttempts().isEmpty()) {
                 resultImage.setImageResource(R.drawable.star);
                 modelAnswer.setText(correct);
                 promptText.setVisibility(View.INVISIBLE);

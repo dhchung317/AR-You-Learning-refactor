@@ -65,6 +65,7 @@ import javax.inject.Inject;
 import dagger.android.support.AndroidSupportInjection;
 import dagger.android.support.DaggerFragment;
 
+//TODO-figure out bounce/float animation
 public class ArHostFragment extends DaggerFragment implements GameCommandListener {
     private static final int RC_PERMISSIONS = 0x123;
     public static final String MODEL_LIST = "MODEL_LIST";
