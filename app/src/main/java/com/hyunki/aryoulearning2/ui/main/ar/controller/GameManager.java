@@ -84,7 +84,7 @@ public class GameManager {
     public String subtractLetterFromAttempt() {
         String letter = "";
         if (!attempt.isEmpty()) {
-            letter = attempt.substring(attempt.length());
+            letter = attempt.substring(attempt.length() - 1);
             attempt = attempt.substring(0, attempt.length() - 1);
         }
         return letter;
