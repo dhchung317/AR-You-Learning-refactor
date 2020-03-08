@@ -470,8 +470,6 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
         mainAnchorNode = null;
     }
 
-    //TODO - refactor ui logic for updating wordbox as user spells and erases word letters
-
     private void addLetterToWordContainer(String letter) {
         Typeface ballonTF = ResourcesCompat.getFont(getActivity(), R.font.balloon);
         TextView t = new TextView(getActivity());
@@ -522,10 +520,45 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
     private Node.OnTapListener getNodeOnTapListener(String letterString, AnchorNode letterAnchorNode) {
 
         return (hitTestResult, motionEvent) -> {
+
+            gameManager.addLetterToAttempt(letterString);
+
+            lottieHelper.addAnimationViewOnTopOfLetter(
+                    getLetterTapAnimation(
+                            checkIfTappedLetterIsCorrect(letterString)),
+                    Math.round(motionEvent.getX() - 7),
+                    Math.round(motionEvent.getY() + 7),
+                    frameLayout);
+
             addLetterToWordBox(letterString.toLowerCase());
             gameManager.addTappedLetterToCurrentWordAttempt(letterString.toLowerCase());
             Objects.requireNonNull(letterAnchorNode.getAnchor()).detach();
         };
+    }
+
+    private boolean checkIfTappedLetterIsCorrect(String tappedLetter){
+        String correctLetter = Character.toString(
+                gameManager.getCurrentWordAnswer()
+                        .charAt(gameManager.getAttempt().length()-1));
+
+        if(tappedLetter.toLowerCase().equals(correctLetter.toLowerCase())){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    private LottieAnimationView getLetterTapAnimation(boolean isCorrect){
+        LottieAnimationView lav;
+
+        if(isCorrect) {
+            lav = lottieHelper.getAnimationView(
+                    getActivity(),LottieHelper.AnimationType.SPARKLES);
+        }else{
+            lav = lottieHelper.getAnimationView(
+                    getActivity(),LottieHelper.AnimationType.ERROR);
+        }
+        return lav;
     }
 
     @Override
@@ -559,13 +592,11 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
         if(wordContainer.getChildCount() > 0){
             wordContainer.removeViewAt(wordContainer.getChildCount() - 1);
         }
-    //TODO remove letter in word box from view;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         hasPlacedGame = false;
-
     }
 }

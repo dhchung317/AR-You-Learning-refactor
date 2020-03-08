@@ -39,7 +39,8 @@ public class GameManager {
     }
 
     public void addTappedLetterToCurrentWordAttempt(String letter) {
-        addLetterToAttempt(letter);
+
+
         if (attempt.length() == getCurrentWordAnswer().length()) {
             if (!attempt.toLowerCase().equals(getCurrentWordAnswer().toLowerCase())) {
                 recordWrongAnswer(attempt);
@@ -64,7 +65,6 @@ public class GameManager {
     }
 
     public void recordWrongAnswer(String wrongAnswer) {
-        attempt = "";
         currentWord.addWrongAnswerToSet(wrongAnswer);
     }
 
@@ -91,9 +91,9 @@ public class GameManager {
     }
 
     public void refreshManager(String key) {
-        attempt = "";
         if(!currentWord.getAnswer().equals(key)) {
             setCurrentWord(new CurrentWord(key));
         }
+        attempt = "";
     }
 }

@@ -42,7 +42,7 @@ public class LottieHelper {
     }
 
     //adds a lottie view to the corresposnding x and y coordinates
-    private void addAnimationViewOnTopOfLetter(LottieAnimationView lav, int x, int y, FrameLayout f) {
+    public void addAnimationViewOnTopOfLetter(LottieAnimationView lav, int x, int y, FrameLayout f) {
         lav.setX(x);
         lav.setY(y);
         f.addView(lav, 300, 300);
