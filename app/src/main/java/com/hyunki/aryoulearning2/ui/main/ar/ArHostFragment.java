@@ -81,15 +81,12 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
     LottieHelper lottieHelper;
 
     private ArViewModel arViewModel;
-    private MainViewModel mainViewModel;
 
     private ArFragment arFragment;
 
     private GestureDetector gestureDetector;
     private PronunciationUtil pronunciationUtil;
     private MediaPlayer playBalloonPop;
-
-    private SharedPreferences prefs;
 
     private boolean hasFinishedLoadingModels = false;
     private boolean hasFinishedLoadingLetters = false;
@@ -176,8 +173,6 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
         setUpARScene(arFragment);
 
         requestCameraPermission(getActivity(), RC_PERMISSIONS);
-
-        mainViewModel = ViewModelProviders.of(this,viewModelProviderFactory).get(MainViewModel.class);
         arViewModel = ViewModelProviders.of(this, viewModelProviderFactory).get(ArViewModel.class);
 
         arViewModel.getModelLiveData().observe(getViewLifecycleOwner(), models -> {
