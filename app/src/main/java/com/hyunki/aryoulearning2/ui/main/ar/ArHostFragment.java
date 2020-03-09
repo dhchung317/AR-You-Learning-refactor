@@ -48,7 +48,6 @@ import com.google.ar.sceneform.ux.ArFragment;
 import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.animation.Animations;
 import com.hyunki.aryoulearning2.animation.LottieHelper;
-import com.hyunki.aryoulearning2.ui.main.MainViewModel;
 import com.hyunki.aryoulearning2.ui.main.ar.controller.GameCommandListener;
 import com.hyunki.aryoulearning2.ui.main.ar.controller.GameManager;
 import com.hyunki.aryoulearning2.ui.main.ar.util.ModelUtil;
@@ -131,8 +130,6 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-
     }
 
     @Override
@@ -156,7 +153,6 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 //        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 //        playBalloonPop = MediaPlayer.create(getContext(), R.raw.pop_effect);
     }
@@ -190,7 +186,6 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
 
         arViewModel.getModelMapList().observe(getViewLifecycleOwner(), hashMaps -> {
             modelMapList = hashMaps;
-
             hasFinishedLoadingModels = true;
         });
 
@@ -545,7 +540,6 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
 
     private LottieAnimationView getLetterTapAnimation(boolean isCorrect){
         LottieAnimationView lav;
-
         if(isCorrect) {
             lav = lottieHelper.getAnimationView(
                     getActivity(),LottieHelper.AnimationType.SPARKLES);
@@ -575,12 +569,10 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
         wordContainer.removeAllViews();
     }
 
-//    @Override
     public void addLetterToWordBox(String letter) {
         addLetterToWordContainer(letter);
     }
 
-//    @Override
     public void undoLastLetter() {
         String erasedLetter = gameManager.subtractLetterFromAttempt();
         recreateErasedLetter(erasedLetter);
