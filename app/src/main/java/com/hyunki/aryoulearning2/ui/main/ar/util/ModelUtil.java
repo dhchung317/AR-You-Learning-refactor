@@ -1,6 +1,8 @@
 package com.hyunki.aryoulearning2.ui.main.ar.util;
 
+import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 
 import com.hyunki.aryoulearning2.animation.Animations;
 import com.google.ar.core.Anchor;
@@ -85,19 +87,19 @@ public class ModelUtil {
         while (checkDoesLetterCollide(coordinates, parent.getLocalPosition())) {
             coordinates = getRandomCoordinates();
         }
+
         trNode.setLocalPosition(coordinates);
-        trNode.setLookDirection(new Vector3(0, 0, 0));
+        trNode.setLookDirection(new Vector3(0, 0, getRandom(4,0)));
         trNode.setLocalScale(new Vector3(1.0f, 1.0f, 1.0f));
 
         ObjectAnimator floating = Animations.AR.createFloatAnimator(trNode);
         ObjectAnimator rotate = Animations.AR.createRotationAnimator();
-
-//        rotate.setTarget(trNode);
-        rotate.setDuration(7000);
+        rotate.setTarget(trNode);
+        rotate.setDuration(4000);
         rotate.start();
 
         floating.setTarget(trNode);
-        floating.setDuration(500);
+        floating.setDuration(2000);
         floating.start();
 
         return base;

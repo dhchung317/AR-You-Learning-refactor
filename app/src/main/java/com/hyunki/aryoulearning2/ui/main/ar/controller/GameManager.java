@@ -4,28 +4,28 @@ import com.hyunki.aryoulearning2.ui.main.ar.util.CurrentWord;
 import com.hyunki.aryoulearning2.ui.main.controller.NavListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.Random;
 import java.util.Stack;
 
 public class GameManager {
+    private static Random r = new Random();
     private GameCommandListener gameCommands;
     private NavListener navListener;
     private CurrentWord currentWord;
-    //will dictate the number of rounds
-    private int roundLimit = 2;
+    private int roundLimit = 3;
     private Stack<String> keyStack = new Stack<>();
-    private Map<String, Set<String>> answerMap = new HashMap<>();
     private List<CurrentWord> wordHistoryList = new ArrayList<>();
     private String attempt = "";
 
     public GameManager(List<String> modelMapKeys, GameCommandListener gameCommands, NavListener navListener) {
         this.gameCommands = gameCommands;
         this.navListener = navListener;
-        for (int i = 0; i < roundLimit; i++) {
-            keyStack.add(modelMapKeys.get(i));
+        while (keyStack.size() < roundLimit) {
+            int ran = getRandom(modelMapKeys.size(), 0);
+            if (!keyStack.contains(modelMapKeys.get(ran))) {
+                keyStack.add(modelMapKeys.get(ran));
+            }
         }
         this.currentWord = new CurrentWord(keyStack.pop());
     }
@@ -48,20 +48,14 @@ public class GameManager {
             } else {
                 if (keyStack.size() > 0) {
                     wordHistoryList.add(currentWord);
-//                    answerMap.put(currentWord.getAnswer(),currentWord.getAttempts());
                     startNextGame(keyStack.pop());
                 } else {
-//                    answerMap.put(currentWord.getAnswer(),currentWord.getAttempts());
                     wordHistoryList.add(currentWord);
                     navListener.setWordHistoryFromGameFragment(wordHistoryList);
                     navListener.moveToReplayFragment();
                 }
             }
         }
-    }
-
-    public void undoLastLetterAdded() {
-        subtractLetterFromAttempt();
     }
 
     public void recordWrongAnswer(String wrongAnswer) {
@@ -91,9 +85,13 @@ public class GameManager {
     }
 
     public void refreshManager(String key) {
-        if(!currentWord.getAnswer().equals(key)) {
+        if (!currentWord.getAnswer().equals(key)) {
             setCurrentWord(new CurrentWord(key));
         }
         attempt = "";
+    }
+
+    private static int getRandom(int max, int min) {
+        return r.nextInt((max - min)) + min;
     }
 }
