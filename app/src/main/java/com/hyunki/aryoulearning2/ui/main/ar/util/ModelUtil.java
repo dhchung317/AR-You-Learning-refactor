@@ -95,11 +95,11 @@ public class ModelUtil {
         ObjectAnimator floating = Animations.AR.createFloatAnimator(trNode);
         ObjectAnimator rotate = Animations.AR.createRotationAnimator();
         rotate.setTarget(trNode);
-        rotate.setDuration(4000);
+        rotate.setDuration(getRandom(4000,3000));
         rotate.start();
 
         floating.setTarget(trNode);
-        floating.setDuration(2000);
+        floating.setDuration(getRandom(2500,2000));
         floating.start();
 
         return base;
