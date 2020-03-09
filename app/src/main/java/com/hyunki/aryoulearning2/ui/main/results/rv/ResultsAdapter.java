@@ -99,7 +99,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
                 resultImage.setImageResource(R.drawable.error);
                 modelAnswer.setText(wrong.substring(0, wrong.length() - 2));
             }
-            cardView.setOnClickListener(v -> pronunUtil.textToSpeechAnnouncer(name, TTS));
+//            cardView.setOnClickListener(v -> pronunUtil.textToSpeechAnnouncer(name, TTS));
         }
     }
 }

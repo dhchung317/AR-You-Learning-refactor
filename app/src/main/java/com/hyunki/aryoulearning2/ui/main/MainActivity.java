@@ -1,11 +1,12 @@
 package com.hyunki.aryoulearning2.ui.main;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.hyunki.aryoulearning2.R;
@@ -29,8 +30,10 @@ import dagger.android.support.DaggerAppCompatActivity;
 
 public class MainActivity extends DaggerAppCompatActivity implements NavListener {
     public static final String TAG = "MainActivity";
+    public static final String NETWORK_CALL_COMPLETED = "network_call_completed";
     private MainViewModel viewModel;
     private ProgressBar progressBar;
+    SharedPreferences prefs;
 
     @Inject
     PronunciationUtil pronunciationUtil;
@@ -80,34 +83,32 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
         setTheme(resId);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        viewModel = ViewModelProviders.of(this, providerFactory).get(MainViewModel.class);
 
         progressBar = findViewById(R.id.progress_bar);
         Log.d(TAG, "onCreate");
-
-        viewModel = ViewModelProviders.of(this, providerFactory).get(MainViewModel.class);
-        viewModel.loadModelResponses();
-        viewModel.getModelResponsesData().observe(this, new Observer<State>() {
-            @Override
-            public void onChanged(State state) {
-                renderModelResponses(state);
-            }
-        });
+        if(prefs.contains(NETWORK_CALL_COMPLETED)){
+            Log.d(TAG, "onCreate: " + prefs.contains(NETWORK_CALL_COMPLETED));
+            moveToListFragment();
+        }else {
+            viewModel.loadModelResponses();
+            viewModel.getModelResponsesData().observe(this, this::renderModelResponses);
+        }
     }
 
     private void renderModelResponses(State state) {
         if (state == State.Loading.INSTANCE) {
             showProgressBar(true);
-
         } else if (state == State.Error.INSTANCE) {
             showProgressBar(false);
-
         } else if (state.getClass() == State.Success.OnModelResponsesLoaded.class) {
+            prefs.edit().putString(NETWORK_CALL_COMPLETED,"success").apply();
             moveToListFragment();
         }
     }
 
     private void showProgressBar(boolean isVisible) {
-
         if (isVisible) {
             progressBar.setVisibility(View.VISIBLE);
         } else {
@@ -128,7 +129,6 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, arHostFragment)
-//                    .addToBackStack(null)
                 .commit();
     }
 
@@ -137,7 +137,6 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, resultsFragment)
-//                    .addToBackStack(null)
                 .commit();
     }
 
@@ -159,11 +158,6 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     }
 
     @Override
-    public void setWordHistoryFromGameFragment(List<CurrentWord> wordHistory) {
-        viewModel.setWordHistory(wordHistory);
-    }
-
-    @Override
     public void moveToTutorialFragment() {
         getSupportFragmentManager()
                 .beginTransaction()
@@ -175,5 +169,10 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     @Override
     public void setCategoryFromListFragment(Category category) {
         viewModel.setCurrentCategory(category);
+    }
+
+    @Override
+    public void setWordHistoryFromGameFragment(List<CurrentWord> wordHistory) {
+        viewModel.setWordHistory(wordHistory);
     }
 }

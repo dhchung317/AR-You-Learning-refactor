@@ -40,9 +40,7 @@ public class MainViewModel extends ViewModel {
     }
 
     void loadModelResponses() {
-
         modelResponsesData.setValue(State.Loading.INSTANCE);
-
         compositeDisposable.add(
                 mainRepository.getModelResponses()
                         .subscribeOn(Schedulers.io())
@@ -78,7 +76,6 @@ public class MainViewModel extends ViewModel {
     public void loadModelsByCat(String cat) {
         modelLiveData.setValue(State.Loading.INSTANCE);
         Log.d(TAG, "loadModelsByCat: loading models by cat");
-
         Disposable modelDisposable =
                 mainRepository.getModelsByCat(cat)
                         .subscribeOn(Schedulers.io())
@@ -89,7 +86,6 @@ public class MainViewModel extends ViewModel {
 
     public void loadCategories() {
         catLiveData.setValue(State.Loading.INSTANCE);
-
         Disposable catDisposable = mainRepository.getAllCats()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -99,7 +95,6 @@ public class MainViewModel extends ViewModel {
 
     public void loadCurrentCategoryName() {
         curCatLiveData.setValue(State.Loading.INSTANCE);
-
         Disposable curCatDisposable = mainRepository.getCurrentCategory()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

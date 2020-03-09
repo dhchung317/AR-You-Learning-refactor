@@ -16,8 +16,6 @@ public class LottieHelper {
         ERROR
     }
 
-
-    //instantiates a lottie view
     public LottieAnimationView getAnimationView(Context context, AnimationType type) {
         LottieAnimationView lav = new LottieAnimationView(context);
         lav.setVisibility(View.VISIBLE);

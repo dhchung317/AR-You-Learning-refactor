@@ -124,9 +124,9 @@ public class ListFragment extends DaggerFragment {
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        renderCategories(mainViewModel.getCatLiveData().getValue());
-    }
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        renderCategories(mainViewModel.getCatLiveData().getValue());
+//    }
 }
