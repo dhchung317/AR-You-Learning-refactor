@@ -13,10 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
+@Singleton
 public class MainRepository {
     private final ModelDao modelDao;
     private final CategoryDao categoryDao;

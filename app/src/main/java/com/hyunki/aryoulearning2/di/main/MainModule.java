@@ -20,11 +20,6 @@ public class MainModule {
     }
 
     @Provides
-    static MainApi provideMainApi(Retrofit retrofit) {
-        return retrofit.create(MainApi.class);
-    }
-
-    @Provides
     static ListAdapter provideCategoryAdapter() {
         return new ListAdapter();
     }

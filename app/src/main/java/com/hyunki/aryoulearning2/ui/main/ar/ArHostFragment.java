@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -45,6 +46,7 @@ import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
+import com.hyunki.aryoulearning2.BaseApplication;
 import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.animation.Animations;
 import com.hyunki.aryoulearning2.animation.LottieHelper;
@@ -63,11 +65,8 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
-import dagger.android.support.AndroidSupportInjection;
-import dagger.android.support.DaggerFragment;
-
 //TODO-figure out bounce/float animation
-public class ArHostFragment extends DaggerFragment implements GameCommandListener {
+public class ArHostFragment extends Fragment implements GameCommandListener {
     private static final int RC_PERMISSIONS = 0x123;
     public static final String MODEL_LIST = "MODEL_LIST";
     private GameManager gameManager;
@@ -134,11 +133,12 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
 
     @Override
     public void onAttach(Context context) {
+        ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
         super.onAttach(context);
         if (context instanceof NavListener) {
             listener = (NavListener) context;
         }
-        AndroidSupportInjection.inject(this);
+
 //        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
     }
 

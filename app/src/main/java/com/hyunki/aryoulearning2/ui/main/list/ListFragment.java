@@ -10,10 +10,12 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.hyunki.aryoulearning2.BaseApplication;
 import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.db.model.Category;
 import com.hyunki.aryoulearning2.ui.main.MainViewModel;
@@ -25,10 +27,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import dagger.android.support.AndroidSupportInjection;
-import dagger.android.support.DaggerFragment;
-
-public class ListFragment extends DaggerFragment {
+public class ListFragment extends Fragment {
     public static final String TAG = "ListFragmentX";
 
     private MainViewModel mainViewModel;
@@ -44,9 +43,9 @@ public class ListFragment extends DaggerFragment {
 
     @Override
     public void onAttach(Context context) {
+        ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
         super.onAttach(context);
         Log.d(TAG, "onAttach: on attach ran");
-        AndroidSupportInjection.inject(this);
     }
 
     @Override

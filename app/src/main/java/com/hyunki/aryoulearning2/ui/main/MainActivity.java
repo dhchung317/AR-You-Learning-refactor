@@ -7,10 +7,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.hyunki.aryoulearning2.BaseApplication;
 import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.db.model.Category;
+import com.hyunki.aryoulearning2.di.AppComponent;
+import com.hyunki.aryoulearning2.di.DaggerAppComponent;
 import com.hyunki.aryoulearning2.ui.main.ar.ArHostFragment;
 import com.hyunki.aryoulearning2.ui.main.ar.util.CurrentWord;
 import com.hyunki.aryoulearning2.ui.main.controller.NavListener;
@@ -26,9 +30,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import dagger.android.support.DaggerAppCompatActivity;
-
-public class MainActivity extends DaggerAppCompatActivity implements NavListener {
+public class MainActivity extends AppCompatActivity implements NavListener {
     public static final String TAG = "MainActivity";
     public static final String NETWORK_CALL_COMPLETED = "network_call_completed";
     private MainViewModel viewModel;
@@ -81,6 +83,7 @@ public class MainActivity extends DaggerAppCompatActivity implements NavListener
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(resId);
+        ((BaseApplication) getApplication()).getAppComponent().inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());

@@ -11,7 +11,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
 
+import com.hyunki.aryoulearning2.BaseApplication;
 import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.model.Model;
 import com.hyunki.aryoulearning2.ui.main.controller.NavListener;
@@ -22,9 +24,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import dagger.android.support.DaggerFragment;
-
-public class ReplayFragment extends DaggerFragment {
+public class ReplayFragment extends Fragment {
     private NavListener listener;
 
     private CardView resultsButtonCard, homeButtonCard, playAgainButtonCard;
@@ -46,6 +46,7 @@ public class ReplayFragment extends DaggerFragment {
 
     @Override
     public void onAttach(Context context) {
+        ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
         super.onAttach(context);
         if (context instanceof NavListener) {
             listener = (NavListener) context;

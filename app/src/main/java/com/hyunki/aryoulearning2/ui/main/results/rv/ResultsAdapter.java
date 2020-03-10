@@ -50,7 +50,6 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
         resultsViewHolder.onBind(wordHistory.get(position), modelMap.get(wordHistory.get(position).getAnswer()), pronunUtil, TTS);
     }
 
-
     @Override
     public int getItemCount() {
         return wordHistory.size();
@@ -58,7 +57,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 
     class ResultsViewHolder extends RecyclerView.ViewHolder {
         private TextView modelTextView;
-        private ImageView modelImageview;
+        private ImageView modelImageView;
         private TextView modelAnswer;
         private ImageView resultImage;
         private TextView promptText;
@@ -67,7 +66,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
             super(itemView);
             modelTextView = itemView.findViewById(R.id.correctmodel_name);
             promptText = itemView.findViewById(R.id.result_prompt_textView);
-            modelImageview = itemView.findViewById(R.id.correctmodel_image);
+            modelImageView = itemView.findViewById(R.id.correctmodel_image);
             modelAnswer = itemView.findViewById(R.id.correctmodel_answer);
             resultImage = itemView.findViewById(R.id.result_imageView);
         }
@@ -88,7 +87,7 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 
             modelTextView.setText(name);
 
-            Picasso.get().load(model.getImage()).into(modelImageview);
+            Picasso.get().load(model.getImage()).into(modelImageView);
 
             if (currentWord.getAttempts().isEmpty()) {
                 resultImage.setImageResource(R.drawable.star);
