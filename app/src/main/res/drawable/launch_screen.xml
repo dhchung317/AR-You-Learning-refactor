@@ -5,15 +5,14 @@
     android:opacity="opaque">
 
     <!-- The background color, preferably the same as your normal theme -->
-    <item android:drawable="@color/categoryCard"/>
+    <item android:drawable="@color/colorSplashBackground"/>
 
     <!-- Your product logo - 144dp color version of your app icon -->
-    <item>
-
+    <item
+        android:width="100dp"
+        android:gravity="center">
         <bitmap
             android:src="@drawable/arulearning"
-            android:gravity="center"/>
-
+            android:gravity="center" />
     </item>
-
 </layer-list>

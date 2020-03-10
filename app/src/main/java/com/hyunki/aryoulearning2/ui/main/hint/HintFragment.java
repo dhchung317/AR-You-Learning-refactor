@@ -12,11 +12,13 @@ import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.hyunki.aryoulearning2.BaseApplication;
 import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.ui.main.MainViewModel;
 import com.hyunki.aryoulearning2.ui.main.State;
@@ -26,10 +28,7 @@ import com.hyunki.aryoulearning2.viewmodel.ViewModelProviderFactory;
 
 import javax.inject.Inject;
 
-import dagger.android.support.AndroidSupportInjection;
-import dagger.android.support.DaggerFragment;
-
-public class HintFragment extends DaggerFragment {
+public class HintFragment extends Fragment {
 
     private RecyclerView hintRecyclerView;
     private ConstraintLayout constraintLayout;
@@ -62,11 +61,11 @@ public class HintFragment extends DaggerFragment {
 
     @Override
     public void onAttach(Context context) {
+        ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
         super.onAttach(context);
         if (context instanceof NavListener) {
             listener = (NavListener) context;
         }
-        AndroidSupportInjection.inject(this);
     }
 
     @Override

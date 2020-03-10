@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -45,10 +46,10 @@ import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
+import com.hyunki.aryoulearning2.BaseApplication;
 import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.animation.Animations;
 import com.hyunki.aryoulearning2.animation.LottieHelper;
-import com.hyunki.aryoulearning2.ui.main.MainViewModel;
 import com.hyunki.aryoulearning2.ui.main.ar.controller.GameCommandListener;
 import com.hyunki.aryoulearning2.ui.main.ar.controller.GameManager;
 import com.hyunki.aryoulearning2.ui.main.ar.util.ModelUtil;
@@ -64,11 +65,8 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
-import dagger.android.support.AndroidSupportInjection;
-import dagger.android.support.DaggerFragment;
-
 //TODO-figure out bounce/float animation
-public class ArHostFragment extends DaggerFragment implements GameCommandListener {
+public class ArHostFragment extends Fragment implements GameCommandListener {
     private static final int RC_PERMISSIONS = 0x123;
     public static final String MODEL_LIST = "MODEL_LIST";
     private GameManager gameManager;
@@ -131,17 +129,16 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-
     }
 
     @Override
     public void onAttach(Context context) {
+        ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
         super.onAttach(context);
         if (context instanceof NavListener) {
             listener = (NavListener) context;
         }
-        AndroidSupportInjection.inject(this);
+
 //        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
     }
 
@@ -156,7 +153,6 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 //        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 //        playBalloonPop = MediaPlayer.create(getContext(), R.raw.pop_effect);
     }
@@ -190,7 +186,6 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
 
         arViewModel.getModelMapList().observe(getViewLifecycleOwner(), hashMaps -> {
             modelMapList = hashMaps;
-
             hasFinishedLoadingModels = true;
         });
 
@@ -545,7 +540,6 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
 
     private LottieAnimationView getLetterTapAnimation(boolean isCorrect){
         LottieAnimationView lav;
-
         if(isCorrect) {
             lav = lottieHelper.getAnimationView(
                     getActivity(),LottieHelper.AnimationType.SPARKLES);
@@ -575,12 +569,10 @@ public class ArHostFragment extends DaggerFragment implements GameCommandListene
         wordContainer.removeAllViews();
     }
 
-//    @Override
     public void addLetterToWordBox(String letter) {
         addLetterToWordContainer(letter);
     }
 
-//    @Override
     public void undoLastLetter() {
         String erasedLetter = gameManager.subtractLetterFromAttempt();
         recreateErasedLetter(erasedLetter);

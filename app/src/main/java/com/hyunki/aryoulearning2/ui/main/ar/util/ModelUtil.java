@@ -90,7 +90,7 @@ public class ModelUtil {
 
         trNode.setLocalPosition(coordinates);
         trNode.setLookDirection(new Vector3(0, 0, getRandom(4,0)));
-        trNode.setLocalScale(new Vector3(1.0f, 1.0f, 1.0f));
+        trNode.setLocalScale(new Vector3(1.0f, getRandom(10,0) * .1f, 1.0f));
 
         ObjectAnimator floating = Animations.AR.createFloatAnimator(trNode);
         ObjectAnimator rotate = Animations.AR.createRotationAnimator();

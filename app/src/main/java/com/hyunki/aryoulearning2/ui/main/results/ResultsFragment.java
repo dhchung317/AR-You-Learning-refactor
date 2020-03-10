@@ -2,6 +2,7 @@ package com.hyunki.aryoulearning2.ui.main.results;
 
 import android.Manifest;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -33,6 +34,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.hyunki.aryoulearning2.BaseApplication;
 import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.ui.main.MainViewModel;
 import com.hyunki.aryoulearning2.ui.main.State;
@@ -72,6 +74,12 @@ public class ResultsFragment extends Fragment {
     @Inject
     public ResultsFragment(ViewModelProviderFactory viewModelProviderFactory) {
         this.viewModelProviderFactory = viewModelProviderFactory;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
+        super.onAttach(context);
     }
 
     @Override

@@ -18,8 +18,7 @@ public class ModelDatabaseModule {
     static ModelDatabase provideModelDatabase(Context context) {
         return Room.databaseBuilder(
                 context,
-                ModelDatabase.class, ModelDatabase.DATABASE_NAME
-        )
+                ModelDatabase.class, ModelDatabase.DATABASE_NAME)
                 .fallbackToDestructiveMigration()
                 .allowMainThreadQueries()
                 .build();

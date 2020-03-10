@@ -1,40 +1,20 @@
 package com.hyunki.aryoulearning2;
 
-import android.app.Activity;
-import android.app.Fragment;
+import android.app.Application;
 
-import androidx.multidex.MultiDexApplication;
-
+import com.hyunki.aryoulearning2.di.AppComponent;
 import com.hyunki.aryoulearning2.di.DaggerAppComponent;
 
-import javax.inject.Inject;
-
-import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasActivityInjector;
-import dagger.android.HasFragmentInjector;
-
-public class BaseApplication extends MultiDexApplication implements HasActivityInjector, HasFragmentInjector {
-
-    @Inject
-    DispatchingAndroidInjector<Activity> activityInjector;
-    @Inject
-    DispatchingAndroidInjector<Fragment> fragmentInjector;
-
+public class BaseApplication extends Application {
+    AppComponent appComponent;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        DaggerAppComponent.builder().application(this).build().inject(this);
+        appComponent = DaggerAppComponent.builder().application(this).build();
     }
 
-    // Dependency Injection
-    @Override
-    public DispatchingAndroidInjector<Activity> activityInjector() {
-        return activityInjector;
-    }
-
-    @Override
-    public DispatchingAndroidInjector<Fragment> fragmentInjector() {
-        return fragmentInjector;
+    public AppComponent getAppComponent() {
+        return appComponent;
     }
 }

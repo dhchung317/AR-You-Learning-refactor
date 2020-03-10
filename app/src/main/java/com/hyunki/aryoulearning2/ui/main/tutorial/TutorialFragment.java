@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
+import com.hyunki.aryoulearning2.BaseApplication;
 import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.model.Model;
 import com.hyunki.aryoulearning2.ui.main.controller.NavListener;
@@ -35,6 +36,7 @@ public class TutorialFragment extends Fragment {
 
     @Override
     public void onAttach(Context context) {
+        ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
         super.onAttach(context);
         if (context instanceof NavListener) {
             listener = (NavListener) context;
