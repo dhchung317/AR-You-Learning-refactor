@@ -4,7 +4,6 @@ import android.app.Application;
 
 import com.hyunki.aryoulearning2.BaseApplication;
 import com.hyunki.aryoulearning2.db.ModelDatabaseModule;
-import com.hyunki.aryoulearning2.di.main.MainFragmentBuildersModule;
 import com.hyunki.aryoulearning2.di.main.MainModule;
 import com.hyunki.aryoulearning2.di.main.MainViewModelsModule;
 import com.hyunki.aryoulearning2.network.main.MainApi;

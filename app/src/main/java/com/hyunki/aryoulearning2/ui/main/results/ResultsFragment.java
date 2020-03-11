@@ -39,6 +39,7 @@ import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.ui.main.MainViewModel;
 import com.hyunki.aryoulearning2.ui.main.State;
 import com.hyunki.aryoulearning2.ui.main.ar.util.CurrentWord;
+import com.hyunki.aryoulearning2.ui.main.controller.NavListener;
 import com.hyunki.aryoulearning2.ui.main.results.rv.ResultsAdapter;
 import com.hyunki.aryoulearning2.util.audio.PronunciationUtil;
 import com.hyunki.aryoulearning2.model.Model;
@@ -48,7 +49,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -68,6 +68,7 @@ public class ResultsFragment extends Fragment {
     private TextToSpeech textToSpeech;
     private MainViewModel viewModel;
     private ProgressBar progressBar;
+    private NavListener navListener;
 
     private ViewModelProviderFactory viewModelProviderFactory;
 
@@ -80,6 +81,10 @@ public class ResultsFragment extends Fragment {
     public void onAttach(@NonNull Context context) {
         ((BaseApplication) getActivity().getApplication()).getAppComponent().inject(this);
         super.onAttach(context);
+
+        if(context instanceof NavListener){
+            navListener = (NavListener) context;
+        }
     }
 
     @Override
@@ -118,7 +123,7 @@ public class ResultsFragment extends Fragment {
         renderModelList(viewModel.getModelLiveData().getValue());
     }
 
-    public void setViews(){
+    private void setViews(){
         displayRatingBarAttempts();
 //        categoryTextView.setText(MainActivityX.currentCategory);
         shareFAB.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.share_button_color)));
@@ -132,7 +137,7 @@ public class ResultsFragment extends Fragment {
 
     }
 
-    public void shareFABClick() {
+    private void shareFABClick() {
         shareFAB.setOnClickListener(v -> {
             v = Objects.requireNonNull(ResultsFragment.this.getActivity()).getWindow().getDecorView().getRootView();
             if (ContextCompat.checkSelfPermission(v.getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -147,16 +152,12 @@ public class ResultsFragment extends Fragment {
         });
     }
 
-    public void backFABClick(){
-        backFAB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Objects.requireNonNull(getActivity()).onBackPressed();
-            }
-        });
+    private void backFABClick(){
+        backFAB.setOnClickListener(v -> navListener.moveToListFragment());
+
     }
 
-    public void allowOnFileUriExposed() {
+    private void allowOnFileUriExposed() {
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
     }
@@ -173,7 +174,7 @@ public class ResultsFragment extends Fragment {
         }
     }
 
-    public void takeScreenshotAndShare(final View view) {
+    private void takeScreenshotAndShare(final View view) {
         allowOnFileUriExposed();
         view.setDrawingCacheEnabled(true);
         view.buildDrawingCache(true);
@@ -198,7 +199,7 @@ public class ResultsFragment extends Fragment {
         }
     }
 
-    public void saveBitmap(final Bitmap bitmap) {
+    private void saveBitmap(final Bitmap bitmap) {
         Date now = new Date();
         android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
 
@@ -260,11 +261,11 @@ public class ResultsFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        textToSpeech.shutdown();
+//        textToSpeech.shutdown();
         pronunciationUtil = null;
     }
 
-    public int getCorrectAnswerCount(List<CurrentWord> wordHistory){
+    private int getCorrectAnswerCount(List<CurrentWord> wordHistory){
         int count = 0;
 
         for (int i = 0; i < wordHistory.size(); i++) {
