@@ -8,6 +8,7 @@ import com.hyunki.aryoulearning2.db.model.CurrentCategory;
 import com.hyunki.aryoulearning2.model.Model;
 import com.hyunki.aryoulearning2.model.ModelResponse;
 import com.hyunki.aryoulearning2.network.RetrofitSingleton;
+import com.hyunki.aryoulearning2.network.main.MainApi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,12 +24,14 @@ public class MainRepository {
     private final ModelDao modelDao;
     private final CategoryDao categoryDao;
     private final CurrentCategoryDao currentCategoryDao;
+    private final MainApi mainApi;
 
     @Inject
-    MainRepository(ModelDao modelDao, CategoryDao categoryDao, CurrentCategoryDao currentCategoryDao) {
+    MainRepository(ModelDao modelDao, CategoryDao categoryDao, CurrentCategoryDao currentCategoryDao, MainApi mainApi) {
         this.modelDao = modelDao;
         this.categoryDao = categoryDao;
         this.currentCategoryDao = currentCategoryDao;
+        this.mainApi = mainApi;
     }
 
     public Single<List<Model>> getModelsByCat(String cat) {
@@ -56,7 +59,7 @@ public class MainRepository {
     }
 
     public Observable<ArrayList<ModelResponse>> getModelResponses() {
-        return RetrofitSingleton.getService().getModels();
+        return mainApi.getModels();
     }
 
     void clearEntireDatabase() {

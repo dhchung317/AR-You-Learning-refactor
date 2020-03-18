@@ -1,6 +1,8 @@
 package com.hyunki.aryoulearning2.ui.main.ar.controller;
 
+import com.hyunki.aryoulearning2.model.Model;
 import com.hyunki.aryoulearning2.ui.main.ar.util.CurrentWord;
+import com.hyunki.aryoulearning2.ui.main.ar.util.ModelUtil;
 import com.hyunki.aryoulearning2.ui.main.controller.NavListener;
 
 import java.util.ArrayList;
@@ -88,6 +90,7 @@ public class GameManager {
         if (!currentWord.getAnswer().equals(key)) {
             setCurrentWord(new CurrentWord(key));
         }
+        ModelUtil.refreshCollisionSet();
         attempt = "";
     }
 

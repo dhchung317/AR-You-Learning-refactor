@@ -13,8 +13,6 @@ import androidx.lifecycle.ViewModelProviders;
 import com.hyunki.aryoulearning2.BaseApplication;
 import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.db.model.Category;
-import com.hyunki.aryoulearning2.di.AppComponent;
-import com.hyunki.aryoulearning2.di.DaggerAppComponent;
 import com.hyunki.aryoulearning2.ui.main.ar.ArHostFragment;
 import com.hyunki.aryoulearning2.ui.main.ar.util.CurrentWord;
 import com.hyunki.aryoulearning2.ui.main.controller.NavListener;

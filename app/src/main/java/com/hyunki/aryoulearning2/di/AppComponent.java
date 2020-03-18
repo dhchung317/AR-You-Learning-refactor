@@ -20,7 +20,6 @@ import javax.inject.Singleton;
 
 import dagger.BindsInstance;
 import dagger.Component;
-import retrofit2.Retrofit;
 
 @Component(
         modules = {
@@ -41,10 +40,6 @@ public interface AppComponent{
         AppComponent build();
     }
 
-    Retrofit retrofit();
-    MainApi mainApi();
-    MainRepository mainRepository();
-
     void inject(BaseApplication baseApplication);
 
     void inject(MainActivity mainActivity);
@@ -56,23 +51,3 @@ public interface AppComponent{
     void inject(HintFragment hintFragment);
     void inject(TutorialFragment tutorialFragment);
 }
-
-//    @ContributesAndroidInjector
-//    abstract ListFragment contributeListFragment();
-//
-//    @ContributesAndroidInjector
-//    abstract HintFragment contributeHintFragment();
-//
-//    @ContributesAndroidInjector
-//    abstract ArHostFragment contributeArHostFragment();
-//
-//    @ContributesAndroidInjector
-//    abstract ReplayFragment contributeReplayFragment();
-//
-//    @ContributesAndroidInjector
-//    abstract ResultsFragment contributeResultsFragment();
-//
-//    @ContributesAndroidInjector
-//    abstract TutorialFragment contributeTutorialFragment();
-
-//    abstract MainActivity contributeMainActivity();
