@@ -1,5 +1,6 @@
 package com.hyunki.aryoulearning2.db;
 
+import android.app.Application;
 import android.content.Context;
 
 import androidx.room.Room;
@@ -15,9 +16,9 @@ import dagger.Provides;
 public class ModelDatabaseModule {
 
     @Provides
-    static ModelDatabase provideModelDatabase(Context context) {
+    static ModelDatabase provideModelDatabase(Application application) {
         return Room.databaseBuilder(
-                context,
+                application.getApplicationContext(),
                 ModelDatabase.class, ModelDatabase.DATABASE_NAME)
                 .fallbackToDestructiveMigration()
                 .allowMainThreadQueries()

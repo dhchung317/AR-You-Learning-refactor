@@ -1,8 +1,6 @@
 package com.hyunki.aryoulearning2.ui.main.ar.util;
 
-import android.animation.Animator;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 
 import com.hyunki.aryoulearning2.animation.Animations;
 import com.google.ar.core.Anchor;
@@ -89,17 +87,17 @@ public class ModelUtil {
         }
 
         trNode.setLocalPosition(coordinates);
-        trNode.setLookDirection(new Vector3(0, 0, getRandom(4,0)));
-        trNode.setLocalScale(new Vector3(1.0f, getRandom(10,0) * .1f, 1.0f));
+        trNode.setLookDirection(new Vector3(0, 0, getRandom(4, 0)));
+        trNode.setLocalScale(new Vector3(1.0f, getRandom(10, 0) * .1f, 1.0f));
 
         ObjectAnimator floating = Animations.AR.createFloatAnimator(trNode);
         ObjectAnimator rotate = Animations.AR.createRotationAnimator();
         rotate.setTarget(trNode);
-        rotate.setDuration(getRandom(4000,3000));
+        rotate.setDuration(getRandom(4000, 3000));
         rotate.start();
 
         floating.setTarget(trNode);
-        floating.setDuration(getRandom(2500,2000));
+        floating.setDuration(getRandom(2500, 2000));
         floating.start();
 
         return base;
@@ -110,21 +108,24 @@ public class ModelUtil {
     }
 
     private static boolean checkDoesLetterCollide(Vector3 newV3, Vector3 parentModel) {
+
         if (collisionSet.isEmpty()) {
             collisionSet.add(newV3);
             return false;
         }
 
-        if ((newV3.x < parentModel.x + 2) && (newV3.x > parentModel.x - 2)
-                && (newV3.y < parentModel.y + 2) && (newV3.y > parentModel.y - 2)
-                && (newV3.z < parentModel.z + 2) && (newV3.z > parentModel.z - 10)) {
+
+        if (((newV3.x < parentModel.x + 2) && (newV3.x > parentModel.x - 2))
+                && ((newV3.y < parentModel.y + 2) && (newV3.y > parentModel.y - 2))
+                && ((newV3.z < parentModel.z + 2) && (newV3.z > parentModel.z - 10))) {
             return true;
         }
 
         for (Vector3 v : collisionSet) {
             //if the coordinates are within a range of any existing coordinates
-            if (((newV3.x < v.x + 2 && newV3.x > v.x - 2)
-                    && (newV3.y < v.y + 3 && newV3.y > v.y - 3))) {
+            if ((newV3.x < v.x + 3 && newV3.x > v.x - 3)
+                    && (newV3.y < v.y + 4 && newV3.y > v.y - 4)
+                    && (newV3.z < v.z + 5 && newV3.z > v.z - 5)) {
                 return true;
             } else {
                 collisionSet.add(newV3);
@@ -138,5 +139,9 @@ public class ModelUtil {
         return new Vector3(getRandom(5, -5),//x
                 getRandom(1, -2),//y
                 getRandom(-2, -10));//z
+    }
+
+    public static void refreshCollisionSet() {
+        collisionSet.clear();
     }
 }

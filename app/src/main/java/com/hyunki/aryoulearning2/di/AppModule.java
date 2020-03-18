@@ -1,12 +1,6 @@
 package com.hyunki.aryoulearning2.di;
 
 import android.app.Application;
-import android.content.Context;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestManager;
-import com.bumptech.glide.request.RequestOptions;
-import com.hyunki.aryoulearning2.R;
 import com.hyunki.aryoulearning2.network.main.MainApi;
 import com.hyunki.aryoulearning2.util.Constants;
 import com.hyunki.aryoulearning2.util.audio.PronunciationUtil;
@@ -22,13 +16,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @Module
 public class AppModule {
 
-    //    @Provides
-//    @Singleton
-//    static Retrofit provideRetrofitInstance() {
-//        return new Retrofit.Builder().baseUrl(Constants.BASE_URL)
-//                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-//                .addConverterFactory(GsonConverterFactory.create()).build();
-//    }
     @Provides
     @Singleton
     static Retrofit provideRetrofit() {
@@ -43,11 +30,11 @@ public class AppModule {
         return retrofit.create(MainApi.class);
     }
 
-    @Provides
-    @Singleton
-    static Context provideApplicationContext(Application application) {
-        return application.getBaseContext();
-    }
+//    @Provides
+//    @Singleton
+//    static Application provideApplicationContext(Application application) {
+//        return application;
+//    }
 
     @Provides
     @Singleton
